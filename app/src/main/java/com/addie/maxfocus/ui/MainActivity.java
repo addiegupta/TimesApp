@@ -12,8 +12,10 @@ import android.support.v7.widget.RecyclerView;
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.adapter.AppAdapter;
 import com.addie.maxfocus.model.App;
+import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -22,13 +24,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler{
+public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler,
+        TimePickerDialog.OnTimeSetListener {
 
     @BindView(R.id.rv_main_apps)
     RecyclerView mAppsRecyclerView;
 
     private AppAdapter mAdapter;
     private ArrayList<App> mAppsList;
+    private App mSelectedApp;
 
 
     @Override
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
      * Loads a list of installed apps on the device using PackageManager
      */
     //TODO Change to different thread to prevent main thread from freezing
-    private void loadAppsList(){
+    private void loadAppsList() {
         mAppsList = new ArrayList<>();
 
         final PackageManager packageManager = getPackageManager();
@@ -57,11 +61,9 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         // Sorts the list in alphabetical order of app names
         final PackageItemInfo.DisplayNameComparator comparator = new PackageItemInfo.DisplayNameComparator(packageManager);
-        Collections.sort(packages, new Comparator<ApplicationInfo>()
-        {
+        Collections.sort(packages, new Comparator<ApplicationInfo>() {
             @Override
-            public int compare(ApplicationInfo lhs, ApplicationInfo rhs)
-            {
+            public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
                 return comparator.compare(lhs, rhs);
             }
         });
@@ -69,11 +71,11 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         // Adds app to the list if it has a launch activity
         for (ApplicationInfo packageInfo : packages) {
 
-            if (packageManager.getLaunchIntentForPackage(packageInfo.packageName)!=null){
+            if (packageManager.getLaunchIntentForPackage(packageInfo.packageName) != null) {
 
-                App app = new App(packageInfo.loadLabel(packageManager).toString(),packageInfo.packageName,packageInfo.loadIcon(packageManager));
+                App app = new App(packageInfo.loadLabel(packageManager).toString(), packageInfo.packageName, packageInfo.loadIcon(packageManager));
                 mAppsList.add(app);
-                Timber.d(app.getmIcon()+ " " +app.getmPackage() + " "+ app.getmTitle());
+                Timber.d(app.getmIcon() + " " + app.getmPackage() + " " + app.getmTitle());
             }
         }
     }
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     /**
      * Initialises the RecyclerView displaying the list of apps
      */
-    private void initialiseRecyclerView(){
+    private void initialiseRecyclerView() {
         mAdapter = new AppAdapter(this, this);
         mAppsRecyclerView.setAdapter(mAdapter);
 
@@ -92,12 +94,45 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
+    /**
+     * Called by AppAdapter when an app is selected in the RecyclerView
+     * @param selectedApp the app that is selected
+     */
     @Override
     public void onClick(App selectedApp) {
-        PackageManager packageManager = getPackageManager();
-        Intent launchIntent = packageManager.getLaunchIntentForPackage(selectedApp.getmPackage());
-        startActivity(launchIntent);
+        mSelectedApp = selectedApp;
+
+        showTimerDialog();
     }
 
+    /**
+     * Shows timer dialog to select the duration for which the selected app is to be run
+     */
+    public void showTimerDialog() {
+        TimePickerDialog tpd = TimePickerDialog.newInstance(
+                MainActivity.this, Calendar.HOUR_OF_DAY, Calendar.MINUTE, true
+        );
+        tpd.setTitle("Specify Usage Time HH:MM");
+        tpd.setOkText("Start");
+        tpd.setInitialSelection(0, 10);
+        tpd.setCancelText("Cancel");
+        tpd.show(getFragmentManager(), "Timepickerdialog");
+    }
 
+    /**
+     * Called when time is selected and "start" is pressed on the dialog
+     * @param view
+     * @param hourOfDay
+     * @param minute
+     * @param second
+     */
+    @Override
+    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+
+        // Launches the selected app
+        PackageManager packageManager = getPackageManager();
+        Intent launchIntent = packageManager.getLaunchIntentForPackage(mSelectedApp.getmPackage());
+        startActivity(launchIntent);
+
+    }
 }
