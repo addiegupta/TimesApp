@@ -1,6 +1,7 @@
 package com.addie.maxfocus.ui;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageItemInfo;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.adapter.AppAdapter;
 import com.addie.maxfocus.model.App;
+import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.ArrayList;
@@ -27,12 +29,16 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler,
         TimePickerDialog.OnTimeSetListener {
 
+    private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
+    private static final String TIME_KEY = "time";
+
     @BindView(R.id.rv_main_apps)
     RecyclerView mAppsRecyclerView;
 
     private AppAdapter mAdapter;
     private ArrayList<App> mAppsList;
     private App mSelectedApp;
+    private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
 
 
     @Override
@@ -47,6 +53,18 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         initialiseRecyclerView();
 
+        //Register broadcast receiver to receive "stop app" dialogs
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_APP_DIALOG);
+        mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
+        registerReceiver(mAppDialogBroadcastReceiver,filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mAppDialogBroadcastReceiver);
     }
 
     /**
@@ -127,11 +145,21 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
      * @param second
      */
     @Override
-    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+    public void onTimeSet(TimePickerDialog view, final int hourOfDay, final int minute, int second) {
 
         // Launches the selected app
         PackageManager packageManager = getPackageManager();
         Intent launchIntent = packageManager.getLaunchIntentForPackage(mSelectedApp.getmPackage());
+
+        // Broadcast intent with selected time for app to be stopped
+        int time = ((hourOfDay*60)+minute)*60000;
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.putExtra(TIME_KEY,time);
+        broadcastIntent.setAction(ACTION_APP_DIALOG);
+
+        sendBroadcast(broadcastIntent);
+
+        finish();
         startActivity(launchIntent);
 
     }

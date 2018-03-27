@@ -16,6 +16,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".service.AppDialogIntentService"
+            android:exported="false" />
+
+        <activity android:name=".ui.DialogActivity" android:theme="@style/Theme.Transparent"></activity>
+
+        <receiver
+            android:name=".receiver.AppDialogBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.addie.maxfocus.service.action.APP_DIALOG" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
