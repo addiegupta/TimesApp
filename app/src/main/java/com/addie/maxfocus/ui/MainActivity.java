@@ -1,11 +1,16 @@
 package com.addie.maxfocus.ui;
 
+import android.annotation.TargetApi;
+import android.app.AppOpsManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageItemInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final String TIME_KEY = "time";
+    private static final String TARGET_PACKAGE_KEY = "target_package";
 
     @BindView(R.id.rv_main_apps)
     RecyclerView mAppsRecyclerView;
@@ -49,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         ButterKnife.bind(this);
         Timber.plant(new Timber.DebugTree());
 
+        requestUsageStatsPermission();
+
         loadAppsList();
 
         initialiseRecyclerView();
@@ -61,6 +69,23 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
+
+
+    void requestUsageStatsPermission() {
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && !hasUsageStatsPermission(this)) {
+            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    boolean hasUsageStatsPermission(Context context) {
+        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
+                android.os.Process.myUid(), context.getPackageName());
+        boolean granted = mode == AppOpsManager.MODE_ALLOWED;
+        return granted;
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -155,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         int time = ((hourOfDay*60)+minute)*60000;
         Intent broadcastIntent = new Intent();
         broadcastIntent.putExtra(TIME_KEY,time);
+        broadcastIntent.putExtra(TARGET_PACKAGE_KEY,mSelectedApp.getmPackage());
         broadcastIntent.setAction(ACTION_APP_DIALOG);
 
         sendBroadcast(broadcastIntent);
