@@ -44,7 +44,8 @@ public class DialogActivity extends Activity {
                     }
                 })
         ;
-        Timber.d("Value of bool appInUse is :" + appInUse);
+
+        // Change in dialog depending on whether app is still in use or not
         if (appInUse) {
             builder.setMessage("Same app is still in use");
         } else {

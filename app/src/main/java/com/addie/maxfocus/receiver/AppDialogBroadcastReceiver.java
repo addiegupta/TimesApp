@@ -44,12 +44,14 @@ public class AppDialogBroadcastReceiver extends BroadcastReceiver {
             public void onFinish() {
                 Timber.d("Starting activity");
 
+                // Checks which app is in foreground
                 AppChecker appChecker = new AppChecker();
                 String packageName = appChecker.getForegroundApp(context);
-                Timber.d(packageName);
+
+                // Creates intent to display
+                // Adds boolean which contains value if app is still in foreground
                 Intent dialogIntent = new Intent(context,DialogActivity.class);
                 boolean appInUse = false;
-                Timber.d("Package name of app is : "+targetPackage + "foreground is :"+packageName);
                 if (packageName.equals(targetPackage)){
                     Timber.d("APp is in use");
                     appInUse = true;
