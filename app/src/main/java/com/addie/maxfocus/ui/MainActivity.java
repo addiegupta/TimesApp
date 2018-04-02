@@ -1,51 +1,30 @@
 package com.addie.maxfocus.ui;
 
-import android.annotation.TargetApi;
-import android.app.AppOpsManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageItemInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.provider.AlarmClock;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.addie.maxfocus.R;
-import com.addie.maxfocus.adapter.AppAdapter;
-import com.addie.maxfocus.model.App;
-import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
-import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler,
-        TimePickerDialog.OnTimeSetListener {
+public class MainActivity extends AppCompatActivity {
 
-    private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
-    private static final String TIME_KEY = "time";
-    private static final String TARGET_PACKAGE_KEY = "target_package";
-
-    @BindView(R.id.rv_main_apps)
-    RecyclerView mAppsRecyclerView;
-
-    private AppAdapter mAdapter;
-    private ArrayList<App> mAppsList;
-    private App mSelectedApp;
-    private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
-
+    @BindView(R.id.btn_apps)
+    Button mAppsButton;
+    @BindView(R.id.btn_study_break)
+    Button mStudyButton;
+    @BindView(R.id.btn_instant_alarm)
+    Button mAlarmButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,138 +34,90 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         ButterKnife.bind(this);
         Timber.plant(new Timber.DebugTree());
 
-        requestUsageStatsPermission();
-
-        loadAppsList();
-
-        initialiseRecyclerView();
-
-        //Register broadcast receiver to receive "stop app" dialogs
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_APP_DIALOG);
-        mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
-        registerReceiver(mAppDialogBroadcastReceiver,filter);
-
-    }
-
-
-
-    void requestUsageStatsPermission() {
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && !hasUsageStatsPermission(this)) {
-            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    boolean hasUsageStatsPermission(Context context) {
-        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
-                android.os.Process.myUid(), context.getPackageName());
-        boolean granted = mode == AppOpsManager.MODE_ALLOWED;
-        return granted;
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(mAppDialogBroadcastReceiver);
-    }
-
-    /**
-     * Loads a list of installed apps on the device using PackageManager
-     */
-    //TODO Change to different thread to prevent main thread from freezing
-    private void loadAppsList() {
-        mAppsList = new ArrayList<>();
-
-        final PackageManager packageManager = getPackageManager();
-        List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
-
-        // Sorts the list in alphabetical order of app names
-        final PackageItemInfo.DisplayNameComparator comparator = new PackageItemInfo.DisplayNameComparator(packageManager);
-        Collections.sort(packages, new Comparator<ApplicationInfo>() {
+        mAppsButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
-                return comparator.compare(lhs, rhs);
+            public void onClick(View view) {
+                startAppsActivity();
             }
         });
 
-        // Adds app to the list if it has a launch activity
-        for (ApplicationInfo packageInfo : packages) {
-
-            if (packageManager.getLaunchIntentForPackage(packageInfo.packageName) != null) {
-
-                App app = new App(packageInfo.loadLabel(packageManager).toString(), packageInfo.packageName, packageInfo.loadIcon(packageManager));
-                mAppsList.add(app);
-                Timber.d(app.getmIcon() + " " + app.getmPackage() + " " + app.getmTitle());
+        mAlarmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startAlarmActivity();
             }
-        }
+        });
+
+        mStudyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startStudyTimerActivity();
+            }
+        });
     }
 
-    /**
-     * Initialises the RecyclerView displaying the list of apps
-     */
-    private void initialiseRecyclerView() {
-        mAdapter = new AppAdapter(this, this);
-        mAppsRecyclerView.setAdapter(mAdapter);
-
-        mAdapter.setListData(mAppsList);
-
-        mAppsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAppsRecyclerView.setHasFixedSize(true);
-
-    }
-
-    /**
-     * Called by AppAdapter when an app is selected in the RecyclerView
-     * @param selectedApp the app that is selected
-     */
-    @Override
-    public void onClick(App selectedApp) {
-        mSelectedApp = selectedApp;
-
-        showTimerDialog();
-    }
-
-    /**
-     * Shows timer dialog to select the duration for which the selected app is to be run
-     */
-    public void showTimerDialog() {
-        TimePickerDialog tpd = TimePickerDialog.newInstance(
-                MainActivity.this, Calendar.HOUR_OF_DAY, Calendar.MINUTE, true
-        );
-        tpd.setTitle("Specify Usage Time HH:MM");
-        tpd.setOkText("Start");
-        tpd.setInitialSelection(0, 10);
-        tpd.setCancelText("Cancel");
-        tpd.show(getFragmentManager(), "Timepickerdialog");
-    }
-
-    /**
-     * Called when time is selected and "start" is pressed on the dialog
-     * @param view
-     * @param hourOfDay
-     * @param minute
-     * @param second
-     */
-    @Override
-    public void onTimeSet(TimePickerDialog view, final int hourOfDay, final int minute, int second) {
-
-        // Launches the selected app
-        PackageManager packageManager = getPackageManager();
-        Intent launchIntent = packageManager.getLaunchIntentForPackage(mSelectedApp.getmPackage());
-
-        // Broadcast intent with selected time for app to be stopped
-        int time = ((hourOfDay*60)+minute)*60000;
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.putExtra(TIME_KEY,time);
-        broadcastIntent.putExtra(TARGET_PACKAGE_KEY,mSelectedApp.getmPackage());
-        broadcastIntent.setAction(ACTION_APP_DIALOG);
-
-        sendBroadcast(broadcastIntent);
-
+    private void startAppsActivity() {
         finish();
-        startActivity(launchIntent);
+        startActivity(new Intent(MainActivity.this, AppsActivity.class));
+    }
 
+    //    TODO: Improve
+    private void startAlarmActivity() {
+
+        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+
+        Calendar cal = Calendar.getInstance(); // creates calendar
+        cal.setTime(new Date()); // sets calendar time/date
+        cal.add(Calendar.HOUR_OF_DAY, 8); // adds one hour
+        Timber.d(cal.getTime().toString()); // returns new date object, one hour in the future
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+
+
+        intent.putExtra(AlarmClock.EXTRA_HOUR, hour);
+        intent.putExtra(AlarmClock.EXTRA_MINUTES, minute);
+        intent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+        startActivity(intent);
+
+//    TODO:Issue notification that alarm is set and phone should be kept aside
+
+    }
+
+    //    TODO:Implement
+    private void startStudyTimerActivity() {
+
+        Intent breakTimerintent = new Intent(AlarmClock.ACTION_SET_TIMER);
+
+        int breakTimerLength = 20;//This is a value in seconds;Change 20 to value decided in sharedpreferences
+
+        breakTimerintent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+        breakTimerintent.putExtra(AlarmClock.EXTRA_LENGTH, breakTimerLength);
+        //TODO Change message
+        breakTimerintent.putExtra(AlarmClock.EXTRA_MESSAGE, "Time for a break!");
+
+        //TODO: Issue a notification as well?
+        startActivity(breakTimerintent);
+        Toast.makeText(this, "Timer set for " + String.valueOf(breakTimerLength) + " seconds from now", Toast.LENGTH_SHORT).show();
+
+        //TODO: Figure out how to set study timer after decided time
+
+        // This is not working; only 1 timer is supported at least in Samsung
+        /*
+        Intent studyTimerIntent = new Intent(AlarmClock.ACTION_SET_TIMER);
+
+        int studyTimerLength = breakTimerLength + 20;// CHange 20 to a value chosen from shared preferences
+
+        studyTimerIntent.putExtra(AlarmClock.EXTRA_SKIP_UI,true);
+        studyTimerIntent.putExtra(AlarmClock.EXTRA_LENGTH,studyTimerLength);
+        //TODO Change message
+        studyTimerIntent.putExtra(AlarmClock.EXTRA_MESSAGE,"Break is over, time to study");
+
+        //TODO: Issue a notification as well? Something like" your timer is set
+        //TODO: check notificattion for details" which will contain clock intent
+        startActivity(studyTimerIntent);
+
+        //TODO: Prompt user to decide whether to continue timer cycle or not
+*/
+//        startActivity(new Intent(MainActivity.this,StudyTimerActivity.class));
     }
 }

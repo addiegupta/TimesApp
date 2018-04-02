@@ -1,12 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/rl_main_layout"
+<!--TODO:Revamp UI Completely and Change View IDs-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:id="@+id/rv_main_apps"
-        android:padding="16dp"
-        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/btn_apps"
+        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="128dp"
+        android:text="Apps with timer"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_study_break"
+        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_apps"
+        android:text="Study+Break"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_instant_alarm"
+        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Instant Alarm"
+        android:layout_below="@+id/btn_study_break"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp" />
 </RelativeLayout>
