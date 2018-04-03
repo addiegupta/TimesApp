@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="match_parent"
+<FrameLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/rl_main_layout"
-
+    android:id="@+id/fl_apps_layout"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:id="@+id/rv_main_apps"
+        android:id="@+id/rv_apps"
         android:padding="16dp"
         android:layout_height="wrap_content"/>
-</RelativeLayout>
+    <ProgressBar
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center"
+        android:id="@+id/pb_apps_loading_indicator"
+        android:visibility="gone"/>
+</FrameLayout>

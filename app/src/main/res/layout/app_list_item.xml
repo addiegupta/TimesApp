@@ -30,6 +30,5 @@
         android:layout_marginRight="4dp"
         android:layout_below="@+id/iv_app_list_item_icon"
         android:background="@android:color/darker_gray"
-
         />
 </RelativeLayout>

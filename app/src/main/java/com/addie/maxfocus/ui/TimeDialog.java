@@ -55,14 +55,16 @@ public class TimeDialog extends Dialog implements
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
 
-        mSeekArcProgressTextView.setText(" " + String.valueOf(mSeekArc.getProgress()));
+        String progressText = " " + String.valueOf(mSeekArc.getProgress());
+        mSeekArcProgressTextView.setText(progressText);
 
         mSeekArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
             @Override
             public void onProgressChanged(SeekArc seekArc, int i, boolean b) {
                 if (i == 0)
                     i = 1;
-                mSeekArcProgressTextView.setText(" " + String.valueOf(i));
+                String progressText = " " + String.valueOf(i);
+                mSeekArcProgressTextView.setText(progressText);
                 minutes = i;
             }
 
@@ -96,7 +98,6 @@ public class TimeDialog extends Dialog implements
 
     /**
      * Called when time is selected and "start" is pressed on the dialog
-     *
      */
     private void launchApp() {
         // Launches the selected app
@@ -112,7 +113,7 @@ public class TimeDialog extends Dialog implements
 
         mCallingActivity.sendBroadcast(broadcastIntent);
 
-        mCallingActivity.startActivity(launchIntent);
         mCallingActivity.finish();
+        mCallingActivity.startActivity(launchIntent);
     }
 }
