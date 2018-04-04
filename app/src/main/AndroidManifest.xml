@@ -40,6 +40,10 @@
         </activity>
         <activity android:name=".ui.AlarmActivity" />
         <activity android:name=".ui.StudyTimerActivity" />
+        <provider
+            android:exported="false"
+            android:authorities="${applicationId}"
+            android:name=".data.generated.AppProvider"/>
 
     </application>
 

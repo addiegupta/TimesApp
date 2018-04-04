@@ -2,11 +2,13 @@ package com.addie.maxfocus.ui;
 
 import android.annotation.TargetApi;
 import android.app.AppOpsManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -23,6 +25,7 @@ import android.widget.ProgressBar;
 
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.adapter.AppAdapter;
+import com.addie.maxfocus.data.AppColumns;
 import com.addie.maxfocus.model.App;
 import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 
@@ -34,17 +37,21 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
+import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
+
 /**
  * Displays a list of apps from which an app is selected for launching with a timer
  */
 //TODO: Correct everything for rotation
-//TODO Cache packages in database
+//TODO Add menu action "refresh app list" to reload packages from packagemanager
+//TODO Add scroll bar
+//TODO Add widget for app with timer
 //TODO: Launch timer option for selected apps when launched from launcher
-public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler, LoaderManager.LoaderCallbacks<ArrayList> {
+public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler {
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
-    private static final int APPS_LOADER_ID = 131;
-
+    private static final int APPS_LOADER_MANAGER_ID = 131;
+    private static final int APPS_LOADER_DB_ID = 486;
     @BindView(R.id.rv_apps)
     RecyclerView mAppsRecyclerView;
     @BindView(R.id.pb_apps_loading_indicator)
@@ -54,7 +61,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private App mSelectedApp;
     private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
     private static PackageManager mPackageManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +73,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         requestUsageStatsPermission();
 
         // Start Loading Apps
-        getSupportLoaderManager().initLoader(APPS_LOADER_ID, null, this);
+        loadAppsFromManagerOrDb();
 
         //Register broadcast receiver to receive "stop app" dialogs
         IntentFilter filter = new IntentFilter();
@@ -76,6 +82,19 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         registerReceiver(mAppDialogBroadcastReceiver, filter);
     }
 
+    private void loadAppsFromManagerOrDb() {
+        Cursor cursor = getContentResolver().query(URI_APPS, null, null, null, null);
+        if (cursor != null && cursor.getCount() != 0) {
+            getSupportLoaderManager().initLoader(APPS_LOADER_DB_ID, null, fetchAppsListener);
+        } else {
+            getSupportLoaderManager().initLoader(APPS_LOADER_MANAGER_ID, null, fetchAppsListener);
+        }
+        if (cursor != null) {
+
+            cursor.close();
+        }
+
+    }
 
     void requestUsageStatsPermission() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
@@ -137,46 +156,49 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         }
     }
 
-    @NonNull
-    @Override
-    public Loader<ArrayList> onCreateLoader(int id, Bundle args) {
-        Timber.d("onCreateLoader");
-        showRecyclerView(false);
-        return new AppLoader(this);
-    }
+    private LoaderManager.LoaderCallbacks<ArrayList> fetchAppsListener
+            = new LoaderManager.LoaderCallbacks<ArrayList>() {
+        @NonNull
+        @Override
+        public Loader<ArrayList> onCreateLoader(int id, @Nullable Bundle args) {
+            Timber.d("onCreateLoader");
+            showRecyclerView(false);
+            return new AppLoader(AppsActivity.this, id);
+        }
 
-    /**
-     * Initialises the RecyclerView displaying the list of apps
-     */
+        /**
+         * Initialises the RecyclerView displaying the list of apps
+         */
+        @Override
+        public void onLoadFinished(@NonNull Loader<ArrayList> loader, ArrayList data) {
+            showRecyclerView(true);
+            Timber.d("onLoadFinished");
+            mAdapter = new AppAdapter(AppsActivity.this, AppsActivity.this);
+            mAppsRecyclerView.setAdapter(mAdapter);
 
-    @Override
-    public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
+            mAdapter.setListData(data);
 
-        showRecyclerView(true);
-        Timber.d("onLoadFinished");
-        mAdapter = new AppAdapter(this, this);
-        mAppsRecyclerView.setAdapter(mAdapter);
+            mAppsRecyclerView.setLayoutManager(new LinearLayoutManager(AppsActivity.this));
+            mAppsRecyclerView.setHasFixedSize(true);
 
-        mAdapter.setListData(data);
+            getSupportLoaderManager().destroyLoader(APPS_LOADER_MANAGER_ID);
+        }
 
-        mAppsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAppsRecyclerView.setHasFixedSize(true);
+        @Override
+        public void onLoaderReset(@NonNull Loader<ArrayList> loader) {
 
-        getSupportLoaderManager().destroyLoader(APPS_LOADER_ID);
+        }
+    };
 
-    }
-
-
-    @Override
-    public void onLoaderReset(Loader<ArrayList> loader) {
-
-    }
 
     public static class AppLoader extends AsyncTaskLoader<ArrayList> {
 
-        public AppLoader(@NonNull Context context) {
+        int mId;
+
+        public AppLoader(@NonNull Context context, int id) {
             super(context);
             mPackageManager = context.getPackageManager();
+            mId = id;
         }
 
         /**
@@ -187,17 +209,47 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         public ArrayList loadInBackground() {
             Timber.d("loadInBackground");
             ArrayList mAppsList = new ArrayList<>();
+            if (mId == APPS_LOADER_MANAGER_ID) {
 
-            Intent intent = new Intent(Intent.ACTION_MAIN, null);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            List<ResolveInfo> activities = mPackageManager.queryIntentActivities(intent, 0);
-            Collections.sort(activities, new ResolveInfo.DisplayNameComparator(mPackageManager));
-            for (ResolveInfo ri : activities) {
-                App app = new App();
-                app.setmPackage(ri.activityInfo.packageName);
-                app.setmTitle((String) ri.loadLabel(mPackageManager));
-                app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
-                mAppsList.add(app);
+                Intent intent = new Intent(Intent.ACTION_MAIN, null);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                List<ResolveInfo> activities = mPackageManager.queryIntentActivities(intent, 0);
+                Collections.sort(activities, new ResolveInfo.DisplayNameComparator(mPackageManager));
+                for (ResolveInfo ri : activities) {
+                    ContentValues values = new ContentValues();
+                    App app = new App();
+                    app.setmPackage(ri.activityInfo.packageName);
+                    app.setmTitle((String) ri.loadLabel(mPackageManager));
+                    app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
+                    mAppsList.add(app);
+                    values.put(AppColumns.APP_TITLE, app.getmTitle());
+                    values.put(AppColumns.PACKAGE_NAME, app.getmPackage());
+                    getContext().getContentResolver().insert(URI_APPS, values);
+                }
+
+
+            } else if (mId == APPS_LOADER_DB_ID) {
+
+                Cursor cursor = getContext().getContentResolver().query(URI_APPS, null, null, null, null);
+                if (cursor != null) {
+
+                    cursor.moveToFirst();
+                    while (!cursor.isAfterLast()) {
+                        App app = new App();
+                        app.setmTitle(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.APP_TITLE)));
+                        app.setmPackage(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.PACKAGE_NAME)));
+                        try {
+                            app.setmIcon(mPackageManager.getApplicationIcon(app.getmPackage()));
+
+                        } catch (PackageManager.NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        mAppsList.add(app);
+                        cursor.moveToNext();
+
+                    }
+                    cursor.close();
+                }
             }
 
             return mAppsList;

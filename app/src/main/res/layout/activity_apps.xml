@@ -3,9 +3,12 @@
     android:layout_height="match_parent"
     android:id="@+id/fl_apps_layout"
     xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--TODO: Style scrollbar-->
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:id="@+id/rv_apps"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="true"
         android:padding="16dp"
         android:layout_height="wrap_content"/>
     <ProgressBar
