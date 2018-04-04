@@ -15,6 +15,7 @@
         android:layout_width="wrap_content"
         android:id="@+id/tv_app_list_item_title"
         android:layout_height="wrap_content"
+        android:textStyle="normal"
         android:layout_centerVertical="true"
         android:paddingBottom="8dp"
         android:layout_toEndOf="@+id/iv_app_list_item_icon"

@@ -10,7 +10,7 @@ public class App {
     private String mTitle, mPackage;
     private Drawable mIcon;
 
-
+public App(){}
     public App(String mTitle, String mPackage, Drawable mIcon) {
         this.mTitle = mTitle;
         this.mPackage = mPackage;

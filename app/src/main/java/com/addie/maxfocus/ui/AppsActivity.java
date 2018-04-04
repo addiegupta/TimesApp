@@ -5,9 +5,8 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageItemInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -29,7 +28,6 @@ import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -40,8 +38,7 @@ import timber.log.Timber;
  * Displays a list of apps from which an app is selected for launching with a timer
  */
 //TODO: Correct everything for rotation
-//TODO: IMPROVE LOADER SPEED!!!!
-//TODO:Check logcat ( E/CustomizedTextParser: getCustomizedText Rule is empty. mRuleMap={})
+//TODO Cache packages in database
 //TODO: Launch timer option for selected apps when launched from launcher
 public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler, LoaderManager.LoaderCallbacks<ArrayList> {
 
@@ -65,7 +62,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         setContentView(R.layout.activity_apps);
 
         ButterKnife.bind(this);
-        Timber.d("onCreate activity double check");
+        Timber.d("onCreate");
 
         requestUsageStatsPermission();
 
@@ -77,8 +74,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         filter.addAction(ACTION_APP_DIALOG);
         mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
         registerReceiver(mAppDialogBroadcastReceiver, filter);
-
-
     }
 
 
@@ -128,6 +123,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     /**
      * Displays either the recyclerView or the progressbar depending upon showRV
+     *
      * @param showRV decides which view to be displayed
      */
     private void showRecyclerView(boolean showRV) {
@@ -141,6 +137,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         }
     }
 
+    @NonNull
     @Override
     public Loader<ArrayList> onCreateLoader(int id, Bundle args) {
         Timber.d("onCreateLoader");
@@ -188,28 +185,19 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         @Nullable
         @Override
         public ArrayList loadInBackground() {
+            Timber.d("loadInBackground");
             ArrayList mAppsList = new ArrayList<>();
 
-            List<ApplicationInfo> packages = mPackageManager.getInstalledApplications(PackageManager.GET_META_DATA);
-
-            // Sorts the list in alphabetical order of app names
-            final PackageItemInfo.DisplayNameComparator comparator = new PackageItemInfo.DisplayNameComparator(mPackageManager);
-            Collections.sort(packages, new Comparator<ApplicationInfo>() {
-                @Override
-                public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
-                    return comparator.compare(lhs, rhs);
-                }
-            });
-
-            // Adds app to the list if it has a launch activity
-            for (ApplicationInfo packageInfo : packages) {
-
-                if (mPackageManager.getLaunchIntentForPackage(packageInfo.packageName) != null) {
-
-                    App app = new App(packageInfo.loadLabel(mPackageManager).toString(), packageInfo.packageName, packageInfo.loadIcon(mPackageManager));
-                    mAppsList.add(app);
-                    Timber.d("LOADED" + app.getmTitle());
-                }
+            Intent intent = new Intent(Intent.ACTION_MAIN, null);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            List<ResolveInfo> activities = mPackageManager.queryIntentActivities(intent, 0);
+            Collections.sort(activities, new ResolveInfo.DisplayNameComparator(mPackageManager));
+            for (ResolveInfo ri : activities) {
+                App app = new App();
+                app.setmPackage(ri.activityInfo.packageName);
+                app.setmTitle((String) ri.loadLabel(mPackageManager));
+                app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
+                mAppsList.add(app);
             }
 
             return mAppsList;
@@ -217,8 +205,15 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         @Override
         protected void onStartLoading() {
+
+            Timber.d("onStartLoading");
             forceLoad();
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this, MainActivity.class));
+    }
 }
