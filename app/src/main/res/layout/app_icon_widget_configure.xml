@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/configure" />
+
+    <EditText
+        android:id="@+id/appwidget_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/add_widget" />
+
+</LinearLayout>-->
+<FrameLayout android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:id="@+id/fl_widget_apps_layout"
+xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.widget.RecyclerView
+    android:layout_width="match_parent"
+    android:id="@+id/rv_widget_apps"
+    android:scrollbars="vertical"
+    android:fadeScrollbars="true"
+    android:padding="16dp"
+    android:layout_height="wrap_content"/>
+<ProgressBar
+    android:layout_width="42dp"
+    android:layout_height="42dp"
+    android:layout_gravity="center"
+    android:id="@+id/pb_widget_apps_loading_indicator"
+    android:visibility="gone"/>
+</FrameLayout>

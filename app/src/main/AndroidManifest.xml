@@ -9,6 +9,7 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,8 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name=".ui.AppsActivity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name=".ui.AppsActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".ui.DialogActivity"
             android:theme="@style/Theme.Transparent" />
@@ -40,11 +42,27 @@
         </activity>
         <activity android:name=".ui.AlarmActivity" />
         <activity android:name=".ui.StudyTimerActivity" />
-        <provider
-            android:exported="false"
-            android:authorities="${applicationId}"
-            android:name=".data.generated.AppProvider"/>
 
+        <provider
+            android:name=".data.generated.AppProvider"
+            android:authorities="${applicationId}"
+            android:exported="false" />
+
+        <receiver android:name=".widget.AppIconWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/app_icon_widget_info" />
+        </receiver>
+
+        <activity android:name=".widget.AppIconWidgetConfigureActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
