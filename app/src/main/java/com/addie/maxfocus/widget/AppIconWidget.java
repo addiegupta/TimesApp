@@ -11,12 +11,16 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.addie.maxfocus.R;
+import com.addie.maxfocus.service.LaunchAppFromWidgetService;
 
 /**
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link AppIconWidgetConfigureActivity AppIconWidgetConfigureActivity}
  */
 public class AppIconWidget extends AppWidgetProvider {
+
+    private static final String TARGET_PACKAGE_KEY = "target_package";
+    private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
@@ -42,19 +46,20 @@ public class AppIconWidget extends AppWidgetProvider {
 //            context.sendBroadcast(broadcastIntent);
 
 
-//        TODO: FIX!! Causing crash
+//        TODO: FIX!! Causing crash. Fixed, still might cause crash
         if (!packageName.equals(context.getString(R.string.appwidget_text))) {
             // Launches the selected app
             PackageManager packageManager = context.getPackageManager();
 
-            Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
-            if (launchIntent != null) {
-                launchIntent.setAction(Long.toString(System.currentTimeMillis()));
+//            Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
+            Intent launchIntent = new Intent(context, LaunchAppFromWidgetService.class);
+            launchIntent.putExtra(TARGET_PACKAGE_KEY,packageName);
+            launchIntent.setAction(Long.toString(System.currentTimeMillis()));
+
 //                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            }
 
             Log.d("WIDGET", "Package being applied in intent is :" + packageName);
-            PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent appPendingIntent = PendingIntent.getService(context, 0, launchIntent, 0);
             views.setOnClickPendingIntent(R.id.widget_icon, appPendingIntent);
         }
 

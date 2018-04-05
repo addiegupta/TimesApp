@@ -2,7 +2,9 @@ package com.addie.maxfocus.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
@@ -11,18 +13,23 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.addie.maxfocus.R;
+import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 import com.triggertrap.seekarc.SeekArc;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 
 public class TimeDialog extends Dialog implements
         android.view.View.OnClickListener {
 
     private final String mTargetPackage;
-    public Activity mCallingActivity;
+    private final boolean mIsWidgetLaunch;
+    public Context mContext;
     public Dialog dialog;
+    private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
+
     private int minutes;
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
@@ -38,19 +45,29 @@ public class TimeDialog extends Dialog implements
     @BindView(R.id.tv_seekarc_progress)
     TextView mSeekArcProgressTextView;
 
-    public TimeDialog(Activity activity, String targetPackage) {
-        super(activity);
-        this.mCallingActivity = activity;
+    public TimeDialog(Context context, String targetPackage, boolean isWidgetLaunch) {
+        super(context);
+        this.mContext = context;
         this.mTargetPackage = targetPackage;
+        this.mIsWidgetLaunch = isWidgetLaunch;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        Timber.d("Created dialog");
 
         setContentView(R.layout.layout_time_dialog);
 
+        if (mIsWidgetLaunch) {
+            mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(ACTION_APP_DIALOG);
+
+            mContext.registerReceiver(mAppDialogBroadcastReceiver, filter);
+
+        }
         ButterKnife.bind(this);
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
@@ -85,7 +102,7 @@ public class TimeDialog extends Dialog implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_dialog_start:
-                launchApp();
+                launchAppOrForegroundApp();
                 break;
             case R.id.btn_dialog_cancel:
                 dismiss();
@@ -99,10 +116,8 @@ public class TimeDialog extends Dialog implements
     /**
      * Called when time is selected and "start" is pressed on the dialog
      */
-    private void launchApp() {
+    private void launchAppOrForegroundApp() {
         // Launches the selected app
-        PackageManager packageManager = mCallingActivity.getPackageManager();
-        Intent launchIntent = packageManager.getLaunchIntentForPackage(mTargetPackage);
 
         // Broadcast intent with selected time for app to be stopped
         int time = minutes * 60000;
@@ -111,9 +126,22 @@ public class TimeDialog extends Dialog implements
         broadcastIntent.putExtra(TARGET_PACKAGE_KEY, mTargetPackage);
         broadcastIntent.setAction(ACTION_APP_DIALOG);
 
-        mCallingActivity.sendBroadcast(broadcastIntent);
+        if (!mIsWidgetLaunch) {
+            PackageManager packageManager = mContext.getPackageManager();
+            Intent launchIntent = packageManager.getLaunchIntentForPackage(mTargetPackage);
+            mContext.startActivity(launchIntent);
+        }
+        mContext.sendBroadcast(broadcastIntent);
+        ((Activity) mContext).finish();
 
-        mCallingActivity.finish();
-        mCallingActivity.startActivity(launchIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mIsWidgetLaunch) {
+
+            mContext.unregisterReceiver(mAppDialogBroadcastReceiver);
+        }
     }
 }

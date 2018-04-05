@@ -20,9 +20,11 @@
         tools:replace="android:icon">
         <activity
             android:name=".ui.AppsActivity"
+            android:noHistory="true"
             android:launchMode="singleTask" />
         <activity
             android:name=".ui.DialogActivity"
+            android:noHistory="true"
             android:theme="@style/Theme.Transparent" />
 
         <receiver
@@ -33,15 +35,18 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MainActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.AlarmActivity" />
-        <activity android:name=".ui.StudyTimerActivity" />
+        <activity android:name=".ui.AlarmActivity"
+            android:noHistory="true" />
+        <activity android:name=".ui.StudyTimerActivity"
+            android:noHistory="true"/>
 
         <provider
             android:name=".data.generated.AppProvider"
@@ -58,11 +63,16 @@
                 android:resource="@xml/app_icon_widget_info" />
         </receiver>
 
-        <activity android:name=".widget.AppIconWidgetConfigureActivity">
+        <activity android:name=".widget.AppIconWidgetConfigureActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".service.LaunchAppFromWidgetService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

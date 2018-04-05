@@ -235,53 +235,9 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
         startActivity(new Intent(this, MainActivity.class));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private static final String PREFS_NAME = "com.addie.maxfocus.widget.AppIconWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-//    EditText mAppWidgetText;
-   /* View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            final Context context = AppIconWidgetConfigureActivity.this;
-
-            // When the button is clicked, store the string locally
-            String widgetText = mAppWidgetText.getText().toString();
-            savePackageName(context, mAppWidgetId, widgetText);
-
-            // It is the responsibility of the configuration activity to update the app widget
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            AppIconWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
-
-            // Make sure we pass back the original appWidgetId
-            Intent resultValue = new Intent();
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
-            setResult(RESULT_OK, resultValue);
-            finish();
-        }
-    };*/
 
     public AppIconWidgetConfigureActivity() {
         super();
@@ -321,8 +277,6 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
         setResult(RESULT_CANCELED);
 
         setContentView(R.layout.app_icon_widget_configure);
-//        mAppWidgetText = (EditText) findViewById(R.id.appwidget_text);
-//        findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
 
         //Code from AppsActivity
         ButterKnife.bind(this);
@@ -335,8 +289,6 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
         filter.addAction(ACTION_APP_DIALOG);
         mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
         registerReceiver(mAppDialogBroadcastReceiver, filter);
-
-
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
@@ -352,7 +304,6 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
             return;
         }
 
-//        mAppWidgetText.setText(loadPackageNameForWidget(AppIconWidgetConfigureActivity.this, mAppWidgetId));
     }
 }
 

@@ -112,6 +112,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         return granted;
     }
 
+    //TODO: Check why am I unregistering
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -135,7 +136,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
      */
     public void showTimerDialog() {
 
-        TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage());
+        TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage(),false);
         tdialog.show();
 
     }
@@ -267,5 +268,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     public void onBackPressed() {
         super.onBackPressed();
         startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 }

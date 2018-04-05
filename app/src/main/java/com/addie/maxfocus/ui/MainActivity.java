@@ -120,4 +120,10 @@ public class MainActivity extends AppCompatActivity {
 */
 //        startActivity(new Intent(MainActivity.this,StudyTimerActivity.class));
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }
