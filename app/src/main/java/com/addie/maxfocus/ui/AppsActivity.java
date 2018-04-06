@@ -18,6 +18,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -70,6 +71,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         ButterKnife.bind(this);
         Timber.d("onCreate");
 
+        //TODO Add UI
         requestUsageStatsPermission();
 
         // Start Loading Apps
@@ -179,7 +181,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
             mAdapter.setListData(data);
 
-            mAppsRecyclerView.setLayoutManager(new LinearLayoutManager(AppsActivity.this));
+            mAppsRecyclerView.setLayoutManager(new GridLayoutManager(AppsActivity.this,4, LinearLayoutManager.VERTICAL,false));
             mAppsRecyclerView.setHasFixedSize(true);
 
             getSupportLoaderManager().destroyLoader(APPS_LOADER_MANAGER_ID);

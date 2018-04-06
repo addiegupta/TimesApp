@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="match_parent"
+<RelativeLayout android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/rl_app_list_item"
-    android:layout_marginBottom="8dp"
+    android:layout_margin="8dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView
         android:layout_width="60dp"
@@ -12,18 +12,15 @@
         android:scaleType="centerCrop"
         />
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:id="@+id/tv_app_list_item_title"
         android:layout_height="wrap_content"
-        android:textStyle="normal"
-        android:layout_centerVertical="true"
-        android:paddingBottom="8dp"
-        android:layout_toEndOf="@+id/iv_app_list_item_icon"
-        android:textSize="20sp"
-        android:layout_marginStart="8dp"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+        android:layout_below="@+id/iv_app_list_item_icon"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
         />
-    <View
+    <!--<View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
@@ -31,5 +28,5 @@
         android:layout_marginRight="4dp"
         android:layout_below="@+id/iv_app_list_item_icon"
         android:background="@android:color/darker_gray"
-        />
+        />-->
 </RelativeLayout>
