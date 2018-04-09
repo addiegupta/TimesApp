@@ -16,6 +16,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -40,6 +41,7 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
 
 
 //TODO:Refactor and check everything carefully
+//TODO Maybe merge this and the AppsActivity
 /**
  * The configuration screen for the {@link AppIconWidget AppIconWidget} AppWidget.
  */
@@ -144,7 +146,7 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
 
             mAdapter.setListData(data);
 
-            mAppsRecyclerView.setLayoutManager(new LinearLayoutManager(AppIconWidgetConfigureActivity.this));
+            mAppsRecyclerView.setLayoutManager(new GridLayoutManager(AppIconWidgetConfigureActivity.this,4,LinearLayoutManager.VERTICAL,false));
             mAppsRecyclerView.setHasFixedSize(true);
 
             getSupportLoaderManager().destroyLoader(APPS_LOADER_MANAGER_ID);
