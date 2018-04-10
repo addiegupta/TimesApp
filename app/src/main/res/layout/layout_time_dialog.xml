@@ -21,7 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!--TODO:Change thumb to better drawable-->
         <com.triggertrap.seekarc.SeekArc
             android:id="@+id/seekArc_dialog"
             android:layout_width="wrap_content"
@@ -38,7 +37,7 @@
             seekarc:rotation="0"
             seekarc:roundEdges="true"
             seekarc:startAngle="0"
-            seekarc:thumb="@drawable/seek_arc_control_selector"
+            seekarc:thumb="@drawable/seekbar_drawable_thumb"
             seekarc:sweepAngle="360"
             seekarc:touchInside="true" />
 

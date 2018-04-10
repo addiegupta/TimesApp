@@ -46,10 +46,6 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
  * Displays a list of apps from which an app is selected for launching with a timer
  */
 //TODO: Correct everything for rotation
-//TODO Add menu action "refresh app list" to reload packages from packagemanager
-//TODO Add scroll bar
-//TODO Add widget for app with timer
-//TODO: Launch timer option for selected apps when launched from launcher
 public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler {
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
