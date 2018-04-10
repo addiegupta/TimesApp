@@ -19,6 +19,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -42,6 +44,7 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
 
 //TODO:Refactor and check everything carefully
 //TODO Maybe merge this and the AppsActivity
+
 /**
  * The configuration screen for the {@link AppIconWidget AppIconWidget} AppWidget.
  */
@@ -108,6 +111,7 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
 
 
     }
+
     /**
      * Displays either the recyclerView or the progressbar depending upon showRV
      *
@@ -123,6 +127,32 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
             mLoadingIndicator.setVisibility(View.VISIBLE);
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_apps, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_apps_action_refresh_list:
+                refreshAppsList();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+    private void refreshAppsList() {
+        mAdapter.setListData(null);
+        getContentResolver().delete(URI_APPS, null, null);
+        loadAppsFromManagerOrDb();
+
+    }
+
 
     private LoaderManager.LoaderCallbacks<ArrayList> fetchAppsListener
             = new LoaderManager.LoaderCallbacks<ArrayList>() {
@@ -146,7 +176,7 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
 
             mAdapter.setListData(data);
 
-            mAppsRecyclerView.setLayoutManager(new GridLayoutManager(AppIconWidgetConfigureActivity.this,4,LinearLayoutManager.VERTICAL,false));
+            mAppsRecyclerView.setLayoutManager(new GridLayoutManager(AppIconWidgetConfigureActivity.this, 4, LinearLayoutManager.VERTICAL, false));
             mAppsRecyclerView.setHasFixedSize(true);
 
             getSupportLoaderManager().destroyLoader(APPS_LOADER_MANAGER_ID);
@@ -203,16 +233,16 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
 
                     cursor.moveToFirst();
                     while (!cursor.isAfterLast()) {
-                        App app = new App();
-                        app.setmTitle(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.APP_TITLE)));
-                        app.setmPackage(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.PACKAGE_NAME)));
                         try {
+                            App app = new App();
+                            app.setmTitle(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.APP_TITLE)));
+                            app.setmPackage(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.PACKAGE_NAME)));
                             app.setmIcon(mPackageManager.getApplicationIcon(app.getmPackage()));
+                            mAppsList.add(app);
 
                         } catch (PackageManager.NameNotFoundException e) {
                             e.printStackTrace();
                         }
-                        mAppsList.add(app);
                         cursor.moveToNext();
 
                     }

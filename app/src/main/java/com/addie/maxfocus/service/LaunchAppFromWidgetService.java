@@ -33,12 +33,13 @@ public class LaunchAppFromWidgetService extends IntentService {
             Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
             startActivity(launchIntent);
 
-            try {
-                Thread.sleep(500);
 
-                // calling some methods here
+            try {
+                //TODO Correct to keep in foreground
+                Thread.sleep(400);
                 final Intent dialogIntent = new Intent(LaunchAppFromWidgetService.this, DialogActivity.class);
                 dialogIntent.putExtra(IS_WIDGET_LAUNCH, true);
+                dialogIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 dialogIntent.putExtra(TARGET_PACKAGE_KEY, packageName);
                 startActivity(dialogIntent);
             } catch (InterruptedException e) {

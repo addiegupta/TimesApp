@@ -17,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
+//TODO Layout to display past usage of apps with/without usage of timers
 public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.btn_apps)
