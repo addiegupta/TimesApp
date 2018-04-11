@@ -4,4 +4,7 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="refresh_list">Refresh List</string>
+    <string name="set_duration_for_app">Set duration for app</string>
+    <string name="start">Start</string>
+    <string name="cancel">Cancel</string>
 </resources>
