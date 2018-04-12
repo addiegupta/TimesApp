@@ -32,9 +32,9 @@ public class AppDialogBroadcastReceiver extends BroadcastReceiver {
         final int time = intent.getIntExtra(TIME_KEY, 0);
         final String targetPackage = intent.getStringExtra(TARGET_PACKAGE_KEY);
 
-        //TODO Change first argument to time
+//        TODODONE Change first argument to time
         // Counts till the specified time before launching dialog activity
-        cdt = new CountDownTimer(4000, 1000) {
+        cdt = new CountDownTimer(time, 1000) {
             @Override
             public void onTick(long l) {
                 Timber.d("Tick tick " + l);
