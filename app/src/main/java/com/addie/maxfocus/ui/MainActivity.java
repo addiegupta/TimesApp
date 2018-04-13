@@ -1,6 +1,11 @@
 package com.addie.maxfocus.ui;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +25,7 @@ import timber.log.Timber;
 //TODO Layout to display past usage of apps with/without usage of timers
 public class MainActivity extends AppCompatActivity {
 
+    private static final int ALARM_NOTIF_ID = 234;
     @BindView(R.id.btn_apps)
     Button mAppsButton;
     @BindView(R.id.btn_study_break)
@@ -63,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //    TODO: Improve
+    // TODO: Launch an activity on first launch?
     private void startAlarmActivity() {
 
         Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
@@ -82,6 +89,29 @@ public class MainActivity extends AppCompatActivity {
 
 //    TODO:Issue notification that alarm is set and phone should be kept aside
 
+        NotificationManager notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Alarm has been set!";
+            String description = "Time to set the phone aside";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("a", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system
+            notificationManager.createNotificationChannel(channel);
+        } else {
+
+            Notification.Builder mBuilder =
+                    new Notification.Builder(this)
+                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                            .setContentTitle("Alarm has been set!")
+                            .setDefaults(Notification.DEFAULT_ALL)
+                            .setContentText("It's time to set the phone aside");
+            mBuilder.setPriority(Notification.PRIORITY_HIGH);
+            notificationManager.notify(ALARM_NOTIF_ID, mBuilder.build());
+        }
+
+        finishAffinity();
     }
 
     //    TODO:Implement

@@ -32,9 +32,9 @@ public class AppDialogBroadcastReceiver extends BroadcastReceiver {
         final int time = intent.getIntExtra(TIME_KEY, 0);
         final String targetPackage = intent.getStringExtra(TARGET_PACKAGE_KEY);
 
-//        TODODONE Change first argument to time
+//        TODO Change first argument to time
         // Counts till the specified time before launching dialog activity
-        cdt = new CountDownTimer(time, 1000) {
+        cdt = new CountDownTimer(4000, 1000) {
             @Override
             public void onTick(long l) {
                 Timber.d("Tick tick " + l);
@@ -50,13 +50,13 @@ public class AppDialogBroadcastReceiver extends BroadcastReceiver {
 
                 // Creates intent to display
                 // Adds boolean which contains value if app is still in foreground
-                Intent dialogIntent = new Intent(context,DialogActivity.class);
+                Intent dialogIntent = new Intent(context, DialogActivity.class);
                 boolean appInUse = false;
-                if (packageName.equals(targetPackage)){
+                if (packageName.equals(targetPackage)) {
                     Timber.d("APp is in use");
                     appInUse = true;
                 }
-                dialogIntent.putExtra(APP_IN_USE_KEY,appInUse);
+                dialogIntent.putExtra(APP_IN_USE_KEY, appInUse);
                 context.startActivity(dialogIntent);
             }
         };
