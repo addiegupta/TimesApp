@@ -29,7 +29,7 @@ public class AppIconWidget extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.layout_widget_icon);
         try {
-            views.setImageViewBitmap(R.id.widget_icon, ((BitmapDrawable) context.getPackageManager().getApplicationIcon(packageName)).getBitmap());
+            views.setImageViewBitmap(R.id.app_widget_icon, ((BitmapDrawable) context.getPackageManager().getApplicationIcon(packageName)).getBitmap());
 
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -60,7 +60,7 @@ public class AppIconWidget extends AppWidgetProvider {
 
             Log.d("WIDGET", "Package being applied in intent is :" + packageName);
             PendingIntent appPendingIntent = PendingIntent.getService(context, 0, launchIntent, 0);
-            views.setOnClickPendingIntent(R.id.widget_icon, appPendingIntent);
+            views.setOnClickPendingIntent(R.id.app_widget_icon, appPendingIntent);
         }
 
 

@@ -20,8 +20,8 @@
         tools:replace="android:icon">
         <activity
             android:name=".ui.AppsActivity"
-            android:noHistory="true"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:noHistory="true" />
         <activity
             android:name=".ui.DialogActivity"
             android:noHistory="true"
@@ -35,7 +35,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.MainActivity"
+        <activity
+            android:name=".ui.MainActivity"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,17 +44,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.AlarmActivity"
+        <activity
+            android:name=".ui.AlarmActivity"
             android:noHistory="true" />
-        <activity android:name=".ui.StudyTimerActivity"
-            android:noHistory="true"/>
+        <activity
+            android:name=".ui.StudyTimerActivity"
+            android:noHistory="true" />
 
         <provider
             android:name=".data.generated.AppProvider"
             android:authorities="${applicationId}"
             android:exported="false" />
 
-        <receiver android:name=".widget.AppIconWidget">
+        <receiver
+            android:name=".widget.AppIconWidget"
+            android:label="Timed App">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -63,7 +68,8 @@
                 android:resource="@xml/app_icon_widget_info" />
         </receiver>
 
-        <activity android:name=".widget.AppIconWidgetConfigureActivity"
+        <activity
+            android:name=".widget.AppIconWidgetConfigureActivity"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -72,7 +78,22 @@
 
         <service
             android:name=".service.LaunchAppFromWidgetService"
-            android:exported="false"></service>
+            android:exported="false" />
+        <service
+            android:name=".service.SetAlarmService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".widget.AlarmWidget"
+            android:label="1 Tap Alarm">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/alarm_widget_info" />
+        </receiver>
     </application>
 
 </manifest>
