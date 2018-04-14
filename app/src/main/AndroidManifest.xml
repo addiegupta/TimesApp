@@ -9,6 +9,7 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCU" />
 
     <application
         android:allowBackup="true"
@@ -94,6 +95,14 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/alarm_widget_info" />
         </receiver>
+
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.addie.maxfocus.ui.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

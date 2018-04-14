@@ -7,4 +7,7 @@
     <string name="set_duration_for_app">Set duration for app</string>
     <string name="start">Start</string>
     <string name="cancel">Cancel</string>
+    <string name="settings">Settings</string>
+    <string name="pref_alarm_time_key">alarm_time</string>
+    <string name="pref_alarm_time_label">Time for Instant Alarm</string>
 </resources>

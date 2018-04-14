@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="480"
+        android:entries="@array/pref_alarm_time_labels"
+        android:entryValues="@array/pref_alarm_time_values"
+        android:key="@string/pref_alarm_time_key"
+        android:title="@string/pref_alarm_time_label" />
+
+</PreferenceScreen>

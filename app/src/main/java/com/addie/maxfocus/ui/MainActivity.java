@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity {
 
     private static final int ALARM_NOTIF_ID = 234;
+    private static final String SHARED_PREFS_KEY = "shared_prefs";
     @BindView(R.id.btn_apps)
     Button mAppsButton;
     @BindView(R.id.btn_study_break)
@@ -63,6 +66,28 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menu_main_action_settings:
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                break;
+            default:
+                break;
+        }
+
+        return true;
+    }
+
     private void startAppsActivity() {
         finish();
         startActivity(new Intent(MainActivity.this, AppsActivity.class));
@@ -74,10 +99,12 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
 
-        Calendar cal = Calendar.getInstance(); // creates calendar
-        cal.setTime(new Date()); // sets calendar time/date
-        cal.add(Calendar.HOUR_OF_DAY, 8); // adds one hour
-        Timber.d(cal.getTime().toString()); // returns new date object, one hour in the future
+        String minutes = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE).getString(getString(R.string.pref_alarm_time_key), "");
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.MINUTE, Integer.valueOf(minutes));
+        Timber.d(cal.getTime().toString());
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);
 
@@ -87,8 +114,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
         startActivity(intent);
 
-//    TODO:Issue notification that alarm is set and phone should be kept aside
-
+        /// Launches notification that displays that alarm has been set
         NotificationManager notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
