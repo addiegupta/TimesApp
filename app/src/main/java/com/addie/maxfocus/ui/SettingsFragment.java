@@ -11,7 +11,7 @@ import com.addie.maxfocus.R;
 
 import timber.log.Timber;
 
-
+///TODO FIX!! Crashing when SettingsActivity is launched
 public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
