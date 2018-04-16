@@ -6,5 +6,9 @@
         android:entryValues="@array/pref_alarm_time_values"
         android:key="@string/pref_alarm_time_key"
         android:title="@string/pref_alarm_time_label" />
+    <Preference
+        android:title="@string/set_study_break_timer_duration"
+        android:key="@string/set_study_break_key"/>
+
 
 </PreferenceScreen>

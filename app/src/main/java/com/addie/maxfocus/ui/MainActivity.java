@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.addie.maxfocus.R;
+import com.addie.maxfocus.receiver.StudyBreakTimerBroadcastReceiver;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -31,12 +33,15 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int ALARM_NOTIF_ID = 234;
     private static final String SHARED_PREFS_KEY = "shared_prefs";
+    private static final String ACTION_STUDY_BREAK_RECEIVER = "com.addie.maxfocus.service.action.STUDY_BREAK";
     @BindView(R.id.btn_apps)
     Button mAppsButton;
     @BindView(R.id.btn_study_break)
     Button mStudyButton;
     @BindView(R.id.btn_instant_alarm)
     Button mAlarmButton;
+    private StudyBreakTimerBroadcastReceiver mStudyBreakBroadcastReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,21 @@ public class MainActivity extends AppCompatActivity {
                 startStudyTimerActivity();
             }
         });
+
+        //Register broadcast receiver to receive "stop app" dialogs
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_STUDY_BREAK_RECEIVER);
+        mStudyBreakBroadcastReceiver = new StudyBreakTimerBroadcastReceiver();
+        registerReceiver(mStudyBreakBroadcastReceiver, filter);
+
+    }
+
+
+    //TODO: Check why am I unregistering
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mStudyBreakBroadcastReceiver);
     }
 
 
@@ -95,14 +115,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, AppsActivity.class));
     }
 
-    //    TODO: Improve
+    // TODO: Improve
     // TODO: Launch an activity on first launch?
     private void startAlarmActivity() {
 
         Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String minutes = preferences.getString(getString(R.string.pref_alarm_time_key),"");
+        String minutes = preferences.getString(getString(R.string.pref_alarm_time_key), "");
 
 
         Calendar cal = Calendar.getInstance();
@@ -121,8 +141,14 @@ public class MainActivity extends AppCompatActivity {
         /// Launches notification that displays that alarm has been set
         NotificationManager notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
+        String notifMinute = String.valueOf(minute);
+        if (minute < 10) {
+            notifMinute = "0" + notifMinute;
+
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Alarm has been set!";
+            CharSequence name = "Alarm has been set for " + hour + ":" + notifMinute + "!";
             String description = "Time to set the phone aside";
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel("a", name, importance);
@@ -134,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             Notification.Builder mBuilder =
                     new Notification.Builder(this)
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle("Alarm has been set!")
+                            .setContentTitle("Alarm has been set for " + hour + ":" + notifMinute + "!")
                             .setDefaults(Notification.DEFAULT_ALL)
                             .setContentText("It's time to set the phone aside");
             mBuilder.setPriority(Notification.PRIORITY_HIGH);
@@ -149,7 +175,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent breakTimerintent = new Intent(AlarmClock.ACTION_SET_TIMER);
 
-        int breakTimerLength = 20;//This is a value in seconds;Change 20 to value decided in sharedpreferences
+        //TODO Change 20 to value decided in sharedpreferences
+        int breakTimerLength = 20;//This is a value in seconds;
 
         breakTimerintent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
         breakTimerintent.putExtra(AlarmClock.EXTRA_LENGTH, breakTimerLength);
@@ -166,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         /*
         Intent studyTimerIntent = new Intent(AlarmClock.ACTION_SET_TIMER);
 
-        int studyTimerLength = breakTimerLength + 20;// CHange 20 to a value chosen from shared preferences
+        int studyTimerLength = breakTimerLength + 20;// Change 20 to a value chosen from shared preferences
 
         studyTimerIntent.putExtra(AlarmClock.EXTRA_SKIP_UI,true);
         studyTimerIntent.putExtra(AlarmClock.EXTRA_LENGTH,studyTimerLength);

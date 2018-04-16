@@ -37,7 +37,7 @@ public class AppDialogBroadcastReceiver extends BroadcastReceiver {
         cdt = new CountDownTimer(4000, 1000) {
             @Override
             public void onTick(long l) {
-                Timber.d("Tick tick " + l);
+                Timber.d("Tick tick %s", l);
             }
 
             @Override
