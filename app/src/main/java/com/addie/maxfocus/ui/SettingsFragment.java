@@ -11,7 +11,6 @@ import com.addie.maxfocus.R;
 
 import timber.log.Timber;
 
-///TODO FIX!! Crashing when SettingsActivity is launched
 public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -29,7 +28,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
             String value = sharedPreferences.getString(p.getKey(), "");
             Timber.d(value);
-//            setPreferenceSummary(p, value);
+            setPreferenceSummary(p, value);
         }
     }
 
@@ -58,7 +57,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
             if (key.equals(getString(R.string.pref_alarm_time_key))) {
                 String value = sharedPreferences.getString(preference.getKey(), "");
-//                setPreferenceSummary(preference, value);
+                setPreferenceSummary(preference, value);
             }
         }
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <array name="pref_alarm_time_labels">
+    <string-array name="pref_alarm_time_labels">
         <item>5 h</item>
         <item>5 h 30m</item>
         <item>6 h</item>
@@ -11,8 +11,8 @@
         <item>8 h 30m</item>
         <item>9 h</item>
         <item>9 h 30m</item>
-    </array>
-    <array name="pref_alarm_time_values">
+    </string-array>
+    <string-array name="pref_alarm_time_values">
         <item>300</item>
         <item>330</item>
         <item>360</item>
@@ -23,5 +23,5 @@
         <item>510</item>
         <item>540</item>
         <item>570</item>
-    </array>
+    </string-array>
 </resources>

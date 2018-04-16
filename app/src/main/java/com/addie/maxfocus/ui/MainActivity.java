@@ -5,10 +5,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -99,7 +101,9 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
 
-        String minutes = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE).getString(getString(R.string.pref_alarm_time_key), "");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String minutes = preferences.getString(getString(R.string.pref_alarm_time_key),"");
+
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
