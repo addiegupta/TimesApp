@@ -32,6 +32,7 @@ public class TimeDialog extends Dialog implements
 
     private int minutes;
 
+    //TODO Rename in all classes from service to receiver
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final String TIME_KEY = "time";
     private static final String TARGET_PACKAGE_KEY = "target_package";
@@ -45,6 +46,7 @@ public class TimeDialog extends Dialog implements
     @BindView(R.id.tv_seekarc_progress)
     TextView mSeekArcProgressTextView;
 
+    //TODO Change isWidgetLaunch to callingClass to be able to use with preference
     public TimeDialog(Context context, String targetPackage, boolean isWidgetLaunch) {
         super(context);
         this.mContext = context;
