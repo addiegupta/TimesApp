@@ -8,6 +8,10 @@ import android.view.MenuItem;
 
 import com.addie.maxfocus.R;
 
+/**
+ * Settings Activity that contains fragment which has preferences
+ * for various settings
+ */
 public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

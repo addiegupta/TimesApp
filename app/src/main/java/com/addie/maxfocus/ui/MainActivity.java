@@ -28,6 +28,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
+/**
+ * Main activity that displays all the options of the app
+ */
+//TODO Implement tutorial activities to be displayed on first launch
 //TODO Layout to display past usage of apps with/without usage of timers
 public class MainActivity extends AppCompatActivity {
 

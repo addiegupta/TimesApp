@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 
 
+/**
+ * Sets timer for break after preferred time on receiving intent
+ */
 //TODO Implement to start new timer
 public class StudyBreakTimerBroadcastReceiver extends BroadcastReceiver {
 

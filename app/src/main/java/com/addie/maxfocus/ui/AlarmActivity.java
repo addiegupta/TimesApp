@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.addie.maxfocus.R;
 
+//TODO Implement or remove
 public class AlarmActivity extends AppCompatActivity {
 
     @Override

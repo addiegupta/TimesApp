@@ -11,6 +11,9 @@ import com.addie.maxfocus.R;
 
 import timber.log.Timber;
 
+/**
+ * Fragment which contains preferences regarding various settings of app
+ */
 public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 

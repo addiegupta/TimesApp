@@ -21,6 +21,9 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 
+/**
+ * Displayed to decide time for app launch
+ */
 public class TimeDialog extends Dialog implements
         android.view.View.OnClickListener {
 
