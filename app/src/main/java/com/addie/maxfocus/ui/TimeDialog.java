@@ -24,6 +24,7 @@ import timber.log.Timber;
 /**
  * Displayed to decide time for app launch
  */
+//TODO Modify to use with time preference too
 public class TimeDialog extends Dialog implements
         android.view.View.OnClickListener {
 
