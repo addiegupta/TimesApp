@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
  * Displays dialog on top of the foreground running activity
  * Transparent activity so only dialog is visible
  */
+//TODO Change behavior when app is not in use/permission not granted
 public class DialogActivity extends Activity {
 
 
