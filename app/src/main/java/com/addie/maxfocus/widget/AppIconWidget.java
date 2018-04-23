@@ -21,7 +21,6 @@ import com.addie.maxfocus.service.LaunchAppFromWidgetService;
 public class AppIconWidget extends AppWidgetProvider {
 
     private static final String TARGET_PACKAGE_KEY = "target_package";
-    private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {

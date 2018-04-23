@@ -36,7 +36,6 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity {
 
     private static final int ALARM_NOTIF_ID = 234;
-    private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String ACTION_STUDY_BREAK_RECEIVER = "com.addie.maxfocus.service.action.STUDY_BREAK";
     @BindView(R.id.btn_apps)
     Button mAppsButton;
