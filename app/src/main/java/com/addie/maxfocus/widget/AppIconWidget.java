@@ -18,6 +18,7 @@ import com.addie.maxfocus.service.LaunchAppFromWidgetService;
  * App Widget Configuration implemented in {@link AppIconWidgetConfigureActivity AppIconWidgetConfigureActivity}
  */
 //TODO Find ways to create widget/shortcut from within app
+    //TODO START WORKING
 public class AppIconWidget extends AppWidgetProvider {
 
     private static final String TARGET_PACKAGE_KEY = "target_package";
