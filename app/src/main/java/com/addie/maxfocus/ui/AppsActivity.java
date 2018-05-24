@@ -9,6 +9,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -46,6 +48,8 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
  * Displays a list of apps from which an app is selected for launching with a timer
  */
 //TODO: Correct everything for rotation
+    //TODO: Search about adding shortcut from within the app
+    //TODO: like spotify's add playlist to home screen option
 public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler {
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
@@ -55,6 +59,13 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     RecyclerView mAppsRecyclerView;
     @BindView(R.id.pb_apps_loading_indicator)
     ProgressBar mLoadingIndicator;
+
+
+
+    private static final String APP_IN_USE_KEY = "app_in_use";
+    //TODO: Change parameter name
+    private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
+    private static final String TARGET_PACKAGE_KEY = "target_package";
 
     private AppAdapter mAdapter;
     private App mSelectedApp;
@@ -127,6 +138,11 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     @Override
     public void onClick(App selectedApp) {
         mSelectedApp = selectedApp;
+        try {
+            createShortcut();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
         showTimerDialog();
     }
@@ -287,6 +303,22 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
             Timber.d("onStartLoading");
             forceLoad();
         }
+    }
+
+    public void createShortcut() throws PackageManager.NameNotFoundException {
+        Intent shortcutintent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+        shortcutintent.putExtra("duplicate", false);
+        Bitmap icon = ((BitmapDrawable) getPackageManager().getApplicationIcon(mSelectedApp.getmPackage())).getBitmap();
+
+        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
+        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
+
+        Intent appIntent = new Intent(getApplicationContext(),DialogActivity.class);
+        appIntent.putExtra(IS_WIDGET_LAUNCH, true);
+        appIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
+
+        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, appIntent);
+        sendBroadcast(shortcutintent);
     }
 
     @Override

@@ -30,8 +30,6 @@ public class LaunchAppFromWidgetService extends IntentService {
             Timber.d("Service launched");
             final String packageName = intent.getStringExtra(TARGET_PACKAGE_KEY);
 
-            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
-            startActivity(launchIntent);
 
 
             try {

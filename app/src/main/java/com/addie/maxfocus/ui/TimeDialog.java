@@ -112,6 +112,9 @@ public class TimeDialog extends Dialog implements
                 break;
             case R.id.btn_dialog_cancel:
                 dismiss();
+                if (mIsWidgetLaunch) {
+                    startAppActivity();
+                }
                 break;
             default:
                 break;
@@ -132,14 +135,21 @@ public class TimeDialog extends Dialog implements
         broadcastIntent.putExtra(TARGET_PACKAGE_KEY, mTargetPackage);
         broadcastIntent.setAction(ACTION_APP_DIALOG);
 
-        if (!mIsWidgetLaunch) {
-            PackageManager packageManager = mContext.getPackageManager();
-            Intent launchIntent = packageManager.getLaunchIntentForPackage(mTargetPackage);
-            mContext.startActivity(launchIntent);
-        }
+//        if (!mIsWidgetLaunch) {
+                startAppActivity();
+//          }
         mContext.sendBroadcast(broadcastIntent);
         ((Activity) mContext).finish();
 
+    }
+
+    /**
+     * Launches the target app using PackageManager
+     */
+    private void startAppActivity() {
+        PackageManager packageManager = mContext.getPackageManager();
+        Intent launchIntent = packageManager.getLaunchIntentForPackage(mTargetPackage);
+        mContext.startActivity(launchIntent);
     }
 
     @Override
