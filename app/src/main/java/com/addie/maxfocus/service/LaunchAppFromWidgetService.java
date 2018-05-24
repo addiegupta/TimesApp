@@ -12,7 +12,6 @@ import timber.log.Timber;
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
  * <p>
- * TODO: Customize class - update intent actions and extra parameters.
  */
 public class LaunchAppFromWidgetService extends IntentService {
 
@@ -30,20 +29,11 @@ public class LaunchAppFromWidgetService extends IntentService {
             Timber.d("Service launched");
             final String packageName = intent.getStringExtra(TARGET_PACKAGE_KEY);
 
-
-
-            try {
-                //TODO Correct to keep in foreground
-                Thread.sleep(400);
-                final Intent dialogIntent = new Intent(LaunchAppFromWidgetService.this, DialogActivity.class);
-                dialogIntent.putExtra(IS_WIDGET_LAUNCH, true);
-                dialogIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                dialogIntent.putExtra(TARGET_PACKAGE_KEY, packageName);
-                startActivity(dialogIntent);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
+            final Intent dialogIntent = new Intent(LaunchAppFromWidgetService.this, DialogActivity.class);
+            dialogIntent.putExtra(IS_WIDGET_LAUNCH, true);
+            dialogIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            dialogIntent.putExtra(TARGET_PACKAGE_KEY, packageName);
+            startActivity(dialogIntent);
 
         }
 
