@@ -10,7 +10,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -18,7 +21,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -307,10 +312,27 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     public void createShortcut() throws PackageManager.NameNotFoundException {
         Intent shortcutintent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-        shortcutintent.putExtra("duplicate", false);
+//        shortcutintent.putExtra("duplicate", true);
         Bitmap icon = ((BitmapDrawable) getPackageManager().getApplicationIcon(mSelectedApp.getmPackage())).getBitmap();
+        Timber.d(icon.getHeight() +" "+ icon.getWidth());
 
-        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
+//        Paint paint = new Paint();
+//        paint.set(getResources().getDrawable(R.drawable.ic_timelapse_white_24dp));
+
+        Bitmap bitmap = getBitmapFromVectorDrawable(this,R.drawable.ic_timelapse_white_24dp);
+        Timber.d(bitmap.getHeight() +" "+ bitmap.getWidth());
+
+        //
+//        Rectangle rectangle = new Rectangle();
+//        rectangle.setBounds(20,20,6,6);
+//
+//        Rect rect = new Rect(20,20,20,20);
+//
+//        Canvas canvas  = new Canvas(icon);
+//        canvas.drawBitmap(bitmap, null, rect,null);
+
+        Bitmap bmp = overlay(icon,bitmap);
+        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, bmp);
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
 
         Intent appIntent = new Intent(getApplicationContext(),DialogActivity.class);
@@ -319,6 +341,28 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, appIntent);
         sendBroadcast(shortcutintent);
+    }
+
+    private Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
+        Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
+        Canvas canvas = new Canvas(bmOverlay);
+        canvas.drawBitmap(bmp1, new Matrix(), null);
+        canvas.drawBitmap(bmp2, 94,94, null);
+        return bmOverlay;
+    }
+    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = (DrawableCompat.wrap(drawable)).mutate();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
     @Override
