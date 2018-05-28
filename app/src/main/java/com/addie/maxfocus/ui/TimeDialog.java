@@ -5,11 +5,15 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.addie.maxfocus.R;
@@ -49,6 +53,10 @@ public class TimeDialog extends Dialog implements
     SeekArc mSeekArc;
     @BindView(R.id.tv_seekarc_progress)
     TextView mSeekArcProgressTextView;
+    @BindView(R.id.tv_dialog_title)
+    TextView mDialogTitleTextView;
+    @BindView(R.id.iv_time_dialog_icon)
+    ImageView mAppIconImageView;
 
     //TODO Change isWidgetLaunch to callingClass to be able to use with preference
     public TimeDialog(Context context, String targetPackage, boolean isWidgetLaunch) {
@@ -77,6 +85,22 @@ public class TimeDialog extends Dialog implements
         ButterKnife.bind(this);
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
+
+            ApplicationInfo ai;
+            PackageManager pm = mContext.getPackageManager();
+            Bitmap icon;
+        try {
+            icon = ((BitmapDrawable) pm.getApplicationIcon(mTargetPackage)).getBitmap();
+            ai = pm.getApplicationInfo(mTargetPackage, 0);
+        } catch (final PackageManager.NameNotFoundException e) {
+            ai = null;
+            icon = null;
+        }
+        final String applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
+
+        String titleText = mContext.getString(R.string.set_duration_for) +" "+ applicationName;
+        mDialogTitleTextView.setText(titleText);
+        mAppIconImageView.setImageBitmap(icon);
 
         String progressText = " " + String.valueOf(mSeekArc.getProgress());
         mSeekArcProgressTextView.setText(progressText);
@@ -108,6 +132,7 @@ public class TimeDialog extends Dialog implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_dialog_start:
+                dismiss();
                 launchAppOrForegroundApp();
                 break;
             case R.id.btn_dialog_cancel:
@@ -136,7 +161,7 @@ public class TimeDialog extends Dialog implements
         broadcastIntent.setAction(ACTION_APP_DIALOG);
 
 //        if (!mIsWidgetLaunch) {
-                startAppActivity();
+        startAppActivity();
 //          }
         mContext.sendBroadcast(broadcastIntent);
         ((Activity) mContext).finish();
