@@ -30,14 +30,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.adapter.AppAdapter;
 import com.addie.maxfocus.data.AppColumns;
 import com.addie.maxfocus.model.App;
 import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,18 +61,24 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
  * Displays a list of apps from which an app is selected for launching with a timer
  */
 //TODO: Correct everything for rotation
-    //TODO: Search about adding shortcut from within the app
-    //TODO: like spotify's add playlist to home screen option
-public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler {
+//TODO: Search about adding shortcut from within the app
+//TODO: like spotify's add playlist to home screen option
+public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler, OnShowcaseEventListener {
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final int APPS_LOADER_MANAGER_ID = 131;
     private static final int APPS_LOADER_DB_ID = 486;
+
+    private static final float ALPHA_DIM_VALUE = 0.1f;
+
+    private ShowcaseView mShowcaseView;
+    @BindView(R.id.buttonBlocked)
+    Button mShowcaseButton;
+
     @BindView(R.id.rv_apps)
     RecyclerView mAppsRecyclerView;
     @BindView(R.id.pb_apps_loading_indicator)
     ProgressBar mLoadingIndicator;
-
 
 
     private static final String APP_IN_USE_KEY = "app_in_use";
@@ -96,6 +110,17 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         filter.addAction(ACTION_APP_DIALOG);
         mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
         registerReceiver(mAppDialogBroadcastReceiver, filter);
+
+        mShowcaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mShowcaseView.isShown()) {
+                    mShowcaseView.setStyle(R.style.CustomShowcaseTheme);
+                } else {
+                    mShowcaseView.show();
+                }
+            }
+        });
     }
 
     private void loadAppsFromManagerOrDb() {
@@ -145,9 +170,21 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         mSelectedApp = selectedApp;
         try {
             createShortcut();
+            Toast.makeText(this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
+    }
+
+    /**
+     * Called by AppAdapter when an app is long clickedin the RecyclerView
+     *
+     * @param selectedApp the app that is selected
+     */
+    @Override
+    public void onLongClick(App selectedApp) {
+        mSelectedApp = selectedApp;
 
         showTimerDialog();
     }
@@ -229,6 +266,28 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
             mAppsRecyclerView.setHasFixedSize(true);
 
             getSupportLoaderManager().destroyLoader(APPS_LOADER_MANAGER_ID);
+
+            //TODO Modify to encircle an app instead of the current placeholder button
+
+            RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            lps.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
+            lps.setMargins(margin, margin, margin, margin);
+
+
+
+            ViewTarget target = new ViewTarget(R.id.rv_apps, AppsActivity.this);
+            mShowcaseView = new ShowcaseView.Builder(AppsActivity.this)
+                    .withMaterialShowcase()
+                    .setTarget(target)
+                    .setContentTitle("Title")
+                    .setContentText("Main Message")
+                    .setStyle(R.style.CustomShowcaseTheme2)
+                    .setShowcaseEventListener(AppsActivity.this)
+                    .replaceEndButton(R.layout.view_custom_button)
+                    .build();
+            mShowcaseView.setButtonPosition(lps);
         }
 
         @Override
@@ -236,6 +295,36 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         }
     };
+
+    @Override
+    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+        mAppsRecyclerView.setAlpha(1f);
+        mShowcaseButton.setText("Button Show");
+        //buttonBlocked.setEnabled(false);
+    }
+
+    @Override
+    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+    }
+
+    @Override
+    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+        dimView(mAppsRecyclerView);
+        mShowcaseButton.setText("Button Hide");
+        //buttonBlocked.setEnabled(true);
+
+    }
+
+    @Override
+    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+    }
+
+
+    private void dimView(View view) {
+        view.setAlpha(ALPHA_DIM_VALUE);
+    }
 
 
     public static class AppLoader extends AsyncTaskLoader<ArrayList> {
@@ -314,13 +403,13 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         Intent shortcutintent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
 //        shortcutintent.putExtra("duplicate", true);
         Bitmap icon = ((BitmapDrawable) getPackageManager().getApplicationIcon(mSelectedApp.getmPackage())).getBitmap();
-        Timber.d(icon.getHeight() +" "+ icon.getWidth());
+        Timber.d(icon.getHeight() + " " + icon.getWidth());
 
 //        Paint paint = new Paint();
 //        paint.set(getResources().getDrawable(R.drawable.ic_timelapse_white_24dp));
 
-        Bitmap bitmap = getBitmapFromVectorDrawable(this,R.drawable.ic_timelapse_white_24dp);
-        Timber.d(bitmap.getHeight() +" "+ bitmap.getWidth());
+        Bitmap bitmap = getBitmapFromVectorDrawable(this, R.drawable.ic_timelapse_white_24dp);
+        Timber.d(bitmap.getHeight() + " " + bitmap.getWidth());
 
         //
 //        Rectangle rectangle = new Rectangle();
@@ -331,11 +420,11 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 //        Canvas canvas  = new Canvas(icon);
 //        canvas.drawBitmap(bitmap, null, rect,null);
 
-        Bitmap bmp = overlay(icon,bitmap);
+        Bitmap bmp = overlay(icon, bitmap);
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, bmp);
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
 
-        Intent appIntent = new Intent(getApplicationContext(),DialogActivity.class);
+        Intent appIntent = new Intent(getApplicationContext(), DialogActivity.class);
         appIntent.putExtra(IS_WIDGET_LAUNCH, true);
         appIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
 
@@ -347,9 +436,10 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
         Canvas canvas = new Canvas(bmOverlay);
         canvas.drawBitmap(bmp1, new Matrix(), null);
-        canvas.drawBitmap(bmp2, 94,94, null);
+        canvas.drawBitmap(bmp2, 94, 94, null);
         return bmOverlay;
     }
+
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

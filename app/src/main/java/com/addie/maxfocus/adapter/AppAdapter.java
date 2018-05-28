@@ -55,6 +55,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppAdapterViewHo
             e.printStackTrace();
             holder.itemView.setVisibility(View.GONE);
         }
+
+
     }
 
     @Override
@@ -64,9 +66,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppAdapterViewHo
 
     public interface AppOnClickHandler {
         void onClick(App selectedApp);
+        void onLongClick(App selectedApp);
     }
 
-    class AppAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class AppAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
 
         @BindView(R.id.tv_app_list_item_title)
@@ -79,6 +82,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppAdapterViewHo
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -89,6 +93,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppAdapterViewHo
             mClickHandler.onClick(app);
         }
 
+        @Override
+        public boolean onLongClick(View view) {
+            int adapterPosition = getAdapterPosition();
+
+            App app = mAppsList.get(adapterPosition);
+            mClickHandler.onLongClick(app);
+            return true;
+        }
     }
 
     public void setListData(ArrayList<App> appsList) {

@@ -112,6 +112,11 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    public void onLongClick(App selectedApp) {
+
+    }
+
     /**
      * Displays either the recyclerView or the progressbar depending upon showRV
      *

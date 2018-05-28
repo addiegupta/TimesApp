@@ -14,6 +14,9 @@ import timber.log.Timber;
  * Receives intent to display dialog after selected time has passed.
  * Launches DialogActivity to display an alert dialog
  */
+
+//TODO Clean up all the broadcast receiver mess ( maybe by starting a service in activity that controls
+    // this receiver
 public class AppDialogBroadcastReceiver extends BroadcastReceiver {
 
 

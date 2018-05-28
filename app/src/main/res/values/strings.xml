@@ -32,4 +32,5 @@
     <string name="hrs_570">570</string>
     <string name="set_study_break_timer_duration">Set study/break timer duration</string>
     <string name="set_study_break_key">set_studybreak</string>
+    <string name="shortcut_created">Shortcut added to home screen</string>
 </resources>
