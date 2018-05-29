@@ -43,4 +43,6 @@
     <string name="usage_permission_pref">usage_permission_pref</string>
     <string name="never_ask_again">Never ask again</string>
     <string name="usage_never_ask_again_pref_key">usage_never_ask_again</string>
+    <string name="pref_app_time_label">Default time for app timers</string>
+    <string name="pref_app_time_key">pref_app_time_default</string>
 </resources>

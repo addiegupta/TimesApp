@@ -58,7 +58,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         Preference preference = findPreference(key);
         if (null != preference) {
 
-            if (key.equals(getString(R.string.pref_alarm_time_key))) {
+            if (key.equals(getString(R.string.pref_alarm_time_key))||key.equals(getString(R.string.pref_app_time_key))) {
                 String value = sharedPreferences.getString(preference.getKey(), "");
                 setPreferenceSummary(preference, value);
             }
@@ -104,17 +104,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             }
         });
     }
-    /**
-     * Shows timer dialog to select the duration for which the selected app is to be run
-     */
-    public void showTimerDialog() {
-
-        //TODO Correct
-//        TimeDialog tdialog = new TimeDialog(getContext(), , false);
-//        tdialog.show();
-
-    }
-
 
     @Override
     public void onDestroy() {

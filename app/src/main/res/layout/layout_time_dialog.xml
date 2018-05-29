@@ -45,7 +45,6 @@
             seekarc:arcColor="@color/colorAccent"
             seekarc:arcWidth="1dp"
             seekarc:max="60"
-            seekarc:progress="10"
             seekarc:progressColor="@color/colorAccent"
             seekarc:progressWidth="10dp"
             seekarc:rotation="0"

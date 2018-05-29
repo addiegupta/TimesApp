@@ -5,11 +5,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -37,6 +39,7 @@ public class TimeDialog extends Dialog implements
     public Context mContext;
     public Dialog dialog;
     private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
+    private SharedPreferences preferences;
 
     private int minutes;
 
@@ -104,6 +107,14 @@ public class TimeDialog extends Dialog implements
 
         String progressText = " " + String.valueOf(mSeekArc.getProgress());
         mSeekArcProgressTextView.setText(progressText);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        int progress = Integer.parseInt(preferences.getString(mContext.getString(R.string.pref_app_time_key),"10"));
+
+        mSeekArc.setProgress(progress);
+        String progressTxt = " " + String.valueOf(progress);
+        mSeekArcProgressTextView.setText(progressTxt);
+        minutes = progress;
 
         mSeekArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
             @Override

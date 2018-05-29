@@ -9,6 +9,12 @@
     <Preference
         android:title="@string/set_study_break_timer_duration"
         android:key="@string/set_study_break_key"/>
-
+<ListPreference
+    android:defaultValue="10"
+    android:entries="@array/pref_app_time_labels"
+    android:entryValues="@array/pref_app_time_values"
+    android:key="@string/pref_app_time_key"
+    android:title="@string/pref_app_time_label"
+    />
 
 </PreferenceScreen>
