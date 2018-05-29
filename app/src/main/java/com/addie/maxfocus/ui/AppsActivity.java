@@ -64,19 +64,14 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
  * Displays a list of apps from which an app is selected for launching with a timer
  */
 //TODO: Correct everything for rotation
-//TODO: Search about adding shortcut from within the app
-//TODO: like spotify's add playlist to home screen option
 public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler, OnShowcaseEventListener {
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final int APPS_LOADER_MANAGER_ID = 131;
     private static final int APPS_LOADER_DB_ID = 486;
 
-    private static final float ALPHA_DIM_VALUE = 0.1f;
 
     private ShowcaseView mShowcaseView;
-//    @BindView(R.id.buttonBlocked)
-//    Button mShowcaseButton;
 
     @BindView(R.id.rv_apps)
     RecyclerView mAppsRecyclerView;
@@ -115,16 +110,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
         registerReceiver(mAppDialogBroadcastReceiver, filter);
 
-        /*mShowcaseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mShowcaseView.isShown()) {
-                    mShowcaseView.setStyle(R.style.CustomShowcaseTheme);
-                } else {
-                    mShowcaseView.show();
-                }
-            }
-        });*/
     }
 
     private void loadAppsFromManagerOrDb() {
@@ -290,9 +275,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     @Override
     public void onShowcaseViewHide(ShowcaseView showcaseView) {
-//        mAppsRecyclerView.setAlpha(1f);
-//        mShowcaseButton.setText("Button Show");
-        //buttonBlocked.setEnabled(false);
     }
 
     @Override
@@ -302,8 +284,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     @Override
     public void onShowcaseViewShow(ShowcaseView showcaseView) {
-//        mShowcaseButton.setText("Button Hide");
-        //buttonBlocked.setEnabled(true);
 
     }
 
