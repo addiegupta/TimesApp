@@ -17,10 +17,12 @@ import android.provider.AlarmClock;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.addie.maxfocus.R;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.btn_instant_alarm)
     Button mAlarmButton;
     private StudyBreakTimerBroadcastReceiver mStudyBreakBroadcastReceiver;
+    private SharedPreferences preferences;
+    private CheckBox mNeverAskAgainCheckbox;
 
 
     @Override
@@ -81,7 +85,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //TODO UI Added. Might contains some bugs related to absence of Usage Access Permission
-        showRequestUsageAccessDialog();
+        //FIXME While returning from settings screen , app activity has been destroyed
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!preferences.getBoolean(getString(R.string.usage_never_ask_again_pref_key), false)) {
+            showRequestUsageAccessDialog();
+        }
 
         //Register broadcast receiver to receive "stop app" dialogs
         IntentFilter filter = new IntentFilter();
@@ -92,9 +100,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showRequestUsageAccessDialog() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && !hasUsageStatsPermission(this)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            LayoutInflater layoutInflater = LayoutInflater.from(this);
+            View checkboxLayout = layoutInflater.inflate(R.layout.never_ask_again_checkbox, null);
+
+            mNeverAskAgainCheckbox = (CheckBox) checkboxLayout.findViewById(R.id.skip);
+            builder.setView(checkboxLayout)
                     .setTitle(R.string.usage_permission_title)
                     .setMessage(R.string.usage_permission_message)
                     .setPositiveButton(R.string.grant_permission, new DialogInterface.OnClickListener() {
@@ -103,9 +118,12 @@ public class MainActivity extends AppCompatActivity {
                             requestUsageStatsPermission();
                         }
                     })
+
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+                            preferences.edit().putBoolean(getString(R.string.usage_never_ask_again_pref_key)
+                                    , mNeverAskAgainCheckbox.isChecked()).apply();
                             dialogInterface.dismiss();
                         }
                     });

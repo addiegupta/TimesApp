@@ -41,4 +41,6 @@
     <string name="grant_permission">Grant Permission</string>
     <string name="usage_permission_instruction">Select MaxFocus in the list, allow usage tracking and then return to the app</string>
     <string name="usage_permission_pref">usage_permission_pref</string>
+    <string name="never_ask_again">Never ask again</string>
+    <string name="usage_never_ask_again_pref_key">usage_never_ask_again</string>
 </resources>
