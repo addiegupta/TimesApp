@@ -1,7 +1,5 @@
 package com.addie.maxfocus.ui;
 
-import android.annotation.TargetApi;
-import android.app.AppOpsManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -98,8 +95,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         ButterKnife.bind(this);
         Timber.d("onCreate");
 
-        //TODO Add UI
-        requestUsageStatsPermission();
 
         // Start Loading Apps
         loadAppsFromManagerOrDb();
@@ -126,21 +121,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
-    void requestUsageStatsPermission() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && !hasUsageStatsPermission(this)) {
-            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-        }
-    }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    boolean hasUsageStatsPermission(Context context) {
-        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
-                android.os.Process.myUid(), context.getPackageName());
-        boolean granted = mode == AppOpsManager.MODE_ALLOWED;
-        return granted;
-    }
 
     //TODO: Check why am I unregistering
     @Override
@@ -163,6 +144,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
 
     }
 

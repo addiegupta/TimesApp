@@ -1,15 +1,20 @@
 package com.addie.maxfocus.ui;
 
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.AppOpsManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.view.Menu;
@@ -75,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //TODO UI Added. Might contains some bugs related to absence of Usage Access Permission
+        showRequestUsageAccessDialog();
+
         //Register broadcast receiver to receive "stop app" dialogs
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_STUDY_BREAK_RECEIVER);
@@ -83,12 +91,56 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void showRequestUsageAccessDialog() {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && !hasUsageStatsPermission(this)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                    .setTitle(R.string.usage_permission_title)
+                    .setMessage(R.string.usage_permission_message)
+                    .setPositiveButton(R.string.grant_permission, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            requestUsageStatsPermission();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+            builder.show();
+        }
+    }
 
     //TODO: Check why am I unregistering
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mStudyBreakBroadcastReceiver);
+    }
+
+    void requestUsageStatsPermission() {
+//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+//                && !hasUsageStatsPermission(this)) {
+
+        //TODO Change to new app name
+        Toast.makeText(this, R.string.usage_permission_instruction, Toast.LENGTH_LONG).show();
+        startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+//        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    boolean hasUsageStatsPermission(Context context) {
+        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
+                android.os.Process.myUid(), context.getPackageName());
+        boolean granted = mode == AppOpsManager.MODE_ALLOWED;
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.edit().putBoolean(getString(R.string.usage_permission_pref), granted).apply();
+
+        return granted;
     }
 
 

@@ -36,4 +36,9 @@
     <string name="showcase_apps_title">Press an app icon to add a shortcut to home screen</string>
     <string name="showcase_apps_message">Long press an app icon to launch app timer</string>
     <string name="pref_display_showcase_apps">display_showcase_apps</string>
+    <string name="usage_permission_title">Usage Permission Access</string>
+    <string name="usage_permission_message">This app requires access to your usage statistics to determine the app being used. Your data is safe and none of it is saved.</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="usage_permission_instruction">Select MaxFocus in the list, allow usage tracking and then return to the app</string>
+    <string name="usage_permission_pref">usage_permission_pref</string>
 </resources>

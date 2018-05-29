@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 
+import com.addie.maxfocus.R;
 import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 
 /**
@@ -24,15 +27,18 @@ public class DialogActivity extends Activity {
     private static final String TARGET_PACKAGE_KEY = "target_package";
 
     private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
-
+    private SharedPreferences preferences;
+    private boolean hasUsageAccess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
 
 
-        if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH,false)){
+        if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false)) {
             displayTimeDialog();
 
             //Register broadcast receiver to receive "stop app" dialogs
@@ -41,10 +47,9 @@ public class DialogActivity extends Activity {
             mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
             registerReceiver(mAppDialogBroadcastReceiver, filter);
 
-        }
-        else {
+        } else {
 
-        displayStopAppDialog();
+            displayStopAppDialog();
         }
     }
 
@@ -53,27 +58,29 @@ public class DialogActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH,false)) {
+        if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false)) {
 
             unregisterReceiver(mAppDialogBroadcastReceiver);
         }
     }
+
     /**
      * Displays a TimeDialog to select time to be set for app usage
      */
-    private void displayTimeDialog(){
+    private void displayTimeDialog() {
 
-        String packageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
-        TimeDialog dialog = new TimeDialog(this,packageName,true);
+        String packageName = null;
+        packageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
+        TimeDialog dialog = new TimeDialog(this, packageName, true);
         dialog.show();
 
     }
+
     /**
      * Displays the alertDialog for user notifying that time has passed
      */
     private void displayStopAppDialog() {
 
-        boolean appInUse = getIntent().getBooleanExtra(APP_IN_USE_KEY, false);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Stop using this app").setCancelable(false)
@@ -97,11 +104,17 @@ public class DialogActivity extends Activity {
                 })
         ;
 
-        // Change in dialog depending on whether app is still in use or not
-        if (appInUse) {
-            builder.setMessage("Same app is still in use");
+        if (hasUsageAccess) {
+            boolean appInUse = getIntent().getBooleanExtra(APP_IN_USE_KEY, false);
+
+            // Change in dialog depending on whether app is still in use or not
+            if (appInUse) {
+                builder.setMessage("Same app is still in use");
+            } else {
+                builder.setMessage("Good job!App is no longer being used");
+            }
         } else {
-            builder.setMessage("Good job!App is no longer being used");
+            builder.setMessage("Usage access permission not found");
         }
         builder.show();
     }
