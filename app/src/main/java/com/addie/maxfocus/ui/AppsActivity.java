@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,6 +27,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +36,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -41,6 +43,7 @@ import android.widget.Toast;
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.adapter.AppAdapter;
 import com.addie.maxfocus.data.AppColumns;
+import com.addie.maxfocus.extra.RecyclerViewDisabler;
 import com.addie.maxfocus.model.App;
 import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
@@ -72,8 +75,8 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private static final float ALPHA_DIM_VALUE = 0.1f;
 
     private ShowcaseView mShowcaseView;
-    @BindView(R.id.buttonBlocked)
-    Button mShowcaseButton;
+//    @BindView(R.id.buttonBlocked)
+//    Button mShowcaseButton;
 
     @BindView(R.id.rv_apps)
     RecyclerView mAppsRecyclerView;
@@ -90,6 +93,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private App mSelectedApp;
     private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
     private static PackageManager mPackageManager;
+    private RecyclerView.OnItemTouchListener mRecyclerViewDisabler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +115,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
         registerReceiver(mAppDialogBroadcastReceiver, filter);
 
-        mShowcaseButton.setOnClickListener(new View.OnClickListener() {
+        /*mShowcaseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mShowcaseView.isShown()) {
@@ -120,7 +124,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     mShowcaseView.show();
                 }
             }
-        });
+        });*/
     }
 
     private void loadAppsFromManagerOrDb() {
@@ -262,32 +266,20 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
             mAdapter.setListData(data);
 
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(AppsActivity.this);
+            if (!preferences.contains(getString(R.string.pref_display_showcase_apps))) {
+
+                 mRecyclerViewDisabler = new RecyclerViewDisabler();
+
+                mAppsRecyclerView.addOnItemTouchListener(mRecyclerViewDisabler);
+                displayShowcaseView();
+            }
+
             mAppsRecyclerView.setLayoutManager(new GridLayoutManager(AppsActivity.this, 4, LinearLayoutManager.VERTICAL, false));
             mAppsRecyclerView.setHasFixedSize(true);
 
             getSupportLoaderManager().destroyLoader(APPS_LOADER_MANAGER_ID);
 
-            //TODO Modify to encircle an app instead of the current placeholder button
-
-            RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            lps.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-            int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
-            lps.setMargins(margin, margin, margin, margin);
-
-
-
-            ViewTarget target = new ViewTarget(R.id.rv_apps, AppsActivity.this);
-            mShowcaseView = new ShowcaseView.Builder(AppsActivity.this)
-                    .withMaterialShowcase()
-                    .setTarget(target)
-                    .setContentTitle("Title")
-                    .setContentText("Main Message")
-                    .setStyle(R.style.CustomShowcaseTheme2)
-                    .setShowcaseEventListener(AppsActivity.this)
-                    .replaceEndButton(R.layout.view_custom_button)
-                    .build();
-            mShowcaseView.setButtonPosition(lps);
         }
 
         @Override
@@ -298,8 +290,8 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     @Override
     public void onShowcaseViewHide(ShowcaseView showcaseView) {
-        mAppsRecyclerView.setAlpha(1f);
-        mShowcaseButton.setText("Button Show");
+//        mAppsRecyclerView.setAlpha(1f);
+//        mShowcaseButton.setText("Button Show");
         //buttonBlocked.setEnabled(false);
     }
 
@@ -310,8 +302,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     @Override
     public void onShowcaseViewShow(ShowcaseView showcaseView) {
-        dimView(mAppsRecyclerView);
-        mShowcaseButton.setText("Button Hide");
+//        mShowcaseButton.setText("Button Hide");
         //buttonBlocked.setEnabled(true);
 
     }
@@ -321,11 +312,47 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
+    /**
+     * Displays the showcaseView tutorial on using the app icons
+     */
+    private void displayShowcaseView() {
 
-    private void dimView(View view) {
-        view.setAlpha(ALPHA_DIM_VALUE);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+
+                // TODO Add enter animation for the showcaseView
+                RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                lps.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
+                lps.setMargins(margin, margin, margin, margin);
+
+
+                ViewTarget target = new ViewTarget(mAppsRecyclerView.getChildAt(4).findViewById(R.id.iv_app_list_item_icon));
+                mShowcaseView = new ShowcaseView.Builder(AppsActivity.this)
+                        .withMaterialShowcase()
+                        .setTarget(target)
+                        .setContentTitle(R.string.showcase_apps_title)
+                        .setContentText(R.string.showcase_apps_message)
+                        .setStyle(R.style.CustomShowcaseTheme2)
+                        .setShowcaseEventListener(AppsActivity.this)
+                        .replaceEndButton(R.layout.view_custom_button)
+                        .build();
+                mShowcaseView.setButtonPosition(lps);
+
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(AppsActivity.this);
+                preferences.edit().putBoolean(getString(R.string.pref_display_showcase_apps), true).apply();
+
+                mAppsRecyclerView.removeOnItemTouchListener(mRecyclerViewDisabler);
+
+            }
+        }, 500);
+
+
     }
-
 
     public static class AppLoader extends AsyncTaskLoader<ArrayList> {
 
@@ -397,6 +424,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
             Timber.d("onStartLoading");
             forceLoad();
         }
+
     }
 
     public void createShortcut() throws PackageManager.NameNotFoundException {
@@ -405,20 +433,9 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         Bitmap icon = ((BitmapDrawable) getPackageManager().getApplicationIcon(mSelectedApp.getmPackage())).getBitmap();
         Timber.d(icon.getHeight() + " " + icon.getWidth());
 
-//        Paint paint = new Paint();
-//        paint.set(getResources().getDrawable(R.drawable.ic_timelapse_white_24dp));
-
         Bitmap bitmap = getBitmapFromVectorDrawable(this, R.drawable.ic_timelapse_white_24dp);
         Timber.d(bitmap.getHeight() + " " + bitmap.getWidth());
 
-        //
-//        Rectangle rectangle = new Rectangle();
-//        rectangle.setBounds(20,20,6,6);
-//
-//        Rect rect = new Rect(20,20,20,20);
-//
-//        Canvas canvas  = new Canvas(icon);
-//        canvas.drawBitmap(bitmap, null, rect,null);
 
         Bitmap bmp = overlay(icon, bitmap);
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, bmp);
