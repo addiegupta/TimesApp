@@ -3,7 +3,6 @@ package com.addie.maxfocus.ui;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -37,17 +36,18 @@ public class DialogActivity extends Activity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
 
-
         if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false)) {
             displayTimeDialog();
 
-            //Register broadcast receiver to receive "stop app" dialogs
+         /*   //Register broadcast receiver to receive "stop app" dialogs
             IntentFilter filter = new IntentFilter();
             filter.addAction(ACTION_APP_DIALOG);
             mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
             registerReceiver(mAppDialogBroadcastReceiver, filter);
+*/
+        }
 
-        } else {
+        else {
 
             displayStopAppDialog();
         }
@@ -58,10 +58,10 @@ public class DialogActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false)) {
+  /*      if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false)) {
 
             unregisterReceiver(mAppDialogBroadcastReceiver);
-        }
+        }*/
     }
 
     /**

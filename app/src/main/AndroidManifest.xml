@@ -27,6 +27,7 @@
         <activity
             android:name=".ui.DialogActivity"
             android:noHistory="true"
+            android:autoRemoveFromRecents="true"
             android:theme="@style/Theme.Transparent">
 
             <intent-filter>
@@ -34,13 +35,13 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".receiver.AppDialogBroadcastReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.addie.maxfocus.service.action.APP_DIALOG" />
-            </intent-filter>
-        </receiver>
+        <!--<receiver-->
+            <!--android:name=".receiver.AppDialogBroadcastReceiver"-->
+            <!--android:exported="false">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.addie.maxfocus.service.action.APP_DIALOG" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
         <receiver
             android:name=".receiver.StudyBreakTimerBroadcastReceiver"
             android:exported="false">
@@ -116,6 +117,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.addie.maxfocus.ui.MainActivity" />
         </activity>
+
+        <service
+            android:name=".service.AppTimeDialogService"
+            android:exported="false" />
     </application>
 
 </manifest>

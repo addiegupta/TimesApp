@@ -34,6 +34,7 @@ public class AppDialogBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
+        Timber.plant(new Timber.DebugTree());
 
         Timber.d("Broadcast received");
 

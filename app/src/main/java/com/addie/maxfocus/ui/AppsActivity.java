@@ -3,7 +3,6 @@ package com.addie.maxfocus.ui;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -98,6 +97,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         // Start Loading Apps
         loadAppsFromManagerOrDb();
+/*
 
         //Register broadcast receiver to receive "stop app" dialogs
         IntentFilter filter = new IntentFilter();
@@ -105,6 +105,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
         registerReceiver(mAppDialogBroadcastReceiver, filter);
 
+*/
     }
 
     private void loadAppsFromManagerOrDb() {
@@ -127,7 +128,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mAppDialogBroadcastReceiver);
+//        unregisterReceiver(mAppDialogBroadcastReceiver);
     }
 
     /**

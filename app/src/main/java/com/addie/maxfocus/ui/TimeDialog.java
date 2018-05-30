@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
+import com.addie.maxfocus.service.AppTimeDialogService;
 import com.triggertrap.seekarc.SeekArc;
 
 import butterknife.BindView;
@@ -30,7 +30,6 @@ import timber.log.Timber;
 /**
  * Displayed to decide time for app launch
  */
-//TODO Modify to use with time preference too
 public class TimeDialog extends Dialog implements
         android.view.View.OnClickListener {
 
@@ -78,11 +77,11 @@ public class TimeDialog extends Dialog implements
         setContentView(R.layout.layout_time_dialog);
 
         if (mIsWidgetLaunch) {
-            mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(ACTION_APP_DIALOG);
+//            mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
+//            IntentFilter filter = new IntentFilter();
+//            filter.addAction(ACTION_APP_DIALOG);
 
-            mContext.registerReceiver(mAppDialogBroadcastReceiver, filter);
+//            mContext.registerReceiver(mAppDialogBroadcastReceiver, filter);
 
         }
         ButterKnife.bind(this);
@@ -166,15 +165,20 @@ public class TimeDialog extends Dialog implements
 
         // Broadcast intent with selected time for app to be stopped
         int time = minutes * 60000;
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.putExtra(TIME_KEY, time);
-        broadcastIntent.putExtra(TARGET_PACKAGE_KEY, mTargetPackage);
-        broadcastIntent.setAction(ACTION_APP_DIALOG);
+        Intent timeServiceIntent = new Intent(mContext, AppTimeDialogService.class);
+        timeServiceIntent.putExtra(TIME_KEY,time);
+        timeServiceIntent.putExtra(TARGET_PACKAGE_KEY,mTargetPackage);
+        mContext.startService(timeServiceIntent);
+
+//        Intent broadcastIntent = new Intent();
+//        broadcastIntent.putExtra(TIME_KEY, time);
+//        broadcastIntent.putExtra(TARGET_PACKAGE_KEY, mTargetPackage);
+//        broadcastIntent.setAction(ACTION_APP_DIALOG);
 
 //        if (!mIsWidgetLaunch) {
         startAppActivity();
 //          }
-        mContext.sendBroadcast(broadcastIntent);
+//        mContext.sendBroadcast(broadcastIntent);
         ((Activity) mContext).finish();
 
     }
@@ -193,7 +197,7 @@ public class TimeDialog extends Dialog implements
         super.onStop();
         if (mIsWidgetLaunch) {
 
-            mContext.unregisterReceiver(mAppDialogBroadcastReceiver);
+//            mContext.unregisterReceiver(mAppDialogBroadcastReceiver);
         }
     }
 }
