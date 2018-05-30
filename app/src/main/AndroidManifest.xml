@@ -35,13 +35,6 @@
             </intent-filter>
         </activity>
 
-        <!--<receiver-->
-            <!--android:name=".receiver.AppDialogBroadcastReceiver"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.addie.maxfocus.service.action.APP_DIALOG" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
         <receiver
             android:name=".receiver.StudyBreakTimerBroadcastReceiver"
             android:exported="false">

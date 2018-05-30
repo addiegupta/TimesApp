@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.addie.maxfocus.R;
-import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 import com.addie.maxfocus.service.AppTimeDialogService;
 import com.triggertrap.seekarc.SeekArc;
 
@@ -37,7 +36,6 @@ public class TimeDialog extends Dialog implements
     private final boolean mIsWidgetLaunch;
     public Context mContext;
     public Dialog dialog;
-    private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
     private SharedPreferences preferences;
 
     private int minutes;
@@ -76,14 +74,6 @@ public class TimeDialog extends Dialog implements
 
         setContentView(R.layout.layout_time_dialog);
 
-        if (mIsWidgetLaunch) {
-//            mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
-//            IntentFilter filter = new IntentFilter();
-//            filter.addAction(ACTION_APP_DIALOG);
-
-//            mContext.registerReceiver(mAppDialogBroadcastReceiver, filter);
-
-        }
         ButterKnife.bind(this);
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
@@ -161,24 +151,16 @@ public class TimeDialog extends Dialog implements
      * Called when time is selected and "start" is pressed on the dialog
      */
     private void launchAppOrForegroundApp() {
-        // Launches the selected app
 
-        // Broadcast intent with selected time for app to be stopped
+        // Start service selected time for app to be stopped
         int time = minutes * 60000;
         Intent timeServiceIntent = new Intent(mContext, AppTimeDialogService.class);
         timeServiceIntent.putExtra(TIME_KEY,time);
         timeServiceIntent.putExtra(TARGET_PACKAGE_KEY,mTargetPackage);
         mContext.startService(timeServiceIntent);
 
-//        Intent broadcastIntent = new Intent();
-//        broadcastIntent.putExtra(TIME_KEY, time);
-//        broadcastIntent.putExtra(TARGET_PACKAGE_KEY, mTargetPackage);
-//        broadcastIntent.setAction(ACTION_APP_DIALOG);
-
-//        if (!mIsWidgetLaunch) {
+        // Launches the selected app
         startAppActivity();
-//          }
-//        mContext.sendBroadcast(broadcastIntent);
         ((Activity) mContext).finish();
 
     }
@@ -192,12 +174,4 @@ public class TimeDialog extends Dialog implements
         mContext.startActivity(launchIntent);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mIsWidgetLaunch) {
-
-//            mContext.unregisterReceiver(mAppDialogBroadcastReceiver);
-        }
-    }
 }

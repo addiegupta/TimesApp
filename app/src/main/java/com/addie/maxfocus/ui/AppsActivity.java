@@ -41,7 +41,6 @@ import com.addie.maxfocus.adapter.AppAdapter;
 import com.addie.maxfocus.data.AppColumns;
 import com.addie.maxfocus.extra.RecyclerViewDisabler;
 import com.addie.maxfocus.model.App;
-import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -82,7 +81,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     private AppAdapter mAdapter;
     private App mSelectedApp;
-    private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
     private static PackageManager mPackageManager;
     private RecyclerView.OnItemTouchListener mRecyclerViewDisabler;
 
@@ -97,15 +95,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         // Start Loading Apps
         loadAppsFromManagerOrDb();
-/*
 
-        //Register broadcast receiver to receive "stop app" dialogs
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_APP_DIALOG);
-        mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
-        registerReceiver(mAppDialogBroadcastReceiver, filter);
-
-*/
     }
 
     private void loadAppsFromManagerOrDb() {
@@ -122,15 +112,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
-
-
-    //TODO: Check why am I unregistering
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        unregisterReceiver(mAppDialogBroadcastReceiver);
-    }
-
     /**
      * Called by AppAdapter when an app is selected in the RecyclerView
      *
@@ -145,7 +126,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
 
     }
 

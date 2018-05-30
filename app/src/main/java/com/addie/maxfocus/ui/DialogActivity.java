@@ -9,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 
 import com.addie.maxfocus.R;
-import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 
 /**
  * Displays dialog on top of the foreground running activity
@@ -25,7 +24,6 @@ public class DialogActivity extends Activity {
     private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
     private static final String TARGET_PACKAGE_KEY = "target_package";
 
-    private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
     private SharedPreferences preferences;
     private boolean hasUsageAccess;
 
@@ -38,30 +36,11 @@ public class DialogActivity extends Activity {
 
         if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false)) {
             displayTimeDialog();
-
-         /*   //Register broadcast receiver to receive "stop app" dialogs
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(ACTION_APP_DIALOG);
-            mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
-            registerReceiver(mAppDialogBroadcastReceiver, filter);
-*/
         }
 
         else {
-
             displayStopAppDialog();
         }
-    }
-
-
-    //TODO: Check why am I unregistering
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-  /*      if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false)) {
-
-            unregisterReceiver(mAppDialogBroadcastReceiver);
-        }*/
     }
 
     /**
