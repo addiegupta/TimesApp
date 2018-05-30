@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -28,7 +27,6 @@ import com.addie.maxfocus.R;
 import com.addie.maxfocus.adapter.AppAdapter;
 import com.addie.maxfocus.data.AppColumns;
 import com.addie.maxfocus.model.App;
-import com.addie.maxfocus.receiver.AppDialogBroadcastReceiver;
 import com.addie.maxfocus.ui.MainActivity;
 
 import java.util.ArrayList;
@@ -60,7 +58,6 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
 
     private AppAdapter mAdapter;
     private App mSelectedApp;
-    private AppDialogBroadcastReceiver mAppDialogBroadcastReceiver;
     private static PackageManager mPackageManager;
 
 
@@ -76,12 +73,6 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
             cursor.close();
         }
 
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(mAppDialogBroadcastReceiver);
     }
 
     /**
@@ -320,12 +311,6 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
 
         // Start Loading Apps
         loadAppsFromManagerOrDb();
-
-        //Register broadcast receiver to receive "stop app" dialogs
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_APP_DIALOG);
-        mAppDialogBroadcastReceiver = new AppDialogBroadcastReceiver();
-        registerReceiver(mAppDialogBroadcastReceiver, filter);
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
