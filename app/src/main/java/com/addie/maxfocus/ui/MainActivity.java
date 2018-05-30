@@ -84,12 +84,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Check if permission has been granted manually
+        if (!preferences.getBoolean(getString(R.string.usage_permission_pref), false)) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                    && hasUsageStatsPermission(this)) {
+                preferences.edit().putBoolean(getString(R.string.usage_permission_pref), true).apply();
+
+            }
+        }
+
         //TODO UI Added. Might contains some bugs related to absence of Usage Access Permission
         //FIXME While returning from settings screen , app activity has been destroyed
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (!preferences.getBoolean(getString(R.string.usage_never_ask_again_pref_key), false)) {
             showRequestUsageAccessDialog();
         }
+
 
         //Register broadcast receiver to receive "stop app" dialogs
         IntentFilter filter = new IntentFilter();
