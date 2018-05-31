@@ -14,6 +14,7 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.ui.DialogActivity;
@@ -35,6 +36,8 @@ public class AppTimeDialogService extends Service {
     private int appTime;
     private boolean hasUsageAccess;
     private String targetPackage;
+    private String mAppName;
+    private Bitmap mAppIcon;
 
     CountDownTimer cdt = null;
 
@@ -60,9 +63,11 @@ public class AppTimeDialogService extends Service {
         } else {
             Timber.i("Starting timer in ATDService...");
 
-            runForegroundService();
-
             initialiseVariables(intent);
+
+            fetchAppData();
+
+            runForegroundService();
 
             setupAndStartCDT();
 
@@ -135,31 +140,36 @@ public class AppTimeDialogService extends Service {
         }
     }
 
+    /**
+     * Fetches data of target app i.e. application name and icon
+     */
+    private void fetchAppData() {
+
+        ApplicationInfo appInfo;
+        PackageManager pm = getPackageManager();
+
+        try {
+            mAppIcon = ((BitmapDrawable) pm.getApplicationIcon(targetPackage)).getBitmap();
+            appInfo = pm.getApplicationInfo(targetPackage, 0);
+        } catch (final PackageManager.NameNotFoundException e) {
+            appInfo = null;
+            mAppIcon = null;
+        }
+        mAppName = (String) (appInfo != null ? pm.getApplicationLabel(appInfo) : "(unknown)");
+
+    }
+
     private void issueAppStoppedNotification() {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(AppTimeDialogService.this);
 
-        //Fetches data of target app
-        ApplicationInfo ai;
-        PackageManager pm = getPackageManager();
-        Bitmap icon;
-        try {
-            icon = ((BitmapDrawable) pm.getApplicationIcon(targetPackage)).getBitmap();
-            ai = pm.getApplicationInfo(targetPackage, 0);
-        } catch (final PackageManager.NameNotFoundException e) {
-            ai = null;
-            icon = null;
-        }
-        final String applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
-
-
-        String title = applicationName + " " + getString(R.string.app_closed_notification_title);
+        String title = mAppName + " " + getString(R.string.app_closed_notification_title);
         builder.setContentTitle(title)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentIntent(PendingIntent.getActivity(AppTimeDialogService.this,
                         0, new Intent(), 0))
-                .setLargeIcon(icon)
+                .setLargeIcon(mAppIcon)
                 .setSubText(getString(R.string.app_closed_notification_subtitle))
                 .setAutoCancel(true);
         Notification notification = builder.build();
@@ -175,20 +185,29 @@ public class AppTimeDialogService extends Service {
         return null;
 
     }
-    private void runForegroundService(){
+
+    private void runForegroundService() {
         Intent notificationIntent = new Intent(this, ForegroundServiceActivity.class);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
 
-        Notification.Builder builder = new Notification.Builder(this);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        Intent appLaunchIntent = getPackageManager().getLaunchIntentForPackage(targetPackage);
+
+        PendingIntent actionPendingIntent = PendingIntent.getActivity(this, 1, appLaunchIntent, 0);
+        NotificationCompat.Action.Builder actionBuilder =
+                new NotificationCompat.Action.Builder(R.drawable.ic_exit_to_app_black_24dp,
+                        "Return to " + mAppName, actionPendingIntent);
 
         Notification notification = builder
                 .setContentText(getString(R.string.app_running_service_notif_text))
                 .setSubText(getString(R.string.tap_for_more_info_foreground_notif))
+                .addAction(actionBuilder.build())
+                .setPriority(Notification.PRIORITY_MIN)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentIntent(pendingIntent).build();
-
 
         startForeground(FOREGROUND_NOTIF_ID, notification);
     }

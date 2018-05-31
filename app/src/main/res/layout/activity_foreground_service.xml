@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.addie.maxfocus.ui.ForegroundServiceActivity">
+    android:id="@+id/rl_foreground_service_activity"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+        android:textColor="@color/black"
+        android:id="@+id/tv_foreground_service_title"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"
+        android:text="@string/why_see_notification"/>
+    <TextView
+        android:layout_marginTop="32dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_foreground_service_title"
+        android:id="@+id/tv_foreground_service_subtitle"
+        android:textSize="18sp"
+        android:gravity="center_horizontal"
+        android:text="@string/why_see_notification_ans"/>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

@@ -52,4 +52,6 @@
     <!--TODO Change to new app name-->
     <string name="app_running_service_notif_text">MaxFocus is keeping track of time in the background</string>
     <string name="tap_for_more_info_foreground_notif">Tap for more info</string>
+    <string name="why_see_notification">Why do I need to see this notification?</string>
+    <string name="why_see_notification_ans">As a security feature of the Android platform, background tasks cannot be run efficiently without showing a notification. The background task is keeping track of the time to keep your phone usage time in control.</string>
 </resources>
