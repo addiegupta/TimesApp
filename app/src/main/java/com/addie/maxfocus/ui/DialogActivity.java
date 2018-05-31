@@ -11,6 +11,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 import com.addie.maxfocus.R;
 
@@ -76,7 +78,7 @@ public class DialogActivity extends Activity {
         final String applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
 
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this,R.style.CustomAlertDialogBlueBackground);
         builder.setTitle("Stop using " + applicationName).setCancelable(false)
                 .setPositiveButton("Stop", new DialogInterface.OnClickListener() {
                     @Override
@@ -111,7 +113,11 @@ public class DialogActivity extends Activity {
         } else {
             builder.setMessage("Time's up! No permission");
         }
-        builder.show();
+        AlertDialog dialog = builder.show();
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        dialog.getWindow().setLayout((6 * width)/7, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 
 }

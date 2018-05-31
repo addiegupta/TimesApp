@@ -26,12 +26,11 @@
             android:noHistory="true" />
         <activity
             android:name=".ui.DialogActivity"
-            android:noHistory="true"
             android:autoRemoveFromRecents="true"
+            android:noHistory="true"
             android:theme="@style/Theme.Transparent">
-
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
@@ -114,6 +113,8 @@
         <service
             android:name=".service.AppTimeDialogService"
             android:exported="false" />
+
+        <activity android:name=".ui.ForegroundServiceActivity"></activity>
     </application>
 
 </manifest>

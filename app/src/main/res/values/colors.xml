@@ -6,4 +6,5 @@
     <color name="colorAccentLight">#ffc9db</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="faded_blue">#c1e8ff</color>
 </resources>
