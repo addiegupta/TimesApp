@@ -78,6 +78,9 @@ public class AppTimeDialogService extends Service {
     }
 
     private void initialiseVariables(Intent intent) {
+        if (cdt!=null){
+            cdt.cancel();
+        }
         appTime = intent.getIntExtra(TIME_KEY, 0);
         targetPackage = intent.getStringExtra(TARGET_PACKAGE_KEY);
         Timber.d("apptime is " + appTime + " targetpackage is " + targetPackage);

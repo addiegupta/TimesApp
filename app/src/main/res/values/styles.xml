@@ -46,8 +46,6 @@
     <style name="CustomText2" parent="TextAppearance.ShowcaseView.Detail.Light">
         <item name="android:textColor">#8affffff</item>
     </style>
-    <style name="CustomAlertDialogBlueBackground" parent="AlertDialog.AppCompat">
-        <item name="android:background">@color/faded_blue</item>
-    </style>
+
 
 </resources>

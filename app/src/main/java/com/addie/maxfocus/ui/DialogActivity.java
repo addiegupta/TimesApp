@@ -11,15 +11,21 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.graphics.Palette;
 import android.util.DisplayMetrics;
+import android.view.Window;
 import android.view.WindowManager;
 
 import com.addie.maxfocus.R;
+
+import timber.log.Timber;
 
 /**
  * Displays dialog on top of the foreground running activity
  * Transparent activity so only dialog is visible
  */
+
+//FIXME URGENT Palette mess needs to be sorted. Shortcut requiring double tap
 public class DialogActivity extends Activity {
 
 
@@ -32,6 +38,13 @@ public class DialogActivity extends Activity {
     private SharedPreferences preferences;
     private boolean hasUsageAccess;
     private String mPackageName;
+    private int mVibrantColor,mMutedColor;
+    private String mAppName;
+    private Bitmap mAppIcon;
+    private boolean mIsWidgetLaunch;
+
+    private TimeDialog mTimeDialog;
+    private AlertDialog mStopAppDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +52,20 @@ public class DialogActivity extends Activity {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
-
         mPackageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
 
-        if (getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false)) {
+
+//        TODO Set to a default color in case palette doesnt work
+//        mVibrantColor =
+//        mMutedColor =
+
+        fetchAppData();
+        createPaletteAsync(mAppIcon);
+
+
+        mIsWidgetLaunch = getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false);
+
+        if (mIsWidgetLaunch) {
             displayTimeDialog();
         } else {
             displayStopAppDialog();
@@ -54,8 +77,17 @@ public class DialogActivity extends Activity {
      */
     private void displayTimeDialog() {
 
-        TimeDialog dialog = new TimeDialog(this, mPackageName, true);
-        dialog.show();
+        mTimeDialog = new TimeDialog(this, mPackageName, true);
+        mTimeDialog.show();
+
+        mTimeDialog.getWindow().getDecorView().setBackgroundColor(mVibrantColor);
+        mTimeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Window window = ((AlertDialog)dialog).getWindow();
+                window.getDecorView().setBackgroundColor(mVibrantColor);
+            }
+        });
 
     }
 
@@ -64,22 +96,8 @@ public class DialogActivity extends Activity {
      */
     private void displayStopAppDialog() {
 
-        //Fetches data of target app
-        ApplicationInfo ai;
-        PackageManager pm = getPackageManager();
-        Bitmap icon;
-        try {
-            icon = ((BitmapDrawable) pm.getApplicationIcon(mPackageName)).getBitmap();
-            ai = pm.getApplicationInfo(mPackageName, 0);
-        } catch (final PackageManager.NameNotFoundException e) {
-            ai = null;
-            icon = null;
-        }
-        final String applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this,R.style.CustomAlertDialogBlueBackground);
-        builder.setTitle("Stop using " + applicationName).setCancelable(false)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Stop using " + mAppName).setCancelable(false)
                 .setPositiveButton("Stop", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -98,26 +116,93 @@ public class DialogActivity extends Activity {
                         dialogInterface.cancel();
                     }
                 })
-                .setIcon(new BitmapDrawable(getResources(),icon))
+                .setIcon(new BitmapDrawable(getResources(),mAppIcon))
         ;
 
         if (hasUsageAccess) {
-//            boolean appInUse = getIntent().getBooleanExtra(APP_IN_USE_KEY, false);
-
-            // Change in dialog depending on whether app is still in use or not
-//            if (appInUse) {
             builder.setMessage("Time's up!");
-//            } else {
-//                builder.setMessage("Good job!App is no longer being used");
-//            }
         } else {
             builder.setMessage("Time's up! No permission");
         }
-        AlertDialog dialog = builder.show();
+        mStopAppDialog = builder.show();
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-        dialog.getWindow().setLayout((6 * width)/7, WindowManager.LayoutParams.WRAP_CONTENT);
+        mStopAppDialog.getWindow().setLayout((6 * width)/7, WindowManager.LayoutParams.WRAP_CONTENT);
+
+        mStopAppDialog.getWindow().getDecorView().setBackgroundColor(mVibrantColor);
+        mStopAppDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Window window = ((AlertDialog)dialog).getWindow();
+                window.getDecorView().setBackgroundColor(mVibrantColor);
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Timber.e("onStop called");
+    }
+
+    @Override
+    protected void onDestroy() {
+Timber.e("onDestroy called");
+        super.onDestroy();
+    }
+
+    // Generate palette asynchronously and use it on a different
+// thread using onGenerated()
+    public void createPaletteAsync(Bitmap bitmap) {
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+            public void onGenerated(Palette p) {
+                // Use generated instance
+                ///TODO Change default color to new value
+                mVibrantColor = p.getDarkVibrantColor(getResources().getColor(R.color.white));
+                mMutedColor = p.getDarkMutedColor(getResources().getColor(R.color.colorAccent));
+
+
+                if (!mIsWidgetLaunch && mStopAppDialog.isShowing()){
+                    mStopAppDialog.getWindow().getDecorView().setBackgroundColor(mVibrantColor);
+                    mStopAppDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(final DialogInterface dialog) {
+                            Window window = ((AlertDialog)dialog).getWindow();
+                            window.getDecorView().setBackgroundColor(mVibrantColor);
+                        }
+                    });
+                }
+                else if(mIsWidgetLaunch && mTimeDialog.isShowing()){
+                    mTimeDialog.getWindow().getDecorView().setBackgroundColor(mVibrantColor);
+                    mTimeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(final DialogInterface dialog) {
+                            Window window = ((AlertDialog)dialog).getWindow();
+                            window.getDecorView().setBackgroundColor(mVibrantColor);
+                        }
+                    });
+                }
+
+
+            }
+        });
+    }
+
+    private void fetchAppData(){
+        ApplicationInfo appInfo;
+        PackageManager pm = getPackageManager();
+
+        try {
+            mAppIcon = ((BitmapDrawable) pm.getApplicationIcon(mPackageName)).getBitmap();
+            appInfo = pm.getApplicationInfo(mPackageName, 0);
+        } catch (final PackageManager.NameNotFoundException e) {
+            appInfo = null;
+            mAppIcon = null;
+        }
+        mAppName = (String) (appInfo != null ? pm.getApplicationLabel(appInfo) : "(unknown)");
+
     }
 
 }

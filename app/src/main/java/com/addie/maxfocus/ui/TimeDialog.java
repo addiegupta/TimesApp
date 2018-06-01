@@ -75,6 +75,7 @@ public class TimeDialog extends Dialog implements
         setContentView(R.layout.layout_time_dialog);
 
         ButterKnife.bind(this);
+
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
 
@@ -161,6 +162,14 @@ public class TimeDialog extends Dialog implements
 
         // Launches the selected app
         startAppActivity();
+        ((Activity) mContext).finish();
+
+    }
+
+    //Finish dialog and activity on pressing back
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         ((Activity) mContext).finish();
 
     }
