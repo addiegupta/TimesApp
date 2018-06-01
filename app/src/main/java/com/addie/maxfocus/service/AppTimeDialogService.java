@@ -28,6 +28,7 @@ public class AppTimeDialogService extends Service {
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final String TIME_KEY = "time";
     private static final String TARGET_PACKAGE_KEY = "target_package";
+    private static final String APP_COLOR_KEY = "app_color";
     private static final String APP_IN_USE_KEY = "app_in_use";
     private static final int APP_STOPPED_NOTIF_ID = 77;
     private SharedPreferences preferences;
@@ -38,6 +39,7 @@ public class AppTimeDialogService extends Service {
     private String targetPackage;
     private String mAppName;
     private Bitmap mAppIcon;
+    private int mAppColor;
 
     CountDownTimer cdt = null;
 
@@ -83,6 +85,7 @@ public class AppTimeDialogService extends Service {
         }
         appTime = intent.getIntExtra(TIME_KEY, 0);
         targetPackage = intent.getStringExtra(TARGET_PACKAGE_KEY);
+        mAppColor = intent.getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
         Timber.d("apptime is " + appTime + " targetpackage is " + targetPackage);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -122,6 +125,7 @@ public class AppTimeDialogService extends Service {
     private void showTimeDialog() {
         Intent dialogIntent = new Intent(AppTimeDialogService.this, DialogActivity.class);
         dialogIntent.putExtra(TARGET_PACKAGE_KEY, targetPackage);
+        dialogIntent.putExtra(APP_COLOR_KEY, mAppColor);
 
         if (hasUsageAccess) {
 

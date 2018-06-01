@@ -39,6 +39,7 @@ public class TimeDialog extends Dialog implements
     private SharedPreferences preferences;
 
     private int minutes;
+    private int mAppColor;
 
     //TODO Rename in all classes from service to receiver
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
@@ -60,10 +61,11 @@ public class TimeDialog extends Dialog implements
     ImageView mAppIconImageView;
 
     //TODO Change isWidgetLaunch to callingClass to be able to use with preference
-    public TimeDialog(Context context, String targetPackage, boolean isWidgetLaunch) {
+    public TimeDialog(Context context, String targetPackage,int appColor, boolean isWidgetLaunch) {
         super(context);
         this.mContext = context;
         this.mTargetPackage = targetPackage;
+        this.mAppColor = appColor;
         this.mIsWidgetLaunch = isWidgetLaunch;
     }
 
@@ -159,6 +161,7 @@ public class TimeDialog extends Dialog implements
         Intent timeServiceIntent = new Intent(mContext, AppTimeDialogService.class);
         timeServiceIntent.putExtra(TIME_KEY,time);
         timeServiceIntent.putExtra(TARGET_PACKAGE_KEY,mTargetPackage);
+        timeServiceIntent.putExtra(APP_COLOR_KEY,mAppColor);
         mContext.startService(timeServiceIntent);
 
         // Launches the selected app

@@ -2,6 +2,7 @@ package com.addie.maxfocus.ui;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -22,6 +23,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.preference.PreferenceManager;
@@ -33,6 +35,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -40,10 +43,8 @@ import android.widget.Toast;
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.adapter.AppAdapter;
 import com.addie.maxfocus.data.AppColumns;
-import com.addie.maxfocus.data.AppProvider;
 import com.addie.maxfocus.extra.RecyclerViewDisabler;
 import com.addie.maxfocus.model.App;
-import com.addie.maxfocus.service.UpdateDbWithPaletteColorService;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -151,8 +152,18 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
      */
     public void showTimerDialog() {
 
-        TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage(), false);
+        TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage(),mSelectedApp.getmColor(), false);
         tdialog.show();
+
+        tdialog.getWindow().getDecorView().setBackgroundColor(mSelectedApp.getmColor());
+        tdialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Window window = ((AlertDialog)dialog).getWindow();
+                window.getDecorView().setBackgroundColor(mSelectedApp.getmColor());
+            }
+        });
+
 
     }
 
@@ -212,7 +223,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
          */
         @Override
         public void onLoadFinished(@NonNull Loader<ArrayList> loader, ArrayList data) {
-//            sendAppsListToPaletteService(data);
             showRecyclerView(true);
             Timber.d("onLoadFinished");
             mAdapter = new AppAdapter(AppsActivity.this, AppsActivity.this);
@@ -335,12 +345,12 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
 
                     Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
-                    app.setmVibrantColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
+                    app.setmColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
 
                     mAppsList.add(app);
                     values.put(AppColumns.APP_TITLE, app.getmTitle());
                     values.put(AppColumns.PACKAGE_NAME, app.getmPackage());
-                    values.put(AppColumns.PALETTE_COLOR, app.getmVibrantColor());
+                    values.put(AppColumns.PALETTE_COLOR, app.getmColor());
                     getContext().getContentResolver().insert(URI_APPS, values);
                 }
 
@@ -357,7 +367,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
                             app.setmTitle(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.APP_TITLE)));
                             app.setmPackage(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.PACKAGE_NAME)));
                             app.setmIcon(mPackageManager.getApplicationIcon(app.getmPackage()));
-                            app.setmVibrantColor(cursor.getInt(cursor.getColumnIndexOrThrow(AppColumns.PALETTE_COLOR)));
+                            app.setmColor(cursor.getInt(cursor.getColumnIndexOrThrow(AppColumns.PALETTE_COLOR)));
                             mAppsList.add(app);
 
                         } catch (PackageManager.NameNotFoundException e) {
@@ -397,24 +407,10 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, bmp);
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
 
-
-        //Not needed as this value is present in mSelectedApp
-        //Fetch app color
-//        String selection = AppColumns.PACKAGE_NAME + "=?";
-//        String[] selectionArgs = new String[]{mSelectedApp.getmPackage()};
-//        Cursor cursor = getContentResolver().query(URI_APPS, null, selection, selectionArgs, null);
-//        TODO Change default value to new value
-//        int mColor = getResources().getColor(R.color.black);
-//        if (cursor != null && cursor.getCount() != 0) {
-//            cursor.moveToFirst();
-//            mColor = cursor.getInt(cursor.getColumnIndexOrThrow(AppColumns.PALETTE_COLOR));
-//            cursor.close();
-//        }
-
         Intent appIntent = new Intent(getApplicationContext(), DialogActivity.class);
         appIntent.putExtra(IS_WIDGET_LAUNCH, true);
         appIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
-        appIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmVibrantColor());
+        appIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmColor());
 
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, appIntent);
         sendBroadcast(shortcutintent);
@@ -448,24 +444,5 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         super.onBackPressed();
         startActivity(new Intent(this, MainActivity.class));
         finish();
-    }
-
-    private void sendAppsListToPaletteService(ArrayList<App> appsList) {
-        Intent intent = new Intent(this, UpdateDbWithPaletteColorService.class);
-        intent.putExtra(APPS_LIST_KEY, appsList);
-        startService(intent);
-    }
-
-    private void getColorFromPalettAndInsertInDb(ArrayList<App> mAppsList) {
-        for (App app : mAppsList) {
-            Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
-            ContentValues values = new ContentValues();
-            values.put(AppColumns.PALETTE_COLOR, p.getVibrantColor(getResources().getColor(R.color.black)));
-            String selection = AppColumns.PACKAGE_NAME + "=?";
-            String[] selectionArgs = new String[]{app.getmPackage()};
-            getContentResolver().update(AppProvider.Apps.URI_APPS, values, selection, selectionArgs);
-
-        }
-
     }
 }

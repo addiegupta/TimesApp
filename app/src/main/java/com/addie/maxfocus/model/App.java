@@ -12,22 +12,22 @@ public class App implements Parcelable {
     private String mTitle, mPackage;
     private Drawable mIcon;
 
-    public App(String mTitle, String mPackage, Drawable mIcon, int mVibrantColor) {
+    public App(String mTitle, String mPackage, Drawable mIcon, int mColor) {
         this.mTitle = mTitle;
         this.mPackage = mPackage;
         this.mIcon = mIcon;
-        this.mVibrantColor = mVibrantColor;
+        this.mColor = mColor;
     }
 
-    public int getmVibrantColor() {
-        return mVibrantColor;
+    public int getmColor() {
+        return mColor;
     }
 
-    public void setmVibrantColor(int mVibrantColor) {
-        this.mVibrantColor = mVibrantColor;
+    public void setmColor(int mColor) {
+        this.mColor = mColor;
     }
 
-    private int mVibrantColor;
+    private int mColor;
 
 public App(){}
     public App(String mTitle, String mPackage, Drawable mIcon) {
@@ -70,14 +70,14 @@ public App(){}
         dest.writeString(this.mTitle);
         dest.writeString(this.mPackage);
         dest.writeParcelable((Parcelable) this.mIcon, flags);
-        dest.writeInt(this.mVibrantColor);
+        dest.writeInt(this.mColor);
     }
 
     protected App(Parcel in) {
         this.mTitle = in.readString();
         this.mPackage = in.readString();
         this.mIcon = in.readParcelable(Drawable.class.getClassLoader());
-        this.mVibrantColor = in.readInt();
+        this.mColor = in.readInt();
     }
 
     public static final Parcelable.Creator<App> CREATOR = new Parcelable.Creator<App>() {

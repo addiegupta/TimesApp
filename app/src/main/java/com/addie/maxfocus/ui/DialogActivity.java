@@ -11,14 +11,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.graphics.Palette;
 import android.util.DisplayMetrics;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.addie.maxfocus.R;
-
-import timber.log.Timber;
 
 /**
  * Displays dialog on top of the foreground running activity
@@ -40,7 +37,7 @@ public class DialogActivity extends Activity {
     private SharedPreferences preferences;
     private boolean hasUsageAccess;
     private String mPackageName;
-    private int mVibrantColor,mMutedColor;
+    private int mAppColor;
     private String mAppName;
     private Bitmap mAppIcon;
     private boolean mIsWidgetLaunch;
@@ -55,15 +52,10 @@ public class DialogActivity extends Activity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
         mPackageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
-        mVibrantColor = getIntent().getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
+        mAppColor = getIntent().getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
 
-
-//        TODO Set to a default color in case palette doesnt work
-//        mVibrantColor =
-//        mMutedColor =
 
         fetchAppData();
-//        createPaletteAsync(mAppIcon);
 
 
         mIsWidgetLaunch = getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false);
@@ -80,15 +72,15 @@ public class DialogActivity extends Activity {
      */
     private void displayTimeDialog() {
 
-        mTimeDialog = new TimeDialog(this, mPackageName, true);
+        mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, true);
         mTimeDialog.show();
 
-        mTimeDialog.getWindow().getDecorView().setBackgroundColor(mVibrantColor);
+        mTimeDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
         mTimeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
                 Window window = ((AlertDialog)dialog).getWindow();
-                window.getDecorView().setBackgroundColor(mVibrantColor);
+                window.getDecorView().setBackgroundColor(mAppColor);
             }
         });
 
@@ -132,66 +124,15 @@ public class DialogActivity extends Activity {
         int width = metrics.widthPixels;
         mStopAppDialog.getWindow().setLayout((6 * width)/7, WindowManager.LayoutParams.WRAP_CONTENT);
 
-        mStopAppDialog.getWindow().getDecorView().setBackgroundColor(mVibrantColor);
+        mStopAppDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
         mStopAppDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
                 Window window = ((AlertDialog)dialog).getWindow();
-                window.getDecorView().setBackgroundColor(mVibrantColor);
+                window.getDecorView().setBackgroundColor(mAppColor);
             }
         });
 
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Timber.e("onStop called");
-    }
-
-    @Override
-    protected void onDestroy() {
-Timber.e("onDestroy called");
-        super.onDestroy();
-    }
-
-    // Generate palette asynchronously and use it on a different
-// thread using onGenerated()
-    public void createPaletteAsync(Bitmap bitmap) {
-        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-            public void onGenerated(Palette p) {
-                // Use generated instance
-                ///TODO Change default color to new value
-//                mVibrantColor = p.getDarkVibrantColor(getResources().getColor(R.color.white));
-                mVibrantColor = p.getVibrantColor(getResources().getColor(R.color.white));
-                mMutedColor = p.getDarkMutedColor(getResources().getColor(R.color.colorAccent));
-
-
-                if (!mIsWidgetLaunch && mStopAppDialog.isShowing()){
-                    mStopAppDialog.getWindow().getDecorView().setBackgroundColor(mVibrantColor);
-                    mStopAppDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                        @Override
-                        public void onShow(final DialogInterface dialog) {
-                            Window window = ((AlertDialog)dialog).getWindow();
-                            window.getDecorView().setBackgroundColor(mVibrantColor);
-                        }
-                    });
-                }
-                else if(mIsWidgetLaunch && mTimeDialog.isShowing()){
-                    mTimeDialog.getWindow().getDecorView().setBackgroundColor(mVibrantColor);
-                    mTimeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                        @Override
-                        public void onShow(final DialogInterface dialog) {
-                            Window window = ((AlertDialog)dialog).getWindow();
-                            window.getDecorView().setBackgroundColor(mVibrantColor);
-                        }
-                    });
-                }
-
-
-            }
-        });
     }
 
     private void fetchAppData(){
