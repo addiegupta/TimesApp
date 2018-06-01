@@ -35,6 +35,8 @@ public class DialogActivity extends Activity {
     private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
     private static final String TARGET_PACKAGE_KEY = "target_package";
 
+    private static final String APP_COLOR_KEY = "app_color";
+
     private SharedPreferences preferences;
     private boolean hasUsageAccess;
     private String mPackageName;
@@ -53,6 +55,7 @@ public class DialogActivity extends Activity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
         mPackageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
+        mVibrantColor = getIntent().getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
 
 
 //        TODO Set to a default color in case palette doesnt work
@@ -60,7 +63,7 @@ public class DialogActivity extends Activity {
 //        mMutedColor =
 
         fetchAppData();
-        createPaletteAsync(mAppIcon);
+//        createPaletteAsync(mAppIcon);
 
 
         mIsWidgetLaunch = getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false);
@@ -160,7 +163,8 @@ Timber.e("onDestroy called");
             public void onGenerated(Palette p) {
                 // Use generated instance
                 ///TODO Change default color to new value
-                mVibrantColor = p.getDarkVibrantColor(getResources().getColor(R.color.white));
+//                mVibrantColor = p.getDarkVibrantColor(getResources().getColor(R.color.white));
+                mVibrantColor = p.getVibrantColor(getResources().getColor(R.color.white));
                 mMutedColor = p.getDarkMutedColor(getResources().getColor(R.color.colorAccent));
 
 

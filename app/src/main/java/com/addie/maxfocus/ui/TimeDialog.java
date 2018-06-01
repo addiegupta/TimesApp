@@ -44,6 +44,7 @@ public class TimeDialog extends Dialog implements
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final String TIME_KEY = "time";
     private static final String TARGET_PACKAGE_KEY = "target_package";
+    private static final String APP_COLOR_KEY = "app_color";
 
     @BindView(R.id.btn_dialog_cancel)
     Button mCancelButton;

@@ -114,7 +114,11 @@
             android:name=".service.AppTimeDialogService"
             android:exported="false" />
 
-        <activity android:name=".ui.ForegroundServiceActivity"></activity>
+        <activity android:name=".ui.ForegroundServiceActivity" />
+
+        <service
+            android:name=".service.UpdateDbWithPaletteColorService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

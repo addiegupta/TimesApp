@@ -23,5 +23,8 @@ public interface AppColumns {
     @DataType(TEXT)
     String PACKAGE_NAME="package_name";
 
+    @DataType(INTEGER)
+    String PALETTE_COLOR ="palette_color";
+
 
 }
