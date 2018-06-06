@@ -7,15 +7,19 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import com.addie.maxfocus.R;
+import com.addie.maxfocus.service.AppTimeDialogService;
 
 /**
  * Displays dialog on top of the foreground running activity
@@ -31,6 +35,8 @@ public class DialogActivity extends Activity {
     private static final String APP_IN_USE_KEY = "app_in_use";
     private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
     private static final String TARGET_PACKAGE_KEY = "target_package";
+    private static final String TIME_KEY = "time";
+    private static final String DISPLAY_1_MIN = "display_1_min";
 
     private static final String APP_COLOR_KEY = "app_color";
 
@@ -41,6 +47,7 @@ public class DialogActivity extends Activity {
     private String mAppName;
     private Bitmap mAppIcon;
     private boolean mIsWidgetLaunch;
+    private boolean mDisplay1Min;
 
     private TimeDialog mTimeDialog;
     private AlertDialog mStopAppDialog;
@@ -53,7 +60,7 @@ public class DialogActivity extends Activity {
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
         mPackageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
         mAppColor = getIntent().getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
-
+        mDisplay1Min = getIntent().getBooleanExtra(DISPLAY_1_MIN,true);
 
         fetchAppData();
 
@@ -92,8 +99,11 @@ public class DialogActivity extends Activity {
     private void displayStopAppDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Stop using " + mAppName).setCancelable(false)
-                .setPositiveButton("Stop", new DialogInterface.OnClickListener() {
+        String title = "Stop using " + mAppName;
+        builder.setTitle(Html.fromHtml("<font color='#FFFFFF'>"+title+"</font>"))
+                .setCancelable(false)
+                .setPositiveButton("Stop"
+                        , new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -104,22 +114,39 @@ public class DialogActivity extends Activity {
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                     }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                }).setIcon(new BitmapDrawable(getResources(),mAppIcon))
+        ;
+
+        if(mDisplay1Min){
+
+            builder.setNegativeButton("+1 Min"
+                    , new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.cancel();
+                        grantOneMinuteExtra();
                     }
-                })
-                .setIcon(new BitmapDrawable(getResources(),mAppIcon))
-        ;
+                });
+
+        }
 
         if (hasUsageAccess) {
-            builder.setMessage("Time's up!");
+            builder.setMessage(Html.fromHtml("<font color='#FFFFFF'>Time's up!</font>"));
         } else {
-            builder.setMessage("Time's up! No permission");
+            builder.setMessage(Html.fromHtml("<font color='#FFFFFF'>Time's up! \n (Foreground app check permission not granted)</font>"));
         }
         mStopAppDialog = builder.show();
+
+
+        Button nbutton = mStopAppDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+        if (nbutton!=null){
+
+            nbutton.setTextColor(Color.WHITE);
+        }
+        Button pbutton = mStopAppDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        pbutton.setTextColor(Color.WHITE);
+
+
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
         mStopAppDialog.getWindow().setLayout((6 * width)/7, WindowManager.LayoutParams.WRAP_CONTENT);
@@ -132,6 +159,24 @@ public class DialogActivity extends Activity {
                 window.getDecorView().setBackgroundColor(mAppColor);
             }
         });
+
+    }
+
+
+    /**
+     * Called when +1 Minute is selected on the dialog
+     */
+    private void grantOneMinuteExtra() {
+
+        // Start service selected time for app to be stopped
+        int time = 60000;
+        Intent timeServiceIntent = new Intent(this, AppTimeDialogService.class);
+        timeServiceIntent.putExtra(TIME_KEY, time);
+        timeServiceIntent.putExtra(TARGET_PACKAGE_KEY, mPackageName);
+        timeServiceIntent.putExtra(APP_COLOR_KEY, mAppColor);
+        this.startService(timeServiceIntent);
+
+        finish();
 
     }
 

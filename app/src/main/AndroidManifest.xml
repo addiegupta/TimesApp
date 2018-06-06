@@ -104,6 +104,8 @@
 
         <activity
             android:name=".ui.SettingsActivity"
+
+            android:noHistory="true"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -114,11 +116,10 @@
             android:name=".service.AppTimeDialogService"
             android:exported="false" />
 
-        <activity android:name=".ui.ForegroundServiceActivity" />
+        <activity android:name=".ui.ForegroundServiceActivity"
 
-        <service
-            android:name=".service.UpdateDbWithPaletteColorService"
-            android:exported="false"></service>
+            android:noHistory="true"/>
+
     </application>
 
 </manifest>

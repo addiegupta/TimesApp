@@ -33,6 +33,7 @@ public class AppTimeDialogService extends Service {
     private static final int APP_STOPPED_NOTIF_ID = 77;
     private SharedPreferences preferences;
     private static final int FOREGROUND_NOTIF_ID = 104;
+    private static final String DISPLAY_1_MIN = "display_1_min";
 
     private int appTime;
     private boolean hasUsageAccess;
@@ -109,7 +110,7 @@ public class AppTimeDialogService extends Service {
 
                 Timber.d("Starting activity");
 
-                showTimeDialog();
+                showStopDialog();
 
                 stopForeground(true);
 
@@ -122,10 +123,12 @@ public class AppTimeDialogService extends Service {
 
     }
 
-    private void showTimeDialog() {
+    private void showStopDialog() {
         Intent dialogIntent = new Intent(AppTimeDialogService.this, DialogActivity.class);
         dialogIntent.putExtra(TARGET_PACKAGE_KEY, targetPackage);
         dialogIntent.putExtra(APP_COLOR_KEY, mAppColor);
+        if (appTime==60000)
+            dialogIntent.putExtra(DISPLAY_1_MIN,false);
 
         if (hasUsageAccess) {
 

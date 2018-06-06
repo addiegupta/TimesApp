@@ -47,6 +47,7 @@ public class TimeDialog extends Dialog implements
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String APP_COLOR_KEY = "app_color";
 
+
     @BindView(R.id.btn_dialog_cancel)
     Button mCancelButton;
     @BindView(R.id.btn_dialog_start)
@@ -61,7 +62,7 @@ public class TimeDialog extends Dialog implements
     ImageView mAppIconImageView;
 
     //TODO Change isWidgetLaunch to callingClass to be able to use with preference
-    public TimeDialog(Context context, String targetPackage,int appColor, boolean isWidgetLaunch) {
+    public TimeDialog(Context context, String targetPackage, int appColor, boolean isWidgetLaunch) {
         super(context);
         this.mContext = context;
         this.mTargetPackage = targetPackage;
@@ -82,9 +83,9 @@ public class TimeDialog extends Dialog implements
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
 
-            ApplicationInfo ai;
-            PackageManager pm = mContext.getPackageManager();
-            Bitmap icon;
+        ApplicationInfo ai;
+        PackageManager pm = mContext.getPackageManager();
+        Bitmap icon;
         try {
             icon = ((BitmapDrawable) pm.getApplicationIcon(mTargetPackage)).getBitmap();
             ai = pm.getApplicationInfo(mTargetPackage, 0);
@@ -94,7 +95,7 @@ public class TimeDialog extends Dialog implements
         }
         final String applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
 
-        String titleText = mContext.getString(R.string.set_duration_for) +" "+ applicationName;
+        String titleText = mContext.getString(R.string.set_duration_for) + " " + applicationName;
         mDialogTitleTextView.setText(titleText);
         mAppIconImageView.setImageBitmap(icon);
 
@@ -102,12 +103,13 @@ public class TimeDialog extends Dialog implements
         mSeekArcProgressTextView.setText(progressText);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        int progress = Integer.parseInt(preferences.getString(mContext.getString(R.string.pref_app_time_key),"10"));
+        int progress = Integer.parseInt(preferences.getString(mContext.getString(R.string.pref_app_time_key), "10"));
 
         mSeekArc.setProgress(progress);
         String progressTxt = " " + String.valueOf(progress);
         mSeekArcProgressTextView.setText(progressTxt);
         minutes = progress;
+
 
         mSeekArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
             @Override
@@ -137,7 +139,7 @@ public class TimeDialog extends Dialog implements
         switch (v.getId()) {
             case R.id.btn_dialog_start:
                 dismiss();
-                launchAppOrForegroundApp();
+                launchTargetApp();
                 break;
             case R.id.btn_dialog_cancel:
                 dismiss();
@@ -154,14 +156,14 @@ public class TimeDialog extends Dialog implements
     /**
      * Called when time is selected and "start" is pressed on the dialog
      */
-    private void launchAppOrForegroundApp() {
+    private void launchTargetApp() {
 
         // Start service selected time for app to be stopped
         int time = minutes * 60000;
         Intent timeServiceIntent = new Intent(mContext, AppTimeDialogService.class);
-        timeServiceIntent.putExtra(TIME_KEY,time);
-        timeServiceIntent.putExtra(TARGET_PACKAGE_KEY,mTargetPackage);
-        timeServiceIntent.putExtra(APP_COLOR_KEY,mAppColor);
+        timeServiceIntent.putExtra(TIME_KEY, time);
+        timeServiceIntent.putExtra(TARGET_PACKAGE_KEY, mTargetPackage);
+        timeServiceIntent.putExtra(APP_COLOR_KEY, mAppColor);
         mContext.startService(timeServiceIntent);
 
         // Launches the selected app

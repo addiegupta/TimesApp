@@ -25,7 +25,7 @@
             android:gravity="center_vertical"
             android:text="@string/set_duration_for"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -41,10 +41,10 @@
             android:layout_gravity="center"
             android:paddingEnd="72dp"
             android:paddingStart="72dp"
-            seekarc:arcColor="@color/colorAccent"
+            seekarc:arcColor="@color/white"
             seekarc:arcWidth="1dp"
             seekarc:max="60"
-            seekarc:progressColor="@color/colorAccent"
+            seekarc:progressColor="@color/white"
             seekarc:progressWidth="10dp"
             seekarc:rotation="0"
             seekarc:roundEdges="true"
@@ -64,6 +64,7 @@
                 android:id="@+id/tv_seekarc_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
                 android:textSize="56sp" />
 
@@ -71,6 +72,7 @@
                 android:id="@+id/tv_seekarc_progress_m_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:text="m"
                 android:textSize="36sp" />
         </LinearLayout>
@@ -90,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:text="@string/start"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/btn_dialog_cancel"
@@ -99,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_toStartOf="@+id/btn_dialog_start"
             android:text="@string/no_limit"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/white" />
     </RelativeLayout>
 
 </LinearLayout>
