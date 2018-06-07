@@ -1,6 +1,8 @@
 package com.addie.maxfocus.ui;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
@@ -20,6 +23,8 @@ import android.widget.Button;
 
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.service.AppTimeDialogService;
+
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -106,6 +111,31 @@ public class DialogActivity extends Activity {
             }
         });
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //TODO Check requirement . added to prevent dialog activity leaking window
+
+        // Prevents dialog activity from leaking dialog window when activity is pause
+        if (mIsWidgetLaunch){
+            mTimeDialog.dismiss();
+        }
+        else {
+            mStopAppDialog.dismiss();
+        }
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.LOLLIPOP){
+
+            ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+            if(am != null) {
+                List<ActivityManager.AppTask> tasks = am.getAppTasks();
+                if (tasks != null && tasks.size() > 0) {
+                    tasks.get(0).setExcludeFromRecents(true);
+                }
+            }
+        }
     }
 
     /**

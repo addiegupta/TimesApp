@@ -36,7 +36,6 @@ public class TimeDialog extends Dialog implements
     private final String mTargetPackage;
     private final boolean mIsWidgetLaunch;
     public Context mContext;
-    public Dialog dialog;
     private SharedPreferences preferences;
 
     private int minutes;
@@ -201,9 +200,11 @@ public class TimeDialog extends Dialog implements
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        this.dismiss();
         ((Activity) mContext).finish();
 
     }
+
 
     /**
      * Launches the target app using PackageManager
@@ -213,5 +214,4 @@ public class TimeDialog extends Dialog implements
         Intent launchIntent = packageManager.getLaunchIntentForPackage(mTargetPackage);
         mContext.startActivity(launchIntent);
     }
-
 }
