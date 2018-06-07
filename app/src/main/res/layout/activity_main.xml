@@ -9,29 +9,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="128dp"
-        android:text="Apps with timer"
+        android:layout_centerVertical="true"
+        android:text="App Timers"
         android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btn_study_break"
-        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_apps"
-        android:text="Study+Break"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btn_instant_alarm"
-        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Instant Alarm"
-        android:layout_below="@+id/btn_study_break"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:textSize="16sp" />
 </RelativeLayout>

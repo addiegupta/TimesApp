@@ -8,7 +8,6 @@
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
 
@@ -34,14 +33,6 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".receiver.StudyBreakTimerBroadcastReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.addie.maxfocus.service.action.APP_DIALOG" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".ui.MainActivity"
             android:noHistory="true">
@@ -51,12 +42,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.AlarmActivity"
-            android:noHistory="true" />
-        <activity
-            android:name=".ui.StudyTimerActivity"
-            android:noHistory="true" />
 
         <provider
             android:name=".data.generated.AppProvider"
@@ -86,21 +71,6 @@
         <service
             android:name=".service.LaunchAppFromWidgetService"
             android:exported="false" />
-        <service
-            android:name=".service.SetAlarmService"
-            android:exported="false" />
-
-        <receiver
-            android:name=".widget.AlarmWidget"
-            android:label="1 Tap Alarm">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/alarm_widget_info" />
-        </receiver>
 
         <activity
             android:name=".ui.SettingsActivity"

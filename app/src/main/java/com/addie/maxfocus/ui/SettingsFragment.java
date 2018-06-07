@@ -58,7 +58,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         Preference preference = findPreference(key);
         if (null != preference) {
 
-            if (key.equals(getString(R.string.pref_alarm_time_key))||key.equals(getString(R.string.pref_app_time_key))) {
+            if (key.equals(getString(R.string.pref_app_time_key))) {
                 String value = sharedPreferences.getString(preference.getKey(), "");
                 setPreferenceSummary(preference, value);
             }
@@ -72,37 +72,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
         super.onCreate(savedInstanceState);
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
-        Preference setStudyTimerPref = findPreference(getString(R.string.set_study_break_key));
-        setStudyTimerPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-             /*   AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-                builder.setMessage(R.string.clear_confirmation);
-
-                builder.setPositiveButton(R.string.clear, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int id) {
-                        //action on dialog close
-                        int itemsDeleted = getContext().getContentResolver().delete(URI_SUBREDDITS, null, null);
-                        Toast.makeText(getContext(), String.valueOf(itemsDeleted) + " " +
-                                getString(R.string.subreddits_deleted), Toast.LENGTH_SHORT).show();
-                    }
-
-                });
-
-                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.show();
-*/
-                return true;
-            }
-        });
     }
 
     @Override
