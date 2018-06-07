@@ -11,23 +11,44 @@ import android.os.Parcelable;
 public class App implements Parcelable {
     private String mTitle, mPackage;
     private Drawable mIcon;
+    private int mTextColor;
 
-    public App(String mTitle, String mPackage, Drawable mIcon, int mColor) {
+    public int getmTextColor() {
+        return mTextColor;
+    }
+
+    public void setmTextColor(int mTextColor) {
+        this.mTextColor = mTextColor;
+    }
+
+    public static Creator<App> getCREATOR() {
+        return CREATOR;
+    }
+
+    public App(String mTitle, String mPackage, Drawable mIcon, int mTextColor, int mAppColor) {
         this.mTitle = mTitle;
         this.mPackage = mPackage;
         this.mIcon = mIcon;
-        this.mColor = mColor;
+        this.mTextColor = mTextColor;
+        this.mAppColor = mAppColor;
     }
 
-    public int getmColor() {
-        return mColor;
+    public App(String mTitle, String mPackage, Drawable mIcon, int mAppColor) {
+        this.mTitle = mTitle;
+        this.mPackage = mPackage;
+        this.mIcon = mIcon;
+        this.mAppColor = mAppColor;
     }
 
-    public void setmColor(int mColor) {
-        this.mColor = mColor;
+    public int getmAppColor() {
+        return mAppColor;
     }
 
-    private int mColor;
+    public void setmAppColor(int mAppColor) {
+        this.mAppColor = mAppColor;
+    }
+
+    private int mAppColor;
 
 public App(){}
     public App(String mTitle, String mPackage, Drawable mIcon) {
@@ -69,18 +90,20 @@ public App(){}
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mTitle);
         dest.writeString(this.mPackage);
-        dest.writeParcelable((Parcelable) this.mIcon, flags);
-        dest.writeInt(this.mColor);
+        dest.writeParcelable((Parcelable)this.mIcon, flags);
+        dest.writeInt(this.mTextColor);
+        dest.writeInt(this.mAppColor);
     }
 
     protected App(Parcel in) {
         this.mTitle = in.readString();
         this.mPackage = in.readString();
         this.mIcon = in.readParcelable(Drawable.class.getClassLoader());
-        this.mColor = in.readInt();
+        this.mTextColor = in.readInt();
+        this.mAppColor = in.readInt();
     }
 
-    public static final Parcelable.Creator<App> CREATOR = new Parcelable.Creator<App>() {
+    public static final Creator<App> CREATOR = new Creator<App>() {
         @Override
         public App createFromParcel(Parcel source) {
             return new App(source);

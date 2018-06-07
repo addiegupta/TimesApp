@@ -29,6 +29,7 @@ public class AppTimeDialogService extends Service {
     private static final String TIME_KEY = "time";
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String APP_COLOR_KEY = "app_color";
+    private static final String TEXT_COLOR_KEY = "text_color";
     private static final String APP_IN_USE_KEY = "app_in_use";
     private static final int APP_STOPPED_NOTIF_ID = 77;
     private SharedPreferences preferences;
@@ -41,6 +42,7 @@ public class AppTimeDialogService extends Service {
     private String mAppName;
     private Bitmap mAppIcon;
     private int mAppColor;
+    private int mTextColor;
 
     CountDownTimer cdt = null;
 
@@ -87,6 +89,7 @@ public class AppTimeDialogService extends Service {
         appTime = intent.getIntExtra(TIME_KEY, 0);
         targetPackage = intent.getStringExtra(TARGET_PACKAGE_KEY);
         mAppColor = intent.getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
+        mTextColor = intent.getIntExtra(TEXT_COLOR_KEY,getResources().getColor(R.color.white));
         Timber.d("apptime is " + appTime + " targetpackage is " + targetPackage);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -127,6 +130,8 @@ public class AppTimeDialogService extends Service {
         Intent dialogIntent = new Intent(AppTimeDialogService.this, DialogActivity.class);
         dialogIntent.putExtra(TARGET_PACKAGE_KEY, targetPackage);
         dialogIntent.putExtra(APP_COLOR_KEY, mAppColor);
+        dialogIntent.putExtra(TEXT_COLOR_KEY, mTextColor);
+
         if (appTime==60000)
             dialogIntent.putExtra(DISPLAY_1_MIN,false);
 

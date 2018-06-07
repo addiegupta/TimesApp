@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -40,12 +41,14 @@ public class TimeDialog extends Dialog implements
 
     private int minutes;
     private int mAppColor;
+    private int mTextColor;
 
     //TODO Rename in all classes from service to receiver
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final String TIME_KEY = "time";
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String APP_COLOR_KEY = "app_color";
+    private static final String TEXT_COLOR_KEY = "text_color";
 
 
     @BindView(R.id.btn_dialog_cancel)
@@ -56,18 +59,22 @@ public class TimeDialog extends Dialog implements
     SeekArc mSeekArc;
     @BindView(R.id.tv_seekarc_progress)
     TextView mSeekArcProgressTextView;
+    @BindView(R.id.tv_seekarc_progress_m_label)
+    TextView mSeekArcProgressTextViewmLabel;
     @BindView(R.id.tv_dialog_title)
     TextView mDialogTitleTextView;
     @BindView(R.id.iv_time_dialog_icon)
     ImageView mAppIconImageView;
 
     //TODO Change isWidgetLaunch to callingClass to be able to use with preference
-    public TimeDialog(Context context, String targetPackage, int appColor, boolean isWidgetLaunch) {
+    public TimeDialog(Context context, String targetPackage, int appColor, boolean isWidgetLaunch,int textColor) {
         super(context);
         this.mContext = context;
         this.mTargetPackage = targetPackage;
         this.mAppColor = appColor;
         this.mIsWidgetLaunch = isWidgetLaunch;
+        this.mTextColor = textColor;
+        Timber.d(String.valueOf(mAppColor));
     }
 
     @Override
@@ -82,6 +89,8 @@ public class TimeDialog extends Dialog implements
 
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
+
+        setViewColors();
 
         ApplicationInfo ai;
         PackageManager pm = mContext.getPackageManager();
@@ -153,6 +162,21 @@ public class TimeDialog extends Dialog implements
         dismiss();
     }
 
+    private void setViewColors(){
+
+        // Only this seems to work, Passing the int directly to setTextColor seems to be missing some properties
+        int parsedTextColor = Color.parseColor(String.format("#%06X", (0xFFFFFF & mTextColor)));
+
+        mStartButton.setTextColor(parsedTextColor);
+        mCancelButton.setTextColor(parsedTextColor);
+        mDialogTitleTextView.setTextColor(parsedTextColor);
+        mSeekArcProgressTextView.setTextColor(parsedTextColor);
+        mSeekArcProgressTextViewmLabel.setTextColor(parsedTextColor);
+        mSeekArc.setArcColor(parsedTextColor);
+        mSeekArc.setProgressColor(parsedTextColor);
+
+    }
+
     /**
      * Called when time is selected and "start" is pressed on the dialog
      */
@@ -164,6 +188,7 @@ public class TimeDialog extends Dialog implements
         timeServiceIntent.putExtra(TIME_KEY, time);
         timeServiceIntent.putExtra(TARGET_PACKAGE_KEY, mTargetPackage);
         timeServiceIntent.putExtra(APP_COLOR_KEY, mAppColor);
+        timeServiceIntent.putExtra(TEXT_COLOR_KEY, mTextColor);
         mContext.startService(timeServiceIntent);
 
         // Launches the selected app

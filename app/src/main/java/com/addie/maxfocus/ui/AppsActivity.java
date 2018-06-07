@@ -70,6 +70,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private static final int APPS_LOADER_DB_ID = 486;
     private static final String APPS_LIST_KEY = "apps_list";
     private static final String APP_COLOR_KEY = "app_color";
+    private static final String TEXT_COLOR_KEY = "text_color";
 
 
     private ShowcaseView mShowcaseView;
@@ -94,14 +95,10 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apps);
-
         ButterKnife.bind(this);
-        Timber.d("onCreate");
-
 
         // Start Loading Apps
         loadAppsFromManagerOrDb();
-
     }
 
     private void loadAppsFromManagerOrDb() {
@@ -152,17 +149,19 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
      */
     public void showTimerDialog() {
 
-        TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage(),mSelectedApp.getmColor(), false);
+        TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage()
+                ,mSelectedApp.getmAppColor(), false,mSelectedApp.getmTextColor());
         tdialog.show();
 
-        tdialog.getWindow().getDecorView().setBackgroundColor(mSelectedApp.getmColor());
+        tdialog.getWindow().getDecorView().setBackgroundColor(mSelectedApp.getmAppColor());
         tdialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
                 Window window = ((AlertDialog)dialog).getWindow();
-                window.getDecorView().setBackgroundColor(mSelectedApp.getmColor());
+                window.getDecorView().setBackgroundColor(mSelectedApp.getmAppColor());
             }
         });
+
 
 
     }
@@ -313,6 +312,21 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
+    private static int getTextColor(int color){
+
+        int redColorValue = (color >> 16) & 0xFF;
+        int greenColorValue = (color >> 8) & 0xFF;
+        int blueColorValue = (color) & 0xFF;
+
+        if ((redColorValue * 0.299
+                + greenColorValue * 0.587
+                + blueColorValue * 0.114) > 186)
+            return 0;
+        else
+            //white
+            return 16777215;
+
+    }
     public static class AppLoader extends AsyncTaskLoader<ArrayList> {
 
         int mId;
@@ -345,12 +359,15 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
 
                     Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
-                    app.setmColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
+                    app.setmAppColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
+                    app.setmTextColor(getTextColor(app.getmAppColor()));
+                    Timber.e("APP:"+app.getmAppColor()+" TEXT "+app.getmTextColor());
 
                     mAppsList.add(app);
                     values.put(AppColumns.APP_TITLE, app.getmTitle());
                     values.put(AppColumns.PACKAGE_NAME, app.getmPackage());
-                    values.put(AppColumns.PALETTE_COLOR, app.getmColor());
+                    values.put(AppColumns.PALETTE_COLOR, app.getmAppColor());
+                    values.put(AppColumns.TEXT_COLOR, app.getmTextColor());
                     getContext().getContentResolver().insert(URI_APPS, values);
                 }
 
@@ -367,7 +384,8 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
                             app.setmTitle(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.APP_TITLE)));
                             app.setmPackage(cursor.getString(cursor.getColumnIndexOrThrow(AppColumns.PACKAGE_NAME)));
                             app.setmIcon(mPackageManager.getApplicationIcon(app.getmPackage()));
-                            app.setmColor(cursor.getInt(cursor.getColumnIndexOrThrow(AppColumns.PALETTE_COLOR)));
+                            app.setmAppColor(cursor.getInt(cursor.getColumnIndexOrThrow(AppColumns.PALETTE_COLOR)));
+                            app.setmTextColor(cursor.getInt(cursor.getColumnIndexOrThrow(AppColumns.TEXT_COLOR)));
                             mAppsList.add(app);
 
                         } catch (PackageManager.NameNotFoundException e) {
@@ -410,7 +428,8 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         Intent appIntent = new Intent(getApplicationContext(), DialogActivity.class);
         appIntent.putExtra(IS_WIDGET_LAUNCH, true);
         appIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
-        appIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmColor());
+        appIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmAppColor());
+        appIntent.putExtra(TEXT_COLOR_KEY,mSelectedApp.getmTextColor());
 
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, appIntent);
         sendBroadcast(shortcutintent);

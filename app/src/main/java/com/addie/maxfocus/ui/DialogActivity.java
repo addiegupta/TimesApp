@@ -21,12 +21,13 @@ import android.widget.Button;
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.service.AppTimeDialogService;
 
+import timber.log.Timber;
+
 /**
  * Displays dialog on top of the foreground running activity
  * Transparent activity so only dialog is visible
  */
 
-//FIXME URGENT Palette mess needs to be sorted. Shortcut requiring double tap
 public class DialogActivity extends Activity {
 
 
@@ -39,11 +40,13 @@ public class DialogActivity extends Activity {
     private static final String DISPLAY_1_MIN = "display_1_min";
 
     private static final String APP_COLOR_KEY = "app_color";
+    private static final String TEXT_COLOR_KEY = "text_color";
 
     private SharedPreferences preferences;
     private boolean hasUsageAccess;
     private String mPackageName;
     private int mAppColor;
+    private int mTextColor;
     private String mAppName;
     private Bitmap mAppIcon;
     private boolean mIsWidgetLaunch;
@@ -60,10 +63,10 @@ public class DialogActivity extends Activity {
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
         mPackageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
         mAppColor = getIntent().getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
+        mTextColor = getIntent().getIntExtra(TEXT_COLOR_KEY,getResources().getColor(R.color.white));
         mDisplay1Min = getIntent().getBooleanExtra(DISPLAY_1_MIN,true);
 
         fetchAppData();
-
 
         mIsWidgetLaunch = getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false);
 
@@ -79,8 +82,20 @@ public class DialogActivity extends Activity {
      */
     private void displayTimeDialog() {
 
-        mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, true);
+        mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, true,mTextColor);
         mTimeDialog.show();
+
+        String hexColor = String.format("#%06X", (0xFFFFFF & mAppColor));
+        Timber.d("hex"+hexColor);
+
+        int redColorValue = (mAppColor >> 16) & 0xFF;
+        int greenColorValue = (mAppColor >> 8) & 0xFF;
+        int blueColorValue = (mAppColor) & 0xFF;
+
+
+
+        String log = String.valueOf(redColorValue)+","+String.valueOf(greenColorValue)+","+String.valueOf(blueColorValue);
+        Timber.e(log);
 
         mTimeDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
         mTimeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -98,11 +113,12 @@ public class DialogActivity extends Activity {
      */
     private void displayStopAppDialog() {
 
+        String colorHex = String.format("#%06X", (0xFFFFFF & mTextColor));
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String title = "Stop using " + mAppName;
-        builder.setTitle(Html.fromHtml("<font color='#FFFFFF'>"+title+"</font>"))
+        builder.setTitle(Html.fromHtml("<font color='"+colorHex+"'>"+title+"</font>"))
                 .setCancelable(false)
-                .setPositiveButton("Stop"
+                .setPositiveButton(Html.fromHtml("<font color='"+colorHex+"'>Stop</font>")
                         , new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -119,7 +135,7 @@ public class DialogActivity extends Activity {
 
         if(mDisplay1Min){
 
-            builder.setNegativeButton("+1 Min"
+            builder.setNegativeButton(Html.fromHtml("<font color='"+colorHex+"'>+1 Min</font>")
                     , new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -131,20 +147,24 @@ public class DialogActivity extends Activity {
         }
 
         if (hasUsageAccess) {
-            builder.setMessage(Html.fromHtml("<font color='#FFFFFF'>Time's up!</font>"));
+            builder.setMessage(Html.fromHtml("<font color='"+colorHex+"'>Time's up!</font>"));
         } else {
-            builder.setMessage(Html.fromHtml("<font color='#FFFFFF'>Time's up! \n (Foreground app check permission not granted)</font>"));
+            builder.setMessage(Html.fromHtml("<font color='"+colorHex+"'>Time's up! \n (Foreground app check permission not granted)</font>"));
         }
         mStopAppDialog = builder.show();
+
+        // Only this seems to work, Passing the int directly to setTextColor seems to be missing some properties
+        int parsedTextColor = Color.parseColor(String.format("#%06X", (0xFFFFFF & mTextColor)));
 
 
         Button nbutton = mStopAppDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         if (nbutton!=null){
 
-            nbutton.setTextColor(Color.WHITE);
+            nbutton.setTextColor(parsedTextColor);
         }
+
         Button pbutton = mStopAppDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        pbutton.setTextColor(Color.WHITE);
+        pbutton.setTextColor(parsedTextColor);
 
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -174,6 +194,7 @@ public class DialogActivity extends Activity {
         timeServiceIntent.putExtra(TIME_KEY, time);
         timeServiceIntent.putExtra(TARGET_PACKAGE_KEY, mPackageName);
         timeServiceIntent.putExtra(APP_COLOR_KEY, mAppColor);
+        timeServiceIntent.putExtra(TEXT_COLOR_KEY, mTextColor);
         this.startService(timeServiceIntent);
 
         finish();

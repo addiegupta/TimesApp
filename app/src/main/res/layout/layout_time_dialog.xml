@@ -20,9 +20,9 @@
             android:id="@+id/tv_dialog_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingStart="8dp"
-            android:paddingRight="8dp"
             android:gravity="center_vertical"
+            android:paddingRight="8dp"
+            android:paddingStart="8dp"
             android:text="@string/set_duration_for"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:textColor="@android:color/white"
@@ -64,16 +64,16 @@
                 android:id="@+id/tv_seekarc_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:textColor="@color/white"
                 android:textSize="56sp" />
 
             <TextView
                 android:id="@+id/tv_seekarc_progress_m_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
                 android:text="m"
+                android:textColor="@color/white"
                 android:textSize="36sp" />
         </LinearLayout>
 

@@ -7,10 +7,6 @@ import net.simonvt.schematic.annotation.PrimaryKey;
 import static net.simonvt.schematic.annotation.DataType.Type.INTEGER;
 import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
 
-/**
- * Created by addie on 04-04-2018.
- */
-
 public interface AppColumns {
 
     @DataType(INTEGER) @PrimaryKey
@@ -25,6 +21,9 @@ public interface AppColumns {
 
     @DataType(INTEGER)
     String PALETTE_COLOR ="palette_color";
+
+    @DataType(INTEGER)
+    String TEXT_COLOR = "text_color";
 
 
 }
