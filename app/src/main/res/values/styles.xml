@@ -47,5 +47,14 @@
         <item name="android:textColor">#8affffff</item>
     </style>
 
+    <style name="AnimatedDialog" parent="Theme.Transparent">
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+    </style>
+
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
 
 </resources>

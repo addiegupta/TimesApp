@@ -30,4 +30,7 @@
     <string name="tap_for_more_info_foreground_notif">Tap for more info</string>
     <string name="why_see_notification">Why do I need to see this notification?</string>
     <string name="why_see_notification_ans">As a security feature of the Android platform, background tasks cannot be run efficiently without showing a notification. The background task is keeping track of the time to keep your phone usage time in control.</string>
+    <string name="pref_shortcut_icon_key">pref_shortcut_icon</string>
+    <string name="pref_shortcut_icon">Shortcut Timer Icon</string>
+    <string name="pref_shortcut_icon_hint">Add timer icon to the application icon on home screen</string>
 </resources>

@@ -67,9 +67,9 @@ public class DialogActivity extends Activity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
         mPackageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
-        mAppColor = getIntent().getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
-        mTextColor = getIntent().getIntExtra(TEXT_COLOR_KEY,getResources().getColor(R.color.white));
-        mDisplay1Min = getIntent().getBooleanExtra(DISPLAY_1_MIN,true);
+        mAppColor = getIntent().getIntExtra(APP_COLOR_KEY, getResources().getColor(R.color.black));
+        mTextColor = getIntent().getIntExtra(TEXT_COLOR_KEY, getResources().getColor(R.color.white));
+        mDisplay1Min = getIntent().getBooleanExtra(DISPLAY_1_MIN, true);
 
         fetchAppData();
 
@@ -87,26 +87,27 @@ public class DialogActivity extends Activity {
      */
     private void displayTimeDialog() {
 
-        mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, true,mTextColor);
+        mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, true, mTextColor);
+        mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
         mTimeDialog.show();
 
         String hexColor = String.format("#%06X", (0xFFFFFF & mAppColor));
-        Timber.d("hex"+hexColor);
+        Timber.d("hex" + hexColor);
 
         int redColorValue = (mAppColor >> 16) & 0xFF;
         int greenColorValue = (mAppColor >> 8) & 0xFF;
         int blueColorValue = (mAppColor) & 0xFF;
 
 
-
-        String log = String.valueOf(redColorValue)+","+String.valueOf(greenColorValue)+","+String.valueOf(blueColorValue);
+        String log = String.valueOf(redColorValue) + "," + String.valueOf(greenColorValue) + "," + String.valueOf(blueColorValue);
         Timber.e(log);
 
         mTimeDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
+//        mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
         mTimeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
-                Window window = ((AlertDialog)dialog).getWindow();
+                Window window = ((AlertDialog) dialog).getWindow();
                 window.getDecorView().setBackgroundColor(mAppColor);
             }
         });
@@ -117,19 +118,16 @@ public class DialogActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
-        //TODO Check requirement . added to prevent dialog activity leaking window
-
         // Prevents dialog activity from leaking dialog window when activity is pause
-        if (mIsWidgetLaunch){
+        if (mIsWidgetLaunch) {
             mTimeDialog.dismiss();
-        }
-        else {
+        } else {
             mStopAppDialog.dismiss();
         }
-        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.LOLLIPOP){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-            if(am != null) {
+            ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            if (am != null) {
                 List<ActivityManager.AppTask> tasks = am.getAppTasks();
                 if (tasks != null && tasks.size() > 0) {
                     tasks.get(0).setExcludeFromRecents(true);
@@ -144,42 +142,42 @@ public class DialogActivity extends Activity {
     private void displayStopAppDialog() {
 
         String colorHex = String.format("#%06X", (0xFFFFFF & mTextColor));
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnimatedDialog);
         String title = "Stop using " + mAppName;
-        builder.setTitle(Html.fromHtml("<font color='"+colorHex+"'>"+title+"</font>"))
+        builder.setTitle(Html.fromHtml("<font color='" + colorHex + "'>" + title + "</font>"))
                 .setCancelable(false)
-                .setPositiveButton(Html.fromHtml("<font color='"+colorHex+"'>Stop</font>")
+                .setPositiveButton(Html.fromHtml("<font color='" + colorHex + "'>Stop</font>")
                         , new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
 
-                        // Goes to home screen
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    }
-                }).setIcon(new BitmapDrawable(getResources(),mAppIcon))
+                                // Goes to home screen
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_HOME);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                        }).setIcon(new BitmapDrawable(getResources(), mAppIcon))
         ;
 
-        if(mDisplay1Min){
+        if (mDisplay1Min) {
 
-            builder.setNegativeButton(Html.fromHtml("<font color='"+colorHex+"'>+1 Min</font>")
+            builder.setNegativeButton(Html.fromHtml("<font color='" + colorHex + "'>+1 Min</font>")
                     , new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                        grantOneMinuteExtra();
-                    }
-                });
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                            grantOneMinuteExtra();
+                        }
+                    });
 
         }
 
         if (hasUsageAccess) {
-            builder.setMessage(Html.fromHtml("<font color='"+colorHex+"'>Time's up!</font>"));
+            builder.setMessage(Html.fromHtml("<font color='" + colorHex + "'>Time's up!</font>"));
         } else {
-            builder.setMessage(Html.fromHtml("<font color='"+colorHex+"'>Time's up! \n (Foreground app check permission not granted)</font>"));
+            builder.setMessage(Html.fromHtml("<font color='" + colorHex + "'>Time's up! \n (Foreground app check permission not granted)</font>"));
         }
         mStopAppDialog = builder.show();
 
@@ -188,7 +186,7 @@ public class DialogActivity extends Activity {
 
 
         Button nbutton = mStopAppDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-        if (nbutton!=null){
+        if (nbutton != null) {
 
             nbutton.setTextColor(parsedTextColor);
         }
@@ -199,13 +197,13 @@ public class DialogActivity extends Activity {
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
-        mStopAppDialog.getWindow().setLayout((6 * width)/7, WindowManager.LayoutParams.WRAP_CONTENT);
+        mStopAppDialog.getWindow().setLayout((6 * width) / 7, WindowManager.LayoutParams.WRAP_CONTENT);
 
         mStopAppDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
         mStopAppDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
-                Window window = ((AlertDialog)dialog).getWindow();
+                Window window = ((AlertDialog) dialog).getWindow();
                 window.getDecorView().setBackgroundColor(mAppColor);
             }
         });
@@ -231,7 +229,7 @@ public class DialogActivity extends Activity {
 
     }
 
-    private void fetchAppData(){
+    private void fetchAppData() {
         ApplicationInfo appInfo;
         PackageManager pm = getPackageManager();
 

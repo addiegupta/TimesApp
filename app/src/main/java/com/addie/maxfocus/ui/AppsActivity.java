@@ -150,18 +150,17 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     public void showTimerDialog() {
 
         TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage()
-                ,mSelectedApp.getmAppColor(), false,mSelectedApp.getmTextColor());
+                , mSelectedApp.getmAppColor(), false, mSelectedApp.getmTextColor());
         tdialog.show();
 
         tdialog.getWindow().getDecorView().setBackgroundColor(mSelectedApp.getmAppColor());
         tdialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
-                Window window = ((AlertDialog)dialog).getWindow();
+                Window window = ((AlertDialog) dialog).getWindow();
                 window.getDecorView().setBackgroundColor(mSelectedApp.getmAppColor());
             }
         });
-
 
 
     }
@@ -201,7 +200,10 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     }
 
     private void refreshAppsList() {
-        mAdapter.setListData(null);
+        if (mAdapter != null) {
+
+            mAdapter.setListData(null);
+        }
         getContentResolver().delete(URI_APPS, null, null);
         loadAppsFromManagerOrDb();
 
@@ -312,7 +314,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
-    private static int getTextColor(int color){
+    private static int getTextColor(int color) {
 
         int redColorValue = (color >> 16) & 0xFF;
         int greenColorValue = (color >> 8) & 0xFF;
@@ -327,6 +329,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
             return 16777215;
 
     }
+
     public static class AppLoader extends AsyncTaskLoader<ArrayList> {
 
         int mId;
@@ -361,7 +364,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
                     app.setmAppColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
                     app.setmTextColor(getTextColor(app.getmAppColor()));
-                    Timber.e("APP:"+app.getmAppColor()+" TEXT "+app.getmTextColor());
+                    Timber.e("APP:" + app.getmAppColor() + " TEXT " + app.getmTextColor());
 
                     mAppsList.add(app);
                     values.put(AppColumns.APP_TITLE, app.getmTitle());
@@ -412,35 +415,40 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     }
 
     public void createShortcut() throws PackageManager.NameNotFoundException {
+        Bitmap icon = getAppIconShortcut();
+
+
         Intent shortcutintent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
 //        shortcutintent.putExtra("duplicate", true);
-        Bitmap icon = ((BitmapDrawable) getPackageManager().getApplicationIcon(mSelectedApp.getmPackage())).getBitmap();
-        Timber.d(icon.getHeight() + " " + icon.getWidth());
 
-        Bitmap bitmap = getBitmapFromVectorDrawable(this, R.drawable.ic_timelapse_white_24dp);
-        Timber.d(bitmap.getHeight() + " " + bitmap.getWidth());
-
-
-        Bitmap bmp = overlay(icon, bitmap);
-        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, bmp);
+        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
 
         Intent appIntent = new Intent(getApplicationContext(), DialogActivity.class);
         appIntent.putExtra(IS_WIDGET_LAUNCH, true);
         appIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
         appIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmAppColor());
-        appIntent.putExtra(TEXT_COLOR_KEY,mSelectedApp.getmTextColor());
+        appIntent.putExtra(TEXT_COLOR_KEY, mSelectedApp.getmTextColor());
 
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, appIntent);
         sendBroadcast(shortcutintent);
     }
 
-    private Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
-        Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
-        Canvas canvas = new Canvas(bmOverlay);
-        canvas.drawBitmap(bmp1, new Matrix(), null);
-        canvas.drawBitmap(bmp2, 94, 94, null);
-        return bmOverlay;
+    private Bitmap getAppIconShortcut() throws PackageManager.NameNotFoundException {
+
+        Bitmap appIcon = ((BitmapDrawable) getPackageManager().getApplicationIcon(mSelectedApp.getmPackage())).getBitmap();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getBoolean(getString(R.string.pref_shortcut_icon_key), true)) {
+            Bitmap timerIcon = getBitmapFromVectorDrawable(this, R.drawable.ic_timelapse_white_24dp);
+
+            Bitmap bmOverlay = Bitmap.createBitmap(appIcon.getWidth(), appIcon.getHeight(), appIcon.getConfig());
+            Canvas canvas = new Canvas(bmOverlay);
+            canvas.drawBitmap(appIcon, new Matrix(), null);
+            canvas.drawBitmap(timerIcon, 94, 94, null);
+            return bmOverlay;
+        } else
+            return appIcon;
     }
 
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {

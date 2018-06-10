@@ -29,9 +29,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
         for (int i = 0; i < count; i++) {
             Preference p = prefScreen.getPreference(i);
 
-            String value = sharedPreferences.getString(p.getKey(), "");
-            Timber.d(value);
-            setPreferenceSummary(p, value);
+            if(p instanceof ListPreference){
+
+                String value = sharedPreferences.getString(p.getKey(), "");
+                Timber.d(value);
+                setPreferenceSummary(p, value);
+            }
         }
     }
 
