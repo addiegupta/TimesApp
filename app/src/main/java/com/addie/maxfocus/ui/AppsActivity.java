@@ -74,7 +74,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private static final String CALLING_CLASS_KEY = "calling_class";
 
 
-
     private ShowcaseView mShowcaseView;
 
     @BindView(R.id.rv_apps)
@@ -85,7 +84,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     private static final String APP_IN_USE_KEY = "app_in_use";
     //TODO: Change parameter name
-    private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
     private static final String TARGET_PACKAGE_KEY = "target_package";
 
     private AppAdapter mAdapter;
@@ -152,7 +150,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     public void showTimerDialog() {
 
         TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage()
-                , mSelectedApp.getmAppColor(), false, mSelectedApp.getmTextColor());
+                , mSelectedApp.getmAppColor(), mSelectedApp.getmTextColor());
         tdialog.show();
 
         tdialog.getWindow().getDecorView().setBackgroundColor(mSelectedApp.getmAppColor());
@@ -325,6 +323,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         if ((redColorValue * 0.299
                 + greenColorValue * 0.587
                 + blueColorValue * 0.114) > 186)
+            //black
             return 0;
         else
             //white
@@ -427,7 +426,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
 
         Intent appIntent = new Intent(getApplicationContext(), DialogActivity.class);
-        appIntent.putExtra(IS_WIDGET_LAUNCH, true);
         appIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
         appIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmAppColor());
         appIntent.putExtra(TEXT_COLOR_KEY, mSelectedApp.getmTextColor());

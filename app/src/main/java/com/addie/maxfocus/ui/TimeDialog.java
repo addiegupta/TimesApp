@@ -34,7 +34,6 @@ public class TimeDialog extends Dialog implements
         android.view.View.OnClickListener {
 
     private final String mTargetPackage;
-    private final boolean mIsWidgetLaunch;
     public Context mContext;
     private SharedPreferences preferences;
 
@@ -66,12 +65,11 @@ public class TimeDialog extends Dialog implements
     ImageView mAppIconImageView;
 
     //TODO Change isWidgetLaunch to callingClass to be able to use with preference
-    public TimeDialog(Context context, String targetPackage, int appColor, boolean isWidgetLaunch, int textColor) {
+    public TimeDialog(Context context, String targetPackage, int appColor,int textColor) {
         super(context);
         this.mContext = context;
         this.mTargetPackage = targetPackage;
         this.mAppColor = appColor;
-        this.mIsWidgetLaunch = isWidgetLaunch;
         this.mTextColor = textColor;
         Timber.d(String.valueOf(mAppColor));
     }

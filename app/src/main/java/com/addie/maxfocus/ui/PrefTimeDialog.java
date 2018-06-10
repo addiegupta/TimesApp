@@ -26,13 +26,6 @@ public class PrefTimeDialog extends Dialog implements
 
     private int minutes;
 
-    //TODO Rename in all classes from service to receiver
-    private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
-    private static final String TIME_KEY = "time";
-    private static final String TARGET_PACKAGE_KEY = "target_package";
-    private static final String APP_COLOR_KEY = "app_color";
-    private static final String TEXT_COLOR_KEY = "text_color";
-
 
     @BindView(R.id.btn_pref_dialog_cancel)
     Button mCancelButton;
@@ -45,7 +38,6 @@ public class PrefTimeDialog extends Dialog implements
     @BindView(R.id.tv_pref_dialog_title)
     TextView mDialogTitleTextView;
 
-    //TODO Change isWidgetLaunch to callingClass to be able to use with preference
     public PrefTimeDialog(Context context) {
         super(context);
         this.mContext = context;

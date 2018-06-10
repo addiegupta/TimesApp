@@ -39,7 +39,6 @@ public class DialogActivity extends Activity {
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
 
     private static final String APP_IN_USE_KEY = "app_in_use";
-    private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String TIME_KEY = "time";
     private static final String DISPLAY_1_MIN = "display_1_min";
@@ -56,7 +55,6 @@ public class DialogActivity extends Activity {
     private int mTextColor;
     private String mAppName;
     private Bitmap mAppIcon;
-    private boolean mIsWidgetLaunch;
     private boolean mDisplay1Min;
     private String mCallingClass;
 
@@ -80,7 +78,6 @@ public class DialogActivity extends Activity {
         }
         fetchAppData();
 
-        mIsWidgetLaunch = getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false);
         Timber.e("Widget launch %s",getCallingActivity());
 
         if (mCallingClass.equals("AppTimeDialogService")) {
@@ -107,7 +104,7 @@ public class DialogActivity extends Activity {
      */
     private void displayTimeDialog() {
 
-        mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, true, mTextColor);
+        mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, mTextColor);
         mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
         mTimeDialog.show();
 

@@ -134,6 +134,7 @@ public class AppTimeDialogService extends Service {
         dialogIntent.putExtra(TEXT_COLOR_KEY, mTextColor);
         dialogIntent.putExtra(CALLING_CLASS_KEY,getClass().getSimpleName());
 
+        // Duration equal to 1 minute
         if (appTime==60000)
             dialogIntent.putExtra(DISPLAY_1_MIN,false);
 
