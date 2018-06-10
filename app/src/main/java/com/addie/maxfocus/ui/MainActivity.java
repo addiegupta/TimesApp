@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startAppsActivity() {
         finish();
+        Timber.e("AppsActivity:%s",AppsActivity.class.getSimpleName());
         startActivity(new Intent(MainActivity.this, AppsActivity.class));
     }
 

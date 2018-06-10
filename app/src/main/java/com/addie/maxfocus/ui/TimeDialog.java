@@ -66,7 +66,7 @@ public class TimeDialog extends Dialog implements
     ImageView mAppIconImageView;
 
     //TODO Change isWidgetLaunch to callingClass to be able to use with preference
-    public TimeDialog(Context context, String targetPackage, int appColor, boolean isWidgetLaunch,int textColor) {
+    public TimeDialog(Context context, String targetPackage, int appColor, boolean isWidgetLaunch, int textColor) {
         super(context);
         this.mContext = context;
         this.mTargetPackage = targetPackage;
@@ -81,6 +81,7 @@ public class TimeDialog extends Dialog implements
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         Timber.d("Created dialog");
+
 
         setContentView(R.layout.layout_time_dialog);
 
@@ -151,9 +152,7 @@ public class TimeDialog extends Dialog implements
                 break;
             case R.id.btn_dialog_cancel:
                 dismiss();
-                if (mIsWidgetLaunch) {
-                    startAppActivity();
-                }
+                startAppActivity();
                 break;
             default:
                 break;
@@ -161,7 +160,7 @@ public class TimeDialog extends Dialog implements
         dismiss();
     }
 
-    private void setViewColors(){
+    private void setViewColors() {
 
         // Only this seems to work, Passing the int directly to setTextColor seems to be missing some properties
         int parsedTextColor = Color.parseColor(String.format("#%06X", (0xFFFFFF & mTextColor)));

@@ -32,6 +32,7 @@ public class AppTimeDialogService extends Service {
     private static final String TEXT_COLOR_KEY = "text_color";
     private static final String APP_IN_USE_KEY = "app_in_use";
     private static final int APP_STOPPED_NOTIF_ID = 77;
+    private static final String CALLING_CLASS_KEY = "calling_class";
     private SharedPreferences preferences;
     private static final int FOREGROUND_NOTIF_ID = 104;
     private static final String DISPLAY_1_MIN = "display_1_min";
@@ -131,6 +132,7 @@ public class AppTimeDialogService extends Service {
         dialogIntent.putExtra(TARGET_PACKAGE_KEY, targetPackage);
         dialogIntent.putExtra(APP_COLOR_KEY, mAppColor);
         dialogIntent.putExtra(TEXT_COLOR_KEY, mTextColor);
+        dialogIntent.putExtra(CALLING_CLASS_KEY,getClass().getSimpleName());
 
         if (appTime==60000)
             dialogIntent.putExtra(DISPLAY_1_MIN,false);

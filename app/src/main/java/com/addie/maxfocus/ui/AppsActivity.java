@@ -71,6 +71,8 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private static final String APPS_LIST_KEY = "apps_list";
     private static final String APP_COLOR_KEY = "app_color";
     private static final String TEXT_COLOR_KEY = "text_color";
+    private static final String CALLING_CLASS_KEY = "calling_class";
+
 
 
     private ShowcaseView mShowcaseView;

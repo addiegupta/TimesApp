@@ -9,13 +9,19 @@ import android.support.v7.preference.PreferenceScreen;
 
 import com.addie.maxfocus.R;
 
+import java.util.Objects;
+
 import timber.log.Timber;
+
 
 /**
  * Fragment which contains preferences regarding various settings of app
  */
 public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String CALLING_CLASS_KEY = "calling_class";
+
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -23,7 +29,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         addPreferencesFromResource(R.xml.pref_main);
 
         PreferenceScreen prefScreen = getPreferenceScreen();
-        SharedPreferences sharedPreferences = prefScreen.getSharedPreferences();
+        sharedPreferences = prefScreen.getSharedPreferences();
         int count = prefScreen.getPreferenceCount();
 
         for (int i = 0; i < count; i++) {
@@ -34,6 +40,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 String value = sharedPreferences.getString(p.getKey(), "");
                 Timber.d(value);
                 setPreferenceSummary(p, value);
+            }
+            if (Objects.equals(p.getKey(), getString(R.string.pref_app_time_key))){
+                String value = sharedPreferences.getString(getString(R.string.pref_app_time_key),"");
+                setPreferenceSummary(p,value);
             }
         }
     }
@@ -54,6 +64,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 listPreference.setSummary(listPreference.getEntries()[prefIndex]);
             }
         }
+        if (preference.getKey().equals(getString(R.string.pref_app_time_key))){
+
+            preference.setSummary(value+" minutes");
+        }
     }
 
     @Override
@@ -61,8 +75,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         Preference preference = findPreference(key);
         if (null != preference) {
 
-            if (key.equals(getString(R.string.pref_app_time_key))) {
-                String value = sharedPreferences.getString(preference.getKey(), "");
+            if(key.equals(getString(R.string.pref_app_time_key))) {
+                String value = sharedPreferences.getString(getString(R.string.pref_app_time_key), "");
                 setPreferenceSummary(preference, value);
             }
         }

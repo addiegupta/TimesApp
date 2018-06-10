@@ -17,6 +17,8 @@ public class LaunchAppFromWidgetService extends IntentService {
 
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String IS_WIDGET_LAUNCH = "is_widget_launch";
+    private static final String CALLING_CLASS_KEY = "calling_class";
+
 
 
     public LaunchAppFromWidgetService() {
@@ -33,6 +35,7 @@ public class LaunchAppFromWidgetService extends IntentService {
             dialogIntent.putExtra(IS_WIDGET_LAUNCH, true);
             dialogIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             dialogIntent.putExtra(TARGET_PACKAGE_KEY, packageName);
+            dialogIntent.putExtra(CALLING_CLASS_KEY,getClass().getSimpleName());
             startActivity(dialogIntent);
 
         }

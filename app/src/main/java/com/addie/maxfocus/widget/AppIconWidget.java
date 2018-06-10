@@ -36,17 +36,6 @@ public class AppIconWidget extends AppWidgetProvider {
             e.printStackTrace();
         }
 
-
-        // Broadcast intent with selected time for app to be stopped
-//            int time = minutes * 60000;
-//            Intent broadcastIntent = new Intent();
-//            broadcastIntent.putExtra(TIME_KEY, time);
-//            broadcastIntent.putExtra(TARGET_PACKAGE_KEY, mTargetPackage);
-//            broadcastIntent.setAction(ACTION_APP_DIALOG);
-
-//            context.sendBroadcast(broadcastIntent);
-
-
 //        TODO: FIX!! Causing crash. Fixed, still might cause crash
         if (!packageName.equals(context.getString(R.string.appwidget_text))) {
             // Launches the selected app

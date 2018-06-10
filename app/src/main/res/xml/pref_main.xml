@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <ListPreference
-        android:defaultValue="10"
-        android:entries="@array/pref_app_time_labels"
-        android:entryValues="@array/pref_app_time_values"
-        android:key="@string/pref_app_time_key"
-        android:title="@string/pref_app_time_label" />
+   <Preference
+        android:key= "@string/pref_app_time_key"
+        android:title="@string/pref_app_time_label">
+        <intent
+            android:targetPackage="com.addie.maxfocus"
+            android:targetClass="com.addie.maxfocus.ui.DialogActivity">
+            <extra android:name="calling_class" android:value="SettingsFragment" />
+        </intent>
+    </Preference>
     <CheckBoxPreference
         android:key="@string/pref_shortcut_icon_key"
         android:summary="@string/pref_shortcut_icon_hint"

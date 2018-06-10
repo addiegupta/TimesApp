@@ -46,6 +46,8 @@ public class DialogActivity extends Activity {
 
     private static final String APP_COLOR_KEY = "app_color";
     private static final String TEXT_COLOR_KEY = "text_color";
+    private static final String CALLING_CLASS_KEY = "calling_class";
+
 
     private SharedPreferences preferences;
     private boolean hasUsageAccess;
@@ -56,9 +58,11 @@ public class DialogActivity extends Activity {
     private Bitmap mAppIcon;
     private boolean mIsWidgetLaunch;
     private boolean mDisplay1Min;
+    private String mCallingClass;
 
     private TimeDialog mTimeDialog;
     private AlertDialog mStopAppDialog;
+    private PrefTimeDialog mPrefDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,16 +74,32 @@ public class DialogActivity extends Activity {
         mAppColor = getIntent().getIntExtra(APP_COLOR_KEY, getResources().getColor(R.color.black));
         mTextColor = getIntent().getIntExtra(TEXT_COLOR_KEY, getResources().getColor(R.color.white));
         mDisplay1Min = getIntent().getBooleanExtra(DISPLAY_1_MIN, true);
-
+        mCallingClass = getIntent().getStringExtra(CALLING_CLASS_KEY);
+        if (mCallingClass==null){
+            mCallingClass="";
+        }
         fetchAppData();
 
         mIsWidgetLaunch = getIntent().getBooleanExtra(IS_WIDGET_LAUNCH, false);
+        Timber.e("Widget launch %s",getCallingActivity());
 
-        if (mIsWidgetLaunch) {
-            displayTimeDialog();
-        } else {
+        if (mCallingClass.equals("AppTimeDialogService")) {
             displayStopAppDialog();
         }
+        else if(mCallingClass.equals("SettingsFragment")){
+            displayPrefTimeDialog();
+
+        } else {
+            displayTimeDialog();
+        }
+    }
+
+    private void displayPrefTimeDialog() {
+        mPrefDialog = new PrefTimeDialog(this);
+
+        mPrefDialog.show();
+
+
     }
 
     /**
@@ -91,19 +111,7 @@ public class DialogActivity extends Activity {
         mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
         mTimeDialog.show();
 
-        String hexColor = String.format("#%06X", (0xFFFFFF & mAppColor));
-        Timber.d("hex" + hexColor);
-
-        int redColorValue = (mAppColor >> 16) & 0xFF;
-        int greenColorValue = (mAppColor >> 8) & 0xFF;
-        int blueColorValue = (mAppColor) & 0xFF;
-
-
-        String log = String.valueOf(redColorValue) + "," + String.valueOf(greenColorValue) + "," + String.valueOf(blueColorValue);
-        Timber.e(log);
-
         mTimeDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
-//        mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
         mTimeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
@@ -119,11 +127,20 @@ public class DialogActivity extends Activity {
         super.onPause();
 
         // Prevents dialog activity from leaking dialog window when activity is pause
-        if (mIsWidgetLaunch) {
-            mTimeDialog.dismiss();
-        } else {
-            mStopAppDialog.dismiss();
+        switch (mCallingClass) {
+            case "AppTimeDialogService":
+                mStopAppDialog.dismiss();
+                break;
+            case "SettingsFragment":
+                mPrefDialog.dismiss();
+
+                break;
+            default:
+                mTimeDialog.dismiss();
+                break;
         }
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
