@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -78,16 +79,19 @@ public class DialogActivity extends Activity {
         }
         fetchAppData();
 
-        Timber.e("Widget launch %s",getCallingActivity());
+        Timber.d("Calling activity %s",getCallingActivity());
 
-        if (mCallingClass.equals("AppTimeDialogService")) {
-            displayStopAppDialog();
-        }
-        else if(mCallingClass.equals("SettingsFragment")){
-            displayPrefTimeDialog();
+        switch (mCallingClass) {
+            case "AppTimeDialogService":
+                displayStopAppDialog();
+                break;
+            case "SettingsFragment":
+                displayPrefTimeDialog();
 
-        } else {
-            displayTimeDialog();
+                break;
+            default:
+                displayTimeDialog();
+                break;
         }
     }
 
@@ -107,6 +111,10 @@ public class DialogActivity extends Activity {
         mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, mTextColor);
         mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
         mTimeDialog.show();
+
+        Timber.e("app color %s",mAppColor);
+        Log.e("TAG",(String.format("#%06X", (0xFFFFFF & mAppColor))));
+
 
         mTimeDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
         mTimeDialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -197,7 +205,6 @@ public class DialogActivity extends Activity {
 
         // Only this seems to work, Passing the int directly to setTextColor seems to be missing some properties
         int parsedTextColor = Color.parseColor(String.format("#%06X", (0xFFFFFF & mTextColor)));
-
 
         Button nbutton = mStopAppDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         if (nbutton != null) {

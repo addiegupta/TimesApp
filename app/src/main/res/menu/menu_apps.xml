@@ -2,9 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:title="@string/refresh_list"
+    <item
         android:id="@+id/menu_apps_action_refresh_list"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:orderInCategory="1"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/refresh_list"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_apps_action_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:orderInCategory="2"
+        android:title="@string/settings"
+        app:showAsAction="ifRoom" />
 </menu>

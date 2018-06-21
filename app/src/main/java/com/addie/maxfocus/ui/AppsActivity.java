@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -109,7 +110,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
             getSupportLoaderManager().initLoader(APPS_LOADER_MANAGER_ID, null, fetchAppsListener);
         }
         if (cursor != null) {
-
             cursor.close();
         }
 
@@ -193,11 +193,15 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
             case R.id.menu_apps_action_refresh_list:
                 refreshAppsList();
                 break;
+            case R.id.menu_apps_action_settings:
+                startActivity(new Intent(AppsActivity.this, SettingsActivity.class));
+                break;
             default:
                 break;
         }
         return true;
     }
+
 
     private void refreshAppsList() {
         if (mAdapter != null) {
@@ -420,7 +424,8 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
 
         Intent shortcutintent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-//        shortcutintent.putExtra("duplicate", true);
+        //TODO Check requirement
+        shortcutintent.putExtra("duplicate", true);
 
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
@@ -440,12 +445,24 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (prefs.getBoolean(getString(R.string.pref_shortcut_icon_key), true)) {
-            Bitmap timerIcon = getBitmapFromVectorDrawable(this, R.drawable.ic_timelapse_white_24dp);
+            Bitmap timerIcon;
+            if (mSelectedApp.getmTextColor() == 0) {
+
+                timerIcon = getBitmapFromVectorDrawable(this, R.drawable.sandclock_icon_black);
+            } else {
+                timerIcon = getBitmapFromVectorDrawable(this, R.drawable.sandclock_icon_white);
+            }
+            // FIXME:Might have compatibility issues
+            Bitmap thumbBitmap = ThumbnailUtils.extractThumbnail(timerIcon, 60, 83);
 
             Bitmap bmOverlay = Bitmap.createBitmap(appIcon.getWidth(), appIcon.getHeight(), appIcon.getConfig());
             Canvas canvas = new Canvas(bmOverlay);
-            canvas.drawBitmap(appIcon, new Matrix(), null);
-            canvas.drawBitmap(timerIcon, 94, 94, null);
+            canvas.drawBitmap(appIcon, new
+
+                    Matrix(), null);
+//            canvas.drawBitmap(timerIcon, 94, 94, null);
+            canvas.drawBitmap(thumbBitmap, appIcon.getWidth()-60, appIcon.getHeight()-83, null);
+
             return bmOverlay;
         } else
             return appIcon;

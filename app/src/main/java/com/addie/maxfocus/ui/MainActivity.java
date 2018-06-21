@@ -42,10 +42,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.plant(new Timber.DebugTree());
+//          Old library
+//        launchIntroActivityIfFirstLaunch();
+
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-        Timber.plant(new Timber.DebugTree());
+
 
         mAppsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +74,44 @@ public class MainActivity extends AppCompatActivity {
         if (!preferences.getBoolean(getString(R.string.usage_never_ask_again_pref_key), false)) {
             showRequestUsageAccessDialog();
         }
+
+    }
+
+    private void launchIntroActivityIfFirstLaunch() {
+
+        //  Declare a new thread to do a preference check
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //  Initialize SharedPreferences
+                SharedPreferences prefs = PreferenceManager
+                        .getDefaultSharedPreferences(getBaseContext());
+
+                //  Create a new boolean and preference and set it to true
+                boolean isFirstStart = prefs.getBoolean(getString(R.string.is_first_start), true);
+
+                //  If the activity has never started before...
+                if (isFirstStart) {
+
+                    //  Launch app intro
+                    final Intent i = new Intent(MainActivity.this, IntroActivityNew.class);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            startActivity(i);
+                        }
+                    });
+
+                    //  Edit preference to make it false because we don't want this to run again
+//                    TODO: Comment this out. Done for debugging
+//                    prefs.edit().putBoolean(getString(R.string.is_first_start),false).apply();
+                }
+            }
+        });
+
+        // Start the thread
+        t.start();
 
     }
 
@@ -149,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startAppsActivity() {
         finish();
-        Timber.e("AppsActivity:%s",AppsActivity.class.getSimpleName());
+        Timber.e("AppsActivity:%s", AppsActivity.class.getSimpleName());
         startActivity(new Intent(MainActivity.this, AppsActivity.class));
     }
 
@@ -158,5 +200,17 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //  Create a new boolean and preference and set it to true
+        boolean isFirstStart = preferences.getBoolean(getString(R.string.is_first_start), true);
+
+        //  If the activity has never started before...
+        if (!isFirstStart) {
+            finish();
+        }
     }
 }
