@@ -42,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//          Old library
-//        launchIntroActivityIfFirstLaunch();
 
         setContentView(R.layout.activity_main);
 
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // TODO Remove this reference for launching intro activity
     private void launchIntroActivityIfFirstLaunch() {
 
         //  Declare a new thread to do a preference check
@@ -93,14 +92,14 @@ public class MainActivity extends AppCompatActivity {
                 if (isFirstStart) {
 
                     //  Launch app intro
-                    final Intent i = new Intent(MainActivity.this, IntroActivityNew.class);
+//                    final Intent i = new Intent(MainActivity.this, IntroActivityNew.class);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            startActivity(i);
-                        }
-                    });
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            startActivity(i);
+//                        }
+//                    });
 
                     //  Edit preference to make it false because we don't want this to run again
 //                    TODO: Comment this out. Done for debugging

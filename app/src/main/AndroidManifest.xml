@@ -83,10 +83,6 @@
             android:name=".ui.ForegroundServiceActivity"
             android:noHistory="true" />
         <activity
-            android:name=".ui.IntroActivityOld"
-            android:theme="@style/Theme.Intro" />
-        <activity android:name=".ui.IntroActivityNew" />
-        <activity
             android:name=".ui.IntroActivity3"
             android:theme="@style/AppFullScreenTheme" />
         <activity
