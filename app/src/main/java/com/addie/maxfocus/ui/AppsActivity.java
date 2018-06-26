@@ -12,18 +12,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -45,6 +41,7 @@ import com.addie.maxfocus.R;
 import com.addie.maxfocus.adapter.AppAdapter;
 import com.addie.maxfocus.data.AppColumns;
 import com.addie.maxfocus.extra.RecyclerViewDisabler;
+import com.addie.maxfocus.extra.Utils;
 import com.addie.maxfocus.model.App;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -98,8 +95,41 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
         setContentView(R.layout.activity_apps);
         ButterKnife.bind(this);
 
-        // Start Loading Apps
-        loadAppsFromManagerOrDb();
+        ArrayList<App> mAppsList = getIntent().getParcelableArrayListExtra(APPS_LIST_KEY);
+        if (mAppsList != null) {
+            if (mAppsList.isEmpty()) {
+
+                // Start Loading Apps
+                loadAppsFromManagerOrDb();
+            } else {
+
+                initViews(mAppsList);
+            }
+        } else {
+            loadAppsFromManagerOrDb();
+        }
+    }
+
+    private void initViews(ArrayList<App> mAppsList) {
+        showRecyclerView(true);
+
+        mAdapter = new AppAdapter(AppsActivity.this, AppsActivity.this);
+        mAppsRecyclerView.setAdapter(mAdapter);
+
+        mAdapter.setListData(mAppsList);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(AppsActivity.this);
+        if (!preferences.contains(getString(R.string.pref_display_showcase_apps))) {
+
+            mRecyclerViewDisabler = new RecyclerViewDisabler();
+
+            mAppsRecyclerView.addOnItemTouchListener(mRecyclerViewDisabler);
+            displayShowcaseView();
+        }
+
+        mAppsRecyclerView.setLayoutManager(new GridLayoutManager(AppsActivity.this, 4, LinearLayoutManager.VERTICAL, false));
+        mAppsRecyclerView.setHasFixedSize(true);
+
     }
 
     private void loadAppsFromManagerOrDb() {
@@ -318,22 +348,6 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
-    private static int getTextColor(int color) {
-
-        int redColorValue = (color >> 16) & 0xFF;
-        int greenColorValue = (color >> 8) & 0xFF;
-        int blueColorValue = (color) & 0xFF;
-
-        if ((redColorValue * 0.299
-                + greenColorValue * 0.587
-                + blueColorValue * 0.114) > 186)
-            //black
-            return 0;
-        else
-            //white
-            return 16777215;
-
-    }
 
     public static class AppLoader extends AsyncTaskLoader<ArrayList> {
 
@@ -368,7 +382,7 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
                     Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
                     app.setmAppColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
-                    app.setmTextColor(getTextColor(app.getmAppColor()));
+                    app.setmTextColor(Utils.getTextColor(app.getmAppColor()));
                     Timber.e("APP:" + app.getmAppColor() + " TEXT " + app.getmTextColor());
 
                     mAppsList.add(app);
@@ -448,9 +462,9 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
             Bitmap timerIcon;
             if (mSelectedApp.getmTextColor() == 0) {
 
-                timerIcon = getBitmapFromVectorDrawable(this, R.drawable.sandclock_icon_black);
+                timerIcon = Utils.getBitmapFromVectorDrawable(this, R.drawable.sandclock_icon_black);
             } else {
-                timerIcon = getBitmapFromVectorDrawable(this, R.drawable.sandclock_icon_white);
+                timerIcon = Utils.getBitmapFromVectorDrawable(this, R.drawable.sandclock_icon_white);
             }
             // FIXME:Might have compatibility issues
             Bitmap thumbBitmap = ThumbnailUtils.extractThumbnail(timerIcon, 60, 83);
@@ -461,27 +475,13 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
                     Matrix(), null);
 //            canvas.drawBitmap(timerIcon, 94, 94, null);
-            canvas.drawBitmap(thumbBitmap, appIcon.getWidth()-60, appIcon.getHeight()-83, null);
+            canvas.drawBitmap(thumbBitmap, appIcon.getWidth() - 60, appIcon.getHeight() - 83, null);
 
             return bmOverlay;
         } else
             return appIcon;
     }
 
-    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
-        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            drawable = (DrawableCompat.wrap(drawable)).mutate();
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
 
     @Override
     public void onBackPressed() {

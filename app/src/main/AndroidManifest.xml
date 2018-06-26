@@ -85,12 +85,12 @@
         <activity
             android:name=".ui.IntroActivityOld"
             android:theme="@style/Theme.Intro" />
-        <activity android:name=".ui.IntroActivityNew"></activity>
+        <activity android:name=".ui.IntroActivityNew" />
         <activity
             android:name=".ui.IntroActivity3"
-            android:theme="@style/AppFullScreenTheme">
-        </activity>
-        <activity android:name=".ui.SplashActivity"
+            android:theme="@style/AppFullScreenTheme" />
+        <activity
+            android:name=".ui.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -98,6 +98,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".service.SaveAppsInDbService"
+            android:exported="false" />
     </application>
 
 </manifest>
