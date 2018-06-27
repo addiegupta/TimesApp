@@ -41,7 +41,7 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
 
 
 //TODO:Refactor and check everything carefully
-//TODO Maybe merge this and the AppsActivity
+//TODO Maybe merge this and the MainActivity
 
 /**
  * The configuration screen for the {@link AppIconWidget AppIconWidget} AppWidget.
@@ -306,7 +306,7 @@ public class AppIconWidgetConfigureActivity extends AppCompatActivity implements
 
         setContentView(R.layout.app_icon_widget_configure);
 
-        //Code from AppsActivity
+        //Code from MainActivity
         ButterKnife.bind(this);
 
         // Start Loading Apps

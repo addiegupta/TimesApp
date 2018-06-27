@@ -133,6 +133,7 @@ public class AppTimeDialogService extends Service {
         dialogIntent.putExtra(APP_COLOR_KEY, mAppColor);
         dialogIntent.putExtra(TEXT_COLOR_KEY, mTextColor);
         dialogIntent.putExtra(CALLING_CLASS_KEY,getClass().getSimpleName());
+        dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         // Duration equal to 1 minute
         if (appTime==60000)

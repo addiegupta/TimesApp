@@ -20,13 +20,11 @@
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
         <activity
-            android:name=".ui.AppsActivity"
-            android:launchMode="singleTask"
-            android:noHistory="true" />
+            android:name=".ui.MainActivity"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".ui.DialogActivity"
             android:autoRemoveFromRecents="true"
-            android:noHistory="true"
             android:theme="@style/AnimatedDialog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +33,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.MainActivity" />
 
         <provider
             android:name=".data.generated.AppProvider"
@@ -55,8 +52,7 @@
         </receiver>
 
         <activity
-            android:name=".widget.AppIconWidgetConfigureActivity"
-            android:noHistory="true">
+            android:name=".widget.AppIconWidgetConfigureActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
@@ -68,7 +64,6 @@
 
         <activity
             android:name=".ui.SettingsActivity"
-            android:noHistory="true"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -80,10 +75,9 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.ForegroundServiceActivity"
-            android:noHistory="true" />
+            android:name=".ui.ForegroundServiceActivity" />
         <activity
-            android:name=".ui.IntroActivity3"
+            android:name=".ui.IntroActivity"
             android:theme="@style/AppFullScreenTheme" />
         <activity
             android:name=".ui.SplashActivity"

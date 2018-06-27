@@ -1,6 +1,8 @@
 package com.addie.maxfocus.ui;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AppOpsManager;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ContentValues;
@@ -47,6 +49,8 @@ public class SplashActivity extends Activity {
 
     private boolean mTutorialSeen;
 
+    private SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,9 +58,22 @@ public class SplashActivity extends Activity {
 
         Timber.plant(new Timber.DebugTree());
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+
+
+
+        }
+        // Check if permission has been granted manually
+        if (!preferences.getBoolean(getString(R.string.usage_permission_pref), false)) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                    && hasUsageStatsPermission(this)) {
+                preferences.edit().putBoolean(getString(R.string.usage_permission_pref), true).apply();
+
+            }
         }
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -80,7 +97,7 @@ public class SplashActivity extends Activity {
                     //Show apps
                     // if apps get loaded before,display apps
                     //show tutorial
-                    startActivity(new Intent(SplashActivity.this, IntroActivity3.class));
+                    startActivity(new Intent(SplashActivity.this, IntroActivity.class));
                     finish();
                 }
 
@@ -90,6 +107,17 @@ public class SplashActivity extends Activity {
 
         }
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    boolean hasUsageStatsPermission(Context context) {
+        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
+                android.os.Process.myUid(), context.getPackageName());
+        boolean granted = mode == AppOpsManager.MODE_ALLOWED;
+        preferences.edit().putBoolean(getString(R.string.usage_permission_pref), granted).apply();
+
+        return granted;
     }
 
     private void loadAppsFromManagerOrDb() {
@@ -122,8 +150,8 @@ public class SplashActivity extends Activity {
         public void onLoadFinished(@NonNull Loader<ArrayList> loader, ArrayList data) {
             Timber.d("onLoadFinished");
 
-            Intent intent =  new Intent(SplashActivity.this,AppsActivity.class);
-            intent.putExtra(APPS_LIST_KEY,data);
+            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            intent.putExtra(APPS_LIST_KEY, data);
 
             startActivity(intent);
             finish();

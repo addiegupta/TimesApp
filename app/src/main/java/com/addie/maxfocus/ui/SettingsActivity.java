@@ -36,10 +36,4 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-        startActivity(new Intent(SettingsActivity.this,MainActivity.class));
-    }
 }
