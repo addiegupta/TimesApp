@@ -64,8 +64,15 @@ public class DialogActivity extends Activity {
     private PrefTimeDialog mPrefDialog;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Timber.d("DA on Resume");
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.d("DA on Create");
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);

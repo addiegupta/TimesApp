@@ -12,17 +12,22 @@ import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.github.paolorotolo.appintro.model.SliderPage;
 
 public class IntroActivity extends AppIntro {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         SliderPage page1 = new SliderPage();
         page1.setTitle("Title 1");
         page1.setDescription("Description 1");
         page1.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
-        page1.setImageDrawable(R.drawable.thumb);
+        page1.setImageDrawable(R.drawable.app_icon_large);
+        addSlide(AppIntroFragment.newInstance(page1));
 
         SliderPage page2 = new SliderPage();
         page2.setTitle("Title 2");
@@ -37,26 +42,23 @@ public class IntroActivity extends AppIntro {
         page3.setImageDrawable(R.drawable.stop_dialog_graphic);
 
         SliderPage page4 = new SliderPage();
-        page3.setTitle("All Set!");
-        page3.setDescription("Press Done to begin");
-        page3.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
-        page3.setImageDrawable(R.drawable.stop_dialog_graphic);
+        page4.setTitle("All Set!");
+        page4.setDescription("Press Done to begin");
+        page4.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
 
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest
-        addSlide(AppIntroFragment.newInstance(page1));
         addSlide(AppIntroFragment.newInstance(page2));
         addSlide(AppIntroFragment.newInstance(page3));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             addSlide(SampleSlide.newInstance(R.layout.fragment_sample_slide));
         }
+        addSlide(AppIntroFragment.newInstance(page4));
 
         // OPTIONAL METHODS
-
         // Override bar/separator color
 //        setBarColor(Color.parseColor("#3F51B5"));
 //        setSeparatorColor(Color.parseColor("#2196F3"));
-
         // Hide Skip/Done button
         showSkipButton(true);
         setProgressButtonEnabled(true);
@@ -83,7 +85,7 @@ public class IntroActivity extends AppIntro {
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
         //TODO : Change to last slide
-        getPager().setCurrentItem(3);
+        getPager().setCurrentItem(4);
 
     }
 

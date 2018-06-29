@@ -185,7 +185,7 @@ public class AppTimeDialogService extends Service {
 
         String title = mAppName + " " + getString(R.string.app_closed_notification_title);
         builder.setContentTitle(title)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.mipmap.launcher)
                 .setContentIntent(PendingIntent.getActivity(AppTimeDialogService.this,
                         0, new Intent(), 0))
                 .setLargeIcon(mAppIcon)
@@ -225,7 +225,7 @@ public class AppTimeDialogService extends Service {
                 .setSubText(getString(R.string.tap_for_more_info_foreground_notif))
                 .addAction(actionBuilder.build())
                 .setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.mipmap.launcher)
                 .setContentIntent(pendingIntent).build();
 
         startForeground(FOREGROUND_NOTIF_ID, notification);

@@ -25,6 +25,7 @@
         <activity
             android:name=".ui.DialogActivity"
             android:autoRemoveFromRecents="true"
+            android:noHistory="true"
             android:theme="@style/AnimatedDialog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,7 +76,8 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.ForegroundServiceActivity" />
+            android:name=".ui.ForegroundServiceActivity"
+            android:noHistory="true"/>
         <activity
             android:name=".ui.IntroActivity"
             android:theme="@style/AppFullScreenTheme" />

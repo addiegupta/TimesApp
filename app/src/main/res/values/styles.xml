@@ -59,14 +59,16 @@
     <style name="AppFullScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@drawable/drawable_color_background</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowContentOverlay">@color/colorPrimary</item>
     </style>
-    <!-- Base application theme. -->
-    <style name="SplashTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
+    <style name="SplashTheme" parent="@android:style/Theme.NoTitleBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
     </style>
 
 

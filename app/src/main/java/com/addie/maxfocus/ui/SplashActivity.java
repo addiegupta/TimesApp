@@ -54,6 +54,8 @@ public class SplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        overridePendingTransition(R.anim.fadein, R.anim.explode);
         setContentView(R.layout.activity_splash);
 
         Timber.plant(new Timber.DebugTree());
@@ -63,8 +65,6 @@ public class SplashActivity extends Activity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-
-
 
         }
         // Check if permission has been granted manually
@@ -91,14 +91,23 @@ public class SplashActivity extends Activity {
                 cursor.close();
             }
 
+            //TODO Only use this on first launch
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     //Show apps
                     // if apps get loaded before,display apps
                     //show tutorial
-                    startActivity(new Intent(SplashActivity.this, IntroActivity.class));
-                    finish();
+
+                    // Check if we're running on Android 5.0 or higher
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        // Apply activity transition
+                    } else {
+                        // Swap without transition
+                    }
+                    Intent intent = new Intent(SplashActivity.this,IntroActivity.class);
+//                    intent.setFlags(FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
                 }
 
 

@@ -62,6 +62,7 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
  */
 //TODO Layout to display past usage of apps with/without usage of timers
 //TODO: Correct everything for rotation
+    //FIXME App wont launch after clicking shortcut
 public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler, OnShowcaseEventListener {
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
