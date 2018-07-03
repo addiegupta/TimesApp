@@ -42,7 +42,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 setPreferenceSummary(p, value);
             }
             if (Objects.equals(p.getKey(), getString(R.string.pref_app_time_key))){
-                String value = sharedPreferences.getString(getString(R.string.pref_app_time_key),"");
+                String value = sharedPreferences.getString(getString(R.string.pref_app_time_key),"10");
                 setPreferenceSummary(p,value);
             }
         }

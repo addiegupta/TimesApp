@@ -69,6 +69,7 @@ public class DialogActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
@@ -77,12 +78,12 @@ public class DialogActivity extends Activity {
         mTextColor = getIntent().getIntExtra(TEXT_COLOR_KEY, getResources().getColor(R.color.white));
         mDisplay1Min = getIntent().getBooleanExtra(DISPLAY_1_MIN, true);
         mCallingClass = getIntent().getStringExtra(CALLING_CLASS_KEY);
-        if (mCallingClass==null){
-            mCallingClass="";
+        if (mCallingClass == null) {
+            mCallingClass = "";
         }
         fetchAppData();
 
-        Timber.d("Calling activity %s",getCallingActivity());
+        Timber.d("Calling activity %s", getCallingActivity());
 
         switch (mCallingClass) {
             case "AppTimeDialogService":
@@ -100,10 +101,10 @@ public class DialogActivity extends Activity {
 
     private void displayPrefTimeDialog() {
         mPrefDialog = new PrefTimeDialog(this);
+        mPrefDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+
 
         mPrefDialog.show();
-
-
     }
 
     /**
@@ -111,12 +112,14 @@ public class DialogActivity extends Activity {
      */
     private void displayTimeDialog() {
 
-        mTimeDialog = new TimeDialog(this, mPackageName, mAppColor, mTextColor);
-        mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
+
+        mTimeDialog = new TimeDialog(DialogActivity.this, mPackageName, mAppColor, mTextColor);
+//        mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
+        mTimeDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+
         mTimeDialog.show();
 
-        Timber.e("app color %s",mAppColor);
-        Log.e("TAG",(String.format("#%06X", (0xFFFFFF & mAppColor))));
+        Log.e("TAG", (String.format("#%06X", (0xFFFFFF & mAppColor))));
 
 
         mTimeDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
@@ -136,10 +139,10 @@ public class DialogActivity extends Activity {
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         boolean isPhoneLocked = myKM.inKeyguardRestrictedInputMode();
 
-        PowerManager powerManager = (PowerManager)getSystemService(Context.POWER_SERVICE);
-        boolean isSceenAwake = (Build.VERSION.SDK_INT < 20? powerManager.isScreenOn():powerManager.isInteractive());
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        boolean isSceenAwake = (Build.VERSION.SDK_INT < 20 ? powerManager.isScreenOn() : powerManager.isInteractive());
 
-        if (!isPhoneLocked && !isSceenAwake){
+        if (!isPhoneLocked && !isSceenAwake) {
 
             // Prevents dialog activity from leaking dialog window when activity is pause
             switch (mCallingClass) {
@@ -176,7 +179,7 @@ public class DialogActivity extends Activity {
 
         String colorHex = String.format("#%06X", (0xFFFFFF & mTextColor));
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnimatedDialog);
-        String title = "Stop using " + mAppName;
+        String title = mAppName;
         builder.setTitle(Html.fromHtml("<font color='" + colorHex + "'>" + title + "</font>"))
                 .setCancelable(false)
                 .setPositiveButton(Html.fromHtml("<font color='" + colorHex + "'>Stop</font>")

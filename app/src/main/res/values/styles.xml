@@ -27,8 +27,8 @@
     </style>
 
     <style name="CustomShowcaseTheme2" parent="ShowcaseView">
-        <item name="sv_backgroundColor">#e51249d9</item>
-        <item name="sv_showcaseColor">#25467A</item>
+        <item name="sv_backgroundColor">@color/colorPrimaryDark</item>
+        <!--<item name="sv_showcaseColor">@color/colorPrimary</item>-->
         <item name="sv_buttonText">Close</item>
         <item name="sv_titleTextAppearance">@style/CustomTitle2</item>
         <item name="sv_detailTextAppearance">@style/CustomText2</item>
@@ -52,8 +52,8 @@
     </style>
 
     <style name="DialogAnimation">
-        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
-        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+        <item name="android:windowEnterAnimation">@anim/scale_in</item>
+        <item name="android:windowExitAnimation">@anim/scale_out</item>
     </style>
 
     <style name="AppFullScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
