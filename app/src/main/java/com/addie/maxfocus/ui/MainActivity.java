@@ -29,12 +29,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.addie.maxfocus.R;
@@ -43,9 +40,8 @@ import com.addie.maxfocus.data.AppColumns;
 import com.addie.maxfocus.extra.RecyclerViewDisabler;
 import com.addie.maxfocus.extra.Utils;
 import com.addie.maxfocus.model.App;
-import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,8 +58,8 @@ import static com.addie.maxfocus.data.AppProvider.Apps.URI_APPS;
  */
 //TODO Layout to display past usage of apps with/without usage of timers
 //TODO: Correct everything for rotation
-    //FIXME App wont launch after clicking shortcut
-public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler, OnShowcaseEventListener {
+//FIXME App wont launch after clicking shortcut
+public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler {
 
     private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final int APPS_LOADER_MANAGER_ID = 131;
@@ -74,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private static final String CALLING_CLASS_KEY = "calling_class";
 
 
-    private ShowcaseView mShowcaseView;
 
     @BindView(R.id.rv_apps)
     RecyclerView mAppsRecyclerView;
@@ -98,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         setContentView(R.layout.activity_apps);
         ButterKnife.bind(this);
 
-//        ArrayList<App> mAppsList = getIntent().getParcelableArrayListExtra(APPS_LIST_KEY);
         if (mAppsList != null) {
             if (mAppsList.isEmpty()) {
 
@@ -122,12 +116,12 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         mAdapter.setListData(mAppsList);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        if (!preferences.contains(getString(R.string.pref_display_showcase_apps))) {
+        if (!preferences.contains(getString(R.string.pref_display_tap_target_apps))) {
 
             mRecyclerViewDisabler = new RecyclerViewDisabler();
 
             mAppsRecyclerView.addOnItemTouchListener(mRecyclerViewDisabler);
-            displayShowcaseView();
+            displayTapTargetView();
         }
 
         mAppsRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 4, LinearLayoutManager.VERTICAL, false));
@@ -269,12 +263,12 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
             mAdapter.setListData(data);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-            if (!preferences.contains(getString(R.string.pref_display_showcase_apps))) {
+            if (!preferences.contains(getString(R.string.pref_display_tap_target_apps))) {
 
                 mRecyclerViewDisabler = new RecyclerViewDisabler();
 
                 mAppsRecyclerView.addOnItemTouchListener(mRecyclerViewDisabler);
-                displayShowcaseView();
+                displayTapTargetView();
             }
 
             mAppsRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 4, LinearLayoutManager.VERTICAL, false));
@@ -290,29 +284,11 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         }
     };
 
-    @Override
-    public void onShowcaseViewHide(ShowcaseView showcaseView) {
-    }
-
-    @Override
-    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
-
-    }
-
-    @Override
-    public void onShowcaseViewShow(ShowcaseView showcaseView) {
-
-    }
-
-    @Override
-    public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
-
-    }
 
     /**
-     * Displays the showcaseView tutorial on using the app icons
+     * Displays the tapTargetView tutorial on using the app icons
      */
-    private void displayShowcaseView() {
+    private void displayTapTargetView() {
 
 
         new Handler().postDelayed(new Runnable() {
@@ -320,28 +296,35 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
             public void run() {
 
 
-                // TODO Add enter animation for the showcaseView
-                RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                lps.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
-                lps.setMargins(margin, margin, margin, margin);
+                new TapTargetSequence(MainActivity.this)
+                        .targets(
+                                TapTarget.forView(mAppsRecyclerView.getChildAt(4).findViewById(R.id.iv_app_list_item_icon), getString(R.string.tap_target_apps_title), getString(R.string.tap_target_apps_message))
+                                .cancelable(false).transparentTarget(true).targetRadius(60),
 
+                                TapTarget.forView(findViewById(R.id.menu_apps_action_refresh_list), "Refresh", "Reload the list of apps").cancelable(false),
+                                TapTarget.forView(findViewById(R.id.menu_apps_action_settings), "Settings", "Manage preferences")
+                                        .cancelable(false)
+                        ).listener(new TapTargetSequence.Listener() {
+                    // This listener will tell us when interesting(tm) events happen in regards
+                    // to the sequence
+                    @Override
+                    public void onSequenceFinish() {
+                        // Yay
+                        Toast.makeText(MainActivity.this, "Sequence finished", Toast.LENGTH_SHORT).show();
+                    }
 
-                ViewTarget target = new ViewTarget(mAppsRecyclerView.getChildAt(4).findViewById(R.id.iv_app_list_item_icon));
-                mShowcaseView = new ShowcaseView.Builder(MainActivity.this)
-                        .withMaterialShowcase()
-                        .setTarget(target)
-                        .setContentTitle(R.string.showcase_apps_title)
-                        .setContentText(R.string.showcase_apps_message)
-                        .setStyle(R.style.CustomShowcaseTheme2)
-                        .setShowcaseEventListener(MainActivity.this)
-                        .replaceEndButton(R.layout.view_custom_button)
-                        .build();
-                mShowcaseView.setButtonPosition(lps);
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                        Toast.makeText(MainActivity.this, "Sequence step", Toast.LENGTH_SHORT).show();
 
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                preferences.edit().putBoolean(getString(R.string.pref_display_showcase_apps), true).apply();
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        // Boo
+                        Toast.makeText(MainActivity.this, "Sequence canceled", Toast.LENGTH_SHORT).show();
+                    }
+                }).start();
 
                 mAppsRecyclerView.removeOnItemTouchListener(mRecyclerViewDisabler);
 
@@ -486,6 +469,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         } else
             return appIcon;
     }
+
     // TODO Remove this reference for launching intro activity
     private void launchIntroActivityIfFirstLaunch() {
 

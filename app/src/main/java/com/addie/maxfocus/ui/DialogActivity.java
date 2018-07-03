@@ -102,6 +102,7 @@ public class DialogActivity extends Activity {
     private void displayPrefTimeDialog() {
         mPrefDialog = new PrefTimeDialog(this);
         mPrefDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        mPrefDialog.setCancelable(false);
 
 
         mPrefDialog.show();
