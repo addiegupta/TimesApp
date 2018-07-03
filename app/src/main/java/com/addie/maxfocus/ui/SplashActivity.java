@@ -106,7 +106,6 @@ public class SplashActivity extends Activity {
                         // Swap without transition
                     }
                     Intent intent = new Intent(SplashActivity.this,IntroActivity.class);
-//                    intent.setFlags(FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(intent);
                 }
 
@@ -159,11 +158,11 @@ public class SplashActivity extends Activity {
         public void onLoadFinished(@NonNull Loader<ArrayList> loader, ArrayList data) {
             Timber.d("onLoadFinished");
 
+            MainActivity.mAppsList = data;
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-            intent.putExtra(APPS_LIST_KEY, data);
 
             startActivity(intent);
-            finish();
+//            finish();
 
         }
 
@@ -173,6 +172,11 @@ public class SplashActivity extends Activity {
         }
     };
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
 
     public static class AppLoader extends AsyncTaskLoader<ArrayList> {
 

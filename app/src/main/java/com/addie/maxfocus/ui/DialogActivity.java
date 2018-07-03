@@ -2,6 +2,7 @@ package com.addie.maxfocus.ui;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
@@ -63,16 +65,10 @@ public class DialogActivity extends Activity {
     private AlertDialog mStopAppDialog;
     private PrefTimeDialog mPrefDialog;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Timber.d("DA on Resume");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Timber.d("DA on Create");
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
@@ -137,29 +133,37 @@ public class DialogActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        boolean isPhoneLocked = myKM.inKeyguardRestrictedInputMode();
 
-        // Prevents dialog activity from leaking dialog window when activity is pause
-        switch (mCallingClass) {
-            case "AppTimeDialogService":
-                mStopAppDialog.dismiss();
-                break;
-            case "SettingsFragment":
-                mPrefDialog.dismiss();
+        PowerManager powerManager = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        boolean isSceenAwake = (Build.VERSION.SDK_INT < 20? powerManager.isScreenOn():powerManager.isInteractive());
 
-                break;
-            default:
-                mTimeDialog.dismiss();
-                break;
-        }
+        if (!isPhoneLocked && !isSceenAwake){
+
+            // Prevents dialog activity from leaking dialog window when activity is pause
+            switch (mCallingClass) {
+                case "AppTimeDialogService":
+                    mStopAppDialog.dismiss();
+                    break;
+                case "SettingsFragment":
+                    mPrefDialog.dismiss();
+
+                    break;
+                default:
+                    mTimeDialog.dismiss();
+                    break;
+            }
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-            if (am != null) {
-                List<ActivityManager.AppTask> tasks = am.getAppTasks();
-                if (tasks != null && tasks.size() > 0) {
-                    tasks.get(0).setExcludeFromRecents(true);
+                ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                if (am != null) {
+                    List<ActivityManager.AppTask> tasks = am.getAppTasks();
+                    if (tasks != null && tasks.size() > 0) {
+                        tasks.get(0).setExcludeFromRecents(true);
+                    }
                 }
             }
         }

@@ -1,5 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY appname "TimesApp">
+    ]>
+
 <resources>
-    <string name="app_name">MaxFocus</string>
+    <string name="app_name">&appname;</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
@@ -13,9 +18,9 @@
     <string name="showcase_apps_message">Long press an app icon to launch app timer</string>
     <string name="pref_display_showcase_apps">display_showcase_apps</string>
     <string name="usage_permission_title">Usage Permission Access</string>
-    <string name="usage_permission_message">This app requires access to your usage statistics for a better experience. Your data is safe and none of it is saved.</string>
+    <string name="usage_permission_message">&appname; requires access to your usage statistics for a better experience. Your data is safe and none of it is saved.</string>
     <string name="grant_permission">Grant Permission</string>
-    <string name="usage_permission_instruction">Select MaxFocus in the list, allow usage tracking and then return to the app</string>
+    <string name="usage_permission_instruction">Select &appname; in the list and allow usage tracking</string>
     <string name="usage_permission_pref">usage_permission_pref</string>
     <string name="never_ask_again">Never ask again</string>
     <string name="usage_never_ask_again_pref_key">usage_never_ask_again</string>
@@ -26,10 +31,10 @@
     <string name="TARGET_APP_TITLE_KEY">target_app_title</string>
     <string name="no_limit">No Limit</string>
     <!--TODO Change to new app name-->
-    <string name="app_running_service_notif_text">MaxFocus is keeping track of time in the background</string>
+    <string name="app_running_service_notif_text">&appname; is keeping track of time in the background</string>
     <string name="tap_for_more_info_foreground_notif">Tap for more info</string>
     <string name="why_see_notification">Why do I need to see this notification?</string>
-    <string name="why_see_notification_ans">As a security feature of the Android platform, background tasks cannot be run efficiently without showing a notification. The background task is keeping track of the time to keep your phone usage time in control.</string>
+    <string name="why_see_notification_ans">As a security feature of the Android platform, background tasks cannot be run efficiently without showing a notification. This notification is required to keep track of the time and keep your phone usage time in control.</string>
     <string name="pref_shortcut_icon_key">pref_shortcut_icon</string>
     <string name="pref_shortcut_icon">Shortcut Timer Icon</string>
     <string name="pref_shortcut_icon_hint">Add timer icon to the application icon on home screen</string>

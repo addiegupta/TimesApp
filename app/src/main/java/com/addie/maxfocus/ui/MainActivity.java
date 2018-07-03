@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private static final String TARGET_PACKAGE_KEY = "target_package";
 
     private AppAdapter mAdapter;
+    public static ArrayList<App> mAppsList;
     private App mSelectedApp;
     private static PackageManager mPackageManager;
     private RecyclerView.OnItemTouchListener mRecyclerViewDisabler;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         setContentView(R.layout.activity_apps);
         ButterKnife.bind(this);
 
-        ArrayList<App> mAppsList = getIntent().getParcelableArrayListExtra(APPS_LIST_KEY);
+//        ArrayList<App> mAppsList = getIntent().getParcelableArrayListExtra(APPS_LIST_KEY);
         if (mAppsList != null) {
             if (mAppsList.isEmpty()) {
 
@@ -105,14 +106,14 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                 loadAppsFromManagerOrDb();
             } else {
 
-                initViews(mAppsList);
+                initViews();
             }
         } else {
             loadAppsFromManagerOrDb();
         }
     }
 
-    private void initViews(ArrayList<App> mAppsList) {
+    private void initViews() {
         showRecyclerView(true);
 
         mAdapter = new AppAdapter(MainActivity.this, MainActivity.this);

@@ -26,7 +26,8 @@
             android:name=".ui.DialogActivity"
             android:autoRemoveFromRecents="true"
             android:noHistory="true"
-            android:theme="@style/AnimatedDialog">
+            android:theme="@style/AnimatedDialog"
+            tools:targetApi="lollipop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="com.addie.maxfocus.ui.SettingsActivity" />
@@ -83,6 +84,7 @@
             android:theme="@style/AppFullScreenTheme" />
         <activity
             android:name=".ui.SplashActivity"
+            android:noHistory="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

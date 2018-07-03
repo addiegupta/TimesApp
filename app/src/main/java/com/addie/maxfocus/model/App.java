@@ -1,5 +1,7 @@
 package com.addie.maxfocus.model;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -90,7 +92,9 @@ public App(){}
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mTitle);
         dest.writeString(this.mPackage);
-        dest.writeParcelable((Parcelable)this.mIcon, flags);
+
+        Bitmap bitmap = (Bitmap)((BitmapDrawable)this.mIcon).getBitmap();
+        dest.writeParcelable(bitmap,flags);
         dest.writeInt(this.mTextColor);
         dest.writeInt(this.mAppColor);
     }

@@ -23,6 +23,7 @@
         android:layout_gravity="center"
         android:layout_weight="2"
         android:textSize="20sp"
+        android:textAlignment="center"
         android:padding="32dp"
         android:textColor="@color/white"
         android:text="@string/usage_permission_message"/>
@@ -32,23 +33,45 @@
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textColor="@color/colorAccent"
         android:textAllCaps="false"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
         android:text="@string/grant_permission" />
-    <CheckBox
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="76dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:clickable="false"
+        android:layout_weight="1"
+        android:padding="32dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@string/permission_granted"
         android:textSize="16sp"
-        android:textColor="@color/white"
-        android:checked="false"
-        android:id="@+id/cb_permssion_granted"
-        android:text="@string/permission_granted"
-        />
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:id="@+id/iv_permission_slide_check_state"
+            android:src="@drawable/ic_clear_red_24dp"/>
+    </LinearLayout>
+    <!--<CheckBox-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_marginBottom="76dp"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:clickable="false"-->
+        <!--android:textSize="16sp"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:checked="false"-->
+        <!--android:id="@+id/cb_permssion_granted"-->
+        <!--android:text="@string/permission_granted"-->
+        <!--/>-->
 </LinearLayout>

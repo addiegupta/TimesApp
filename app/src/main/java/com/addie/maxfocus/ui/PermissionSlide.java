@@ -18,25 +18,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.addie.maxfocus.R;
 
-public class SampleSlide extends Fragment {
+public class PermissionSlide extends Fragment {
 
     private static final String ARG_LAYOUT_RES_ID = "layoutResId";
     private int layoutResId;
     private SharedPreferences preferences;
     private Context mContext;
 
-    public static SampleSlide newInstance(int layoutResId) {
-        SampleSlide sampleSlide = new SampleSlide();
+    public static PermissionSlide newInstance(int layoutResId) {
+        PermissionSlide permissionSlide = new PermissionSlide();
 
         Bundle args = new Bundle();
         args.putInt(ARG_LAYOUT_RES_ID, layoutResId);
-        sampleSlide.setArguments(args);
+        permissionSlide.setArguments(args);
 
-        return sampleSlide;
+        return permissionSlide;
     }
 
     @Override
@@ -72,15 +73,19 @@ public class SampleSlide extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        CheckBox mGrantedCheckbox = (CheckBox) getView().findViewById(R.id.cb_permssion_granted);
+//        CheckBox mGrantedCheckbox = (CheckBox) getView().findViewById(R.id.cb_permssion_granted);
+        ImageView mCheckImageView =(ImageView) getView().findViewById(R.id.iv_permission_slide_check_state);
 
         if (hasUsageStatsPermission(mContext)){
-            mGrantedCheckbox.setEnabled(true);
-            mGrantedCheckbox.setChecked(true);
+                mCheckImageView.setImageResource(R.drawable.ic_check_green_24dp);
+//            mGrantedCheckbox.setEnabled(true);
+//            mGrantedCheckbox.setChecked(true);
         }
         else{
-            mGrantedCheckbox.setEnabled(false);
-            mGrantedCheckbox.setChecked(false);
+
+            mCheckImageView.setImageResource(R.drawable.ic_clear_red_24dp);
+//            mGrantedCheckbox.setEnabled(false);
+//            mGrantedCheckbox.setChecked(false);
         }
 
     }

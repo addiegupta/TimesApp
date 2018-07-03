@@ -1,8 +1,10 @@
 package com.addie.maxfocus.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
@@ -15,7 +17,6 @@ public class IntroActivity extends AppIntro {
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -23,27 +24,28 @@ public class IntroActivity extends AppIntro {
         super.onCreate(savedInstanceState);
 
         SliderPage page1 = new SliderPage();
-        page1.setTitle("Title 1");
-        page1.setDescription("Description 1");
+        page1.setTitle(getString(R.string.app_name));
+        page1.setDescription("Control your phone usage");
         page1.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
         page1.setImageDrawable(R.drawable.app_icon_large);
         addSlide(AppIntroFragment.newInstance(page1));
 
         SliderPage page2 = new SliderPage();
-        page2.setTitle("Title 2");
-        page2.setDescription("Description 2");
+        page2.setTitle("Set a timer");
+        page2.setDescription("Before starting an app,specify the time you want to spend on it");
         page2.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
-        page2.setImageDrawable(R.drawable.time_dialog_graphic);
+        page2.setImageDrawable(R.drawable.time_dialog_phone);
 
         SliderPage page3 = new SliderPage();
-        page3.setTitle("Title 3");
-        page3.setDescription("Description 3");
+        page3.setTitle("Get notified");
+        page3.setDescription("A dialog will pop up when the specified time has passed");
         page3.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
-        page3.setImageDrawable(R.drawable.stop_dialog_graphic);
+        page3.setImageDrawable(R.drawable.stop_dialog_new);
 
         SliderPage page4 = new SliderPage();
         page4.setTitle("All Set!");
         page4.setDescription("Press Done to begin");
+        page4.setImageDrawable(R.drawable.ic_check_circle_big_green_128dp);
         page4.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
 
         // Instead of fragments, you can also use our default slide
@@ -51,7 +53,7 @@ public class IntroActivity extends AppIntro {
         addSlide(AppIntroFragment.newInstance(page2));
         addSlide(AppIntroFragment.newInstance(page3));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            addSlide(SampleSlide.newInstance(R.layout.fragment_sample_slide));
+            addSlide(PermissionSlide.newInstance(R.layout.fragment_permission_slide));
         }
         addSlide(AppIntroFragment.newInstance(page4));
 
@@ -94,6 +96,9 @@ public class IntroActivity extends AppIntro {
         super.onDonePressed(currentFragment);
         startActivity(new Intent(this, MainActivity.class));
         finish();
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(getString(R.string.tutorial_seen_key),true).apply();
+
     }
 
     @Override
