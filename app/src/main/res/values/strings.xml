@@ -44,4 +44,6 @@
     <string name="tutorial_seen_key">tutorial_seen</string>
     <string name="permission_granted">Permission Granted</string>
     <string name="pref_display_tap_target_time_dialog">display_tap_target_time_dialog</string>
+    <string name="pref_tutorial_key">pref_tutorial_key</string>
+    <string name="pref_tutorial_label">Display tutorials</string>
 </resources>

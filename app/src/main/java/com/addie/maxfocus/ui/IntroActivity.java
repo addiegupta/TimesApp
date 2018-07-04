@@ -14,6 +14,9 @@ import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.github.paolorotolo.appintro.model.SliderPage;
 
 public class IntroActivity extends AppIntro {
+    private static final String CALLING_CLASS_KEY = "calling_class";
+    private static String mCallingClass;
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -22,6 +25,16 @@ public class IntroActivity extends AppIntro {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCallingClass = "";
+        if (getIntent().hasExtra(CALLING_CLASS_KEY)) {
+            mCallingClass = getIntent().getStringExtra(CALLING_CLASS_KEY);
+            if (mCallingClass.equals("SettingsFragment")) {
+                SharedPreferences preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(IntroActivity.this);
+                preferences.edit().putBoolean(getString(R.string.pref_display_tap_target_apps), true).apply();
+
+                preferences.edit().putBoolean(getString(R.string.pref_display_tap_target_time_dialog), true).apply();
+            }
+        }
 
         SliderPage page1 = new SliderPage();
         page1.setTitle(getString(R.string.app_name));
@@ -101,10 +114,18 @@ public class IntroActivity extends AppIntro {
     @Override
     public void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putBoolean(getString(R.string.tutorial_seen_key),true).apply();
+        prefs.edit().putBoolean(getString(R.string.tutorial_seen_key), true).apply();
+
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        if (mCallingClass.equals("SettingsFragment")) {
+            finishAffinity();
+            startActivity(mainIntent);
+        } else {
+            startActivity(mainIntent);
+            finish();
+        }
 
     }
 

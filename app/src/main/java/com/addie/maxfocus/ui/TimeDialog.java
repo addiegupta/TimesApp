@@ -115,7 +115,7 @@ public class TimeDialog extends Dialog implements
         }
         final String applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
 
-        String titleText = mContext.getString(R.string.set_duration_for) + " " + applicationName;
+        String titleText = applicationName;
         mDialogTitleTextView.setText(titleText);
         mAppIconImageView.setImageBitmap(icon);
 

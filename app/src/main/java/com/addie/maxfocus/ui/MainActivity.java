@@ -313,19 +313,16 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     @Override
                     public void onSequenceFinish() {
                         // Yay
-                        Toast.makeText(MainActivity.this, "Sequence finished", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
-                        Toast.makeText(MainActivity.this, "Sequence step", Toast.LENGTH_SHORT).show();
 
                     }
 
                     @Override
                     public void onSequenceCanceled(TapTarget lastTarget) {
                         // Boo
-                        Toast.makeText(MainActivity.this, "Sequence canceled", Toast.LENGTH_SHORT).show();
                     }
                 }).start();
 

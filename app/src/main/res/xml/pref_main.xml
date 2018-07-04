@@ -14,5 +14,15 @@
         android:summary="@string/pref_shortcut_icon_hint"
         android:title="@string/pref_shortcut_icon"
         android:defaultValue="true" />
+    <Preference
+        android:key= "@string/pref_tutorial_key"
+        android:title="@string/pref_tutorial_label">
+        <intent
+            android:targetPackage="com.addie.maxfocus"
+            android:targetClass="com.addie.maxfocus.ui.IntroActivity">
+            <extra android:name="calling_class" android:value="SettingsFragment" />
+        </intent>
+    </Preference>
+
 
 </PreferenceScreen>
