@@ -16,7 +16,7 @@
     <string name="shortcut_created">Shortcut added to home screen</string>
     <string name="tap_target_apps_title">Press to add app shortcut to home screen</string>
     <string name="tap_target_apps_message">Long press to launch app</string>
-    <string name="pref_display_tap_target_apps">display_showcase_apps</string>
+    <string name="pref_display_tap_target_apps">display_tap_target_apps</string>
     <string name="usage_permission_title">Usage Permission Access</string>
     <string name="usage_permission_message">&appname; requires access to your usage statistics for a better experience. Your data is safe and none of it is saved.</string>
     <string name="grant_permission">Grant Permission</string>
@@ -43,4 +43,5 @@
     <string name="is_first_start">isFirstStart</string>
     <string name="tutorial_seen_key">tutorial_seen</string>
     <string name="permission_granted">Permission Granted</string>
+    <string name="pref_display_tap_target_time_dialog">display_tap_target_time_dialog</string>
 </resources>

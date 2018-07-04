@@ -116,13 +116,14 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         mAdapter.setListData(mAppsList);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        if (!preferences.contains(getString(R.string.pref_display_tap_target_apps))) {
+        if (!preferences.contains(getString(R.string.pref_display_tap_target_apps)) || preferences.getBoolean(getString(R.string.pref_display_tap_target_apps),true)) {
 
             mRecyclerViewDisabler = new RecyclerViewDisabler();
 
             mAppsRecyclerView.addOnItemTouchListener(mRecyclerViewDisabler);
             displayTapTargetView();
         }
+
 
         mAppsRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 4, LinearLayoutManager.VERTICAL, false));
         mAppsRecyclerView.setHasFixedSize(true);
@@ -178,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         TimeDialog tdialog = new TimeDialog(this, mSelectedApp.getmPackage()
                 , mSelectedApp.getmAppColor(), mSelectedApp.getmTextColor());
+        tdialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         tdialog.show();
 
         tdialog.getWindow().getDecorView().setBackgroundColor(mSelectedApp.getmAppColor());
@@ -263,13 +265,14 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
             mAdapter.setListData(data);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-            if (!preferences.contains(getString(R.string.pref_display_tap_target_apps))) {
+            if (!preferences.contains(getString(R.string.pref_display_tap_target_apps))|| preferences.getBoolean(getString(R.string.pref_display_tap_target_apps),true)) {
 
                 mRecyclerViewDisabler = new RecyclerViewDisabler();
 
                 mAppsRecyclerView.addOnItemTouchListener(mRecyclerViewDisabler);
                 displayTapTargetView();
             }
+
 
             mAppsRecyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 4, LinearLayoutManager.VERTICAL, false));
             mAppsRecyclerView.setHasFixedSize(true);
@@ -325,6 +328,10 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                         Toast.makeText(MainActivity.this, "Sequence canceled", Toast.LENGTH_SHORT).show();
                     }
                 }).start();
+
+
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                preferences.edit().putBoolean(getString(R.string.pref_display_tap_target_apps), false).apply();
 
                 mAppsRecyclerView.removeOnItemTouchListener(mRecyclerViewDisabler);
 

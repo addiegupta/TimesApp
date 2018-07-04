@@ -1,6 +1,7 @@
 package com.addie.maxfocus.ui;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
@@ -20,11 +22,17 @@ import android.widget.TextView;
 
 import com.addie.maxfocus.R;
 import com.addie.maxfocus.service.AppTimeDialogService;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.triggertrap.seekarc.SeekArc;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
+
+import static android.content.Context.ACTIVITY_SERVICE;
 
 
 /**
@@ -80,10 +88,15 @@ public class TimeDialog extends Dialog implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         Timber.d("Created dialog");
 
-
         setContentView(R.layout.layout_time_dialog);
 
         ButterKnife.bind(this);
+
+        SharedPreferences preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
+        if (!preferences.contains(mContext.getString(R.string.pref_display_tap_target_time_dialog))|| preferences.getBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog),true)) {
+            displayTapTargetView();
+        }
+
 
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
@@ -158,6 +171,56 @@ public class TimeDialog extends Dialog implements
         dismiss();
     }
 
+
+    /**
+     * Displays the tapTargetView tutorial on using the app icons
+     */
+    private void displayTapTargetView() {
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                new TapTargetSequence(TimeDialog.this)
+                        .targets(
+                                TapTarget.forView(mSeekArc, "Set a timer by adjusting the slider")
+                                        .cancelable(false).transparentTarget(true).targetRadius(150).outerCircleColor(R.color.colorPrimary),
+
+                                TapTarget.forView(mStartButton, "Launch the app with the timer set" ).cancelable(false).outerCircleColor(R.color.colorPrimary),
+                                TapTarget.forView(mCancelButton, "Launch without a timer")
+                                        .cancelable(false).outerCircleColor(R.color.colorPrimary)
+                        ).listener(new TapTargetSequence.Listener() {
+                    // This listener will tell us when interesting(tm) events happen in regards
+                    // to the sequence
+                    @Override
+                    public void onSequenceFinish() {
+                        // Yay
+                        }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        // Boo
+                       }
+                }).start();
+
+
+                SharedPreferences preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
+                preferences.edit().putBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog), false).apply();
+
+
+            }
+        }, 500);
+
+
+    }
+
+
     private void setViewColors() {
 
         // Only this seems to work, Passing the int directly to setTextColor seems to be missing some properties
@@ -198,8 +261,13 @@ public class TimeDialog extends Dialog implements
     public void onBackPressed() {
         super.onBackPressed();
         this.dismiss();
-        ((Activity) mContext).finish();
 
+        ActivityManager am = (ActivityManager)mContext.getSystemService(ACTIVITY_SERVICE);
+        List< ActivityManager.RunningTaskInfo > taskInfo = am.getRunningTasks(1);
+        String currentActivity = taskInfo.get(0).topActivity.getClassName();
+        if(currentActivity.equals(DialogActivity.class.getName())){
+            ((Activity) mContext).finish();
+        }
     }
 
 

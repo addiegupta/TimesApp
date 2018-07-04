@@ -30,6 +30,12 @@ public class IntroActivity extends AppIntro {
         page1.setImageDrawable(R.drawable.app_icon_large);
         addSlide(AppIntroFragment.newInstance(page1));
 
+        SliderPage pagei = new SliderPage();
+        pagei.setTitle("Add app shortcut");
+        pagei.setDescription("Add new app shorcuts to the home screen using " + getString(R.string.app_name));
+        pagei.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
+        pagei.setImageDrawable(R.drawable.replace_icon);
+
         SliderPage page2 = new SliderPage();
         page2.setTitle("Set a timer");
         page2.setDescription("Before starting an app,specify the time you want to spend on it");
@@ -50,6 +56,7 @@ public class IntroActivity extends AppIntro {
 
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest
+        addSlide(AppIntroFragment.newInstance(pagei));
         addSlide(AppIntroFragment.newInstance(page2));
         addSlide(AppIntroFragment.newInstance(page3));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -87,7 +94,7 @@ public class IntroActivity extends AppIntro {
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
         //TODO : Change to last slide
-        getPager().setCurrentItem(4);
+        getPager().setCurrentItem(5);
 
     }
 
