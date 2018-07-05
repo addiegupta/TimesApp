@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 aSoft
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.addie.timesapp.ui;
 
 import android.app.Activity;
@@ -38,10 +62,6 @@ import timber.log.Timber;
 
 public class DialogActivity extends Activity {
 
-
-    private static final String ACTION_APP_DIALOG = "com.addie.timesapp.service.action.APP_DIALOG";
-
-    private static final String APP_IN_USE_KEY = "app_in_use";
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String TIME_KEY = "time";
     private static final String DISPLAY_1_MIN = "display_1_min";
@@ -213,8 +233,6 @@ public class DialogActivity extends Activity {
 
         if (hasUsageAccess) {
             builder.setMessage(Html.fromHtml("<font color='" + colorHex + "'>Time's up!</font>"));
-        } else {
-            builder.setMessage(Html.fromHtml("<font color='" + colorHex + "'>Time's up! \n (Foreground app check permission not granted)</font>"));
         }
         mStopAppDialog = builder.show();
 
