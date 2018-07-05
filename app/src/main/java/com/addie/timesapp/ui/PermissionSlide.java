@@ -145,7 +145,6 @@ public class PermissionSlide extends Fragment {
 
 
     void requestUsageStatsPermission() {
-        //TODO Change to new app name
         Toast.makeText(mContext, R.string.usage_permission_instruction, Toast.LENGTH_LONG).show();
         startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
 //        }

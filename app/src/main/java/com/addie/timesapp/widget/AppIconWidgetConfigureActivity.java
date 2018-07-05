@@ -40,15 +40,12 @@ import timber.log.Timber;
 import static com.addie.timesapp.data.AppProvider.Apps.URI_APPS;
 
 
-//TODO:Refactor and check everything carefully
-//TODO Maybe merge this and the MainActivity
 
 /**
  * The configuration screen for the {@link AppIconWidget AppIconWidget} AppWidget.
  */
 public class AppIconWidgetConfigureActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler {
 
-    private static final String ACTION_APP_DIALOG = "com.addie.timesapp.service.action.APP_DIALOG";
     private static final int APPS_LOADER_MANAGER_ID = 131;
     private static final int APPS_LOADER_DB_ID = 486;
     @BindView(R.id.rv_widget_apps)

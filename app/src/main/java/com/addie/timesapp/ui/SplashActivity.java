@@ -39,7 +39,7 @@ import static com.addie.timesapp.data.AppProvider.Apps.URI_APPS;
 
 public class SplashActivity extends Activity {
 
-    private static final int SPLASH_TIMEOUT = 2500;
+    private static final int SPLASH_TIMEOUT = 2000;
 
     private static final int APPS_LOADER_DB_ID = 486;
 
@@ -91,20 +91,10 @@ public class SplashActivity extends Activity {
                 cursor.close();
             }
 
-            //TODO Only use this on first launch
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    //Show apps
-                    // if apps get loaded before,display apps
-                    //show tutorial
 
-                    // Check if we're running on Android 5.0 or higher
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        // Apply activity transition
-                    } else {
-                        // Swap without transition
-                    }
                     Intent intent = new Intent(SplashActivity.this,IntroActivity.class);
                     startActivity(intent);
                 }

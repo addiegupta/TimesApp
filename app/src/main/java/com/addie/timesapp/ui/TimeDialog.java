@@ -10,10 +10,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -49,8 +51,6 @@ public class TimeDialog extends Dialog implements
     private int mAppColor;
     private int mTextColor;
 
-    //TODO Rename in all classes from service to receiver
-    private static final String ACTION_APP_DIALOG = "com.addie.maxfocus.service.action.APP_DIALOG";
     private static final String TIME_KEY = "time";
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String APP_COLOR_KEY = "app_color";
@@ -72,7 +72,6 @@ public class TimeDialog extends Dialog implements
     @BindView(R.id.iv_time_dialog_icon)
     ImageView mAppIconImageView;
 
-    //TODO Change isWidgetLaunch to callingClass to be able to use with preference
     public TimeDialog(Context context, String targetPackage, int appColor,int textColor) {
         super(context);
         this.mContext = context;
@@ -181,15 +180,20 @@ public class TimeDialog extends Dialog implements
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+                int width = metrics.widthPixels;
+                int height = metrics.heightPixels;
+                Rect lowerScreen = new Rect(width/8, height-height/15, width-(width/8), height+height/8);
 
                 new TapTargetSequence(TimeDialog.this)
                         .targets(
                                 TapTarget.forView(mSeekArc, "Set a timer by adjusting the slider")
-                                        .cancelable(false).transparentTarget(true).targetRadius(150).outerCircleColor(R.color.colorPrimary),
+                                        .cancelable(false).transparentTarget(true).targetRadius(width/10).outerCircleColor(R.color.colorPrimary),
 
                                 TapTarget.forView(mStartButton, "Launch the app with the timer set" ).cancelable(false).outerCircleColor(R.color.colorPrimary),
                                 TapTarget.forView(mCancelButton, "Launch without a timer")
-                                        .cancelable(false).outerCircleColor(R.color.colorPrimary)
+                                        .cancelable(false).outerCircleColor(R.color.colorPrimary),
+                                TapTarget.forBounds(lowerScreen,"Press back to close dialog").targetRadius(width/12).transparentTarget(true).cancelable(false).outerCircleColor(R.color.colorPrimary)
                         ).listener(new TapTargetSequence.Listener() {
                     // This listener will tell us when interesting(tm) events happen in regards
                     // to the sequence
@@ -215,7 +219,7 @@ public class TimeDialog extends Dialog implements
 
 
             }
-        }, 500);
+        }, 200);
 
 
     }

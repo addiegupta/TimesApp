@@ -17,8 +17,6 @@ import com.addie.timesapp.service.LaunchAppFromWidgetService;
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link AppIconWidgetConfigureActivity AppIconWidgetConfigureActivity}
  */
-//TODO Find ways to create widget/shortcut from within app
-    //TODO START WORKING  ASAP!!!
 public class AppIconWidget extends AppWidgetProvider {
 
     private static final String TARGET_PACKAGE_KEY = "target_package";

@@ -56,12 +56,10 @@ import static com.addie.timesapp.data.AppProvider.Apps.URI_APPS;
 /**
  * Displays a list of apps from which an app is selected for launching with a timer
  */
-//TODO Layout to display past usage of apps with/without usage of timers
+//TODO [FUTURE]Layout to display past usage of apps with/without usage of timers
 //TODO: Correct everything for rotation
-//FIXME App wont launch after clicking shortcut
 public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnClickHandler {
 
-    private static final String ACTION_APP_DIALOG = "com.addie.timesapp.service.action.APP_DIALOG";
     private static final int APPS_LOADER_MANAGER_ID = 131;
     private static final int APPS_LOADER_DB_ID = 486;
     private static final String APPS_LIST_KEY = "apps_list";
@@ -77,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
 
     private static final String APP_IN_USE_KEY = "app_in_use";
-    //TODO: Change parameter name
     private static final String TARGET_PACKAGE_KEY = "target_package";
 
     private AppAdapter mAdapter;
@@ -482,43 +479,5 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
             return appIcon;
     }
 
-    // TODO Remove this reference for launching intro activity
-    private void launchIntroActivityIfFirstLaunch() {
-
-        //  Declare a new thread to do a preference check
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //  Initialize SharedPreferences
-                SharedPreferences prefs = PreferenceManager
-                        .getDefaultSharedPreferences(getBaseContext());
-
-                //  Create a new boolean and preference and set it to true
-                boolean isFirstStart = prefs.getBoolean(getString(R.string.is_first_start), true);
-
-                //  If the activity has never started before...
-                if (isFirstStart) {
-
-                    //  Launch app intro
-//                    final Intent i = new Intent(MainActivity.this, IntroActivityNew.class);
-
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            startActivity(i);
-//                        }
-//                    });
-
-                    //  Edit preference to make it false because we don't want this to run again
-//                    TODO: Comment this out. Done for debugging
-//                    prefs.edit().putBoolean(getString(R.string.is_first_start),false).apply();
-                }
-            }
-        });
-
-        // Start the thread
-        t.start();
-
-    }
 
 }

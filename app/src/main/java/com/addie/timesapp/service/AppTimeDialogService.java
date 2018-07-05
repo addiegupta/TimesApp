@@ -25,7 +25,6 @@ import timber.log.Timber;
 
 public class AppTimeDialogService extends Service {
 
-    private static final String ACTION_APP_DIALOG = "com.addie.timesapp.service.action.APP_DIALOG";
     private static final String TIME_KEY = "time";
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String APP_COLOR_KEY = "app_color";

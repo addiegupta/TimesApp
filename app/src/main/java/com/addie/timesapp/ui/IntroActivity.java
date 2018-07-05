@@ -38,75 +38,54 @@ public class IntroActivity extends AppIntro {
 
         SliderPage page1 = new SliderPage();
         page1.setTitle(getString(R.string.app_name));
-        page1.setDescription("Control your phone usage");
+        page1.setDescription(getString(R.string.intro_page1_desc));
         page1.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
         page1.setImageDrawable(R.drawable.app_icon_large);
-        addSlide(AppIntroFragment.newInstance(page1));
-
-        SliderPage pagei = new SliderPage();
-        pagei.setTitle("Add app shortcut");
-        pagei.setDescription("Add new app shorcuts to the home screen using " + getString(R.string.app_name));
-        pagei.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
-        pagei.setImageDrawable(R.drawable.replace_icon);
 
         SliderPage page2 = new SliderPage();
-        page2.setTitle("Set a timer");
-        page2.setDescription("Before starting an app,specify the time you want to spend on it");
+        page2.setTitle(getString(R.string.intro_page2_title));
+        page2.setDescription(getString(R.string.intro_page2_desc));
         page2.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
-        page2.setImageDrawable(R.drawable.time_dialog_phone);
+        page2.setImageDrawable(R.drawable.replace_icon);
 
         SliderPage page3 = new SliderPage();
-        page3.setTitle("Get notified");
-        page3.setDescription("A dialog will pop up when the specified time has passed");
+        page3.setTitle(getString(R.string.intro_page3_title));
+        page3.setDescription(getString(R.string.intro_page3_desc));
         page3.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
-        page3.setImageDrawable(R.drawable.stop_dialog_new);
+        page3.setImageDrawable(R.drawable.time_dialog_phone);
 
         SliderPage page4 = new SliderPage();
-        page4.setTitle("All Set!");
-        page4.setDescription("Press Done to begin");
-        page4.setImageDrawable(R.drawable.ic_check_circle_big_green_128dp);
+        page4.setTitle(getString(R.string.intro_page4_title));
+        page4.setDescription(getString(R.string.intro_page4_desc));
         page4.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
+        page4.setImageDrawable(R.drawable.stop_dialog_new);
 
-        // Instead of fragments, you can also use our default slide
-        // Just set a title, description, background and image. AppIntro will do the rest
-        addSlide(AppIntroFragment.newInstance(pagei));
+        SliderPage page5 = new SliderPage();
+        page5.setTitle(getString(R.string.intro_page5_title));
+        page5.setDescription(getString(R.string.intro_page5_desc));
+        page5.setImageDrawable(R.drawable.ic_check_circle_big_green_128dp);
+        page5.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
+
+        addSlide(AppIntroFragment.newInstance(page1));
         addSlide(AppIntroFragment.newInstance(page2));
         addSlide(AppIntroFragment.newInstance(page3));
+        addSlide(AppIntroFragment.newInstance(page4));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             addSlide(PermissionSlide.newInstance(R.layout.fragment_permission_slide));
         }
-        addSlide(AppIntroFragment.newInstance(page4));
+        addSlide(AppIntroFragment.newInstance(page5));
 
-        // OPTIONAL METHODS
-        // Override bar/separator color
-//        setBarColor(Color.parseColor("#3F51B5"));
-//        setSeparatorColor(Color.parseColor("#2196F3"));
-        // Hide Skip/Done button
         showSkipButton(true);
         setProgressButtonEnabled(true);
-
         showSeparator(false);
-
-        // SHOW or HIDE the statusbar
-
         showStatusBar(false);
-        // Animations -- use only one of the below. Using both could cause errors.
-        setFadeAnimation(); // OR
-//        setZoomAnimation(); // OR
-//        setFlowAnimation(); // OR
-//        setSlideOverAnimation(); // OR
-//        setDepthAnimation(); // OR
-//        setCustomTransformer(yourCustomTransformer);
+        setFadeAnimation();
 
-        // Permissions -- takes a permission and slide number
-//        askForPermissions(new String[]{
-//                Manifest.permission.CAMERA}, 1);
     }
 
     @Override
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
-        //TODO : Change to last slide
         getPager().setCurrentItem(5);
 
     }
