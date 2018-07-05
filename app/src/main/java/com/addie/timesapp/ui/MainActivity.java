@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_apps);
+        setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
         if (mAppsList != null) {
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_apps, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
