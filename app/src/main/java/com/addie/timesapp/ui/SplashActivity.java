@@ -49,7 +49,7 @@ import android.view.WindowManager;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.data.AppColumns;
-import com.addie.timesapp.extra.Utils;
+import com.addie.timesapp.utils.Utils;
 import com.addie.timesapp.model.App;
 import com.addie.timesapp.service.SaveAppsInDbService;
 
@@ -61,6 +61,9 @@ import timber.log.Timber;
 
 import static com.addie.timesapp.data.AppProvider.Apps.URI_APPS;
 
+/**
+ * Splash screen displayed while loading the app
+ */
 public class SplashActivity extends Activity {
 
     private static final int SPLASH_TIMEOUT = 2000;
@@ -69,7 +72,6 @@ public class SplashActivity extends Activity {
 
     private static final int APPS_LOADER_MANAGER_ID = 131;
 
-    private static final String APPS_LIST_KEY = "apps_list";
 
     private boolean mTutorialSeen;
 
@@ -100,6 +102,7 @@ public class SplashActivity extends Activity {
             }
         }
 
+        // IF tutorial has been seen once, start loading apps else show tutorial after timeout of SPLASH_TIMEOUT miliseconds
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mTutorialSeen = prefs.getBoolean(getString(R.string.tutorial_seen_key), false);
         if (mTutorialSeen) {
@@ -126,11 +129,15 @@ public class SplashActivity extends Activity {
 
             }, SPLASH_TIMEOUT);
 
-
         }
 
     }
 
+    /**
+     * Checks if usage permission has been granted
+     * @param context
+     * @return
+     */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     boolean hasUsageStatsPermission(Context context) {
         AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
@@ -142,6 +149,9 @@ public class SplashActivity extends Activity {
         return granted;
     }
 
+    /**
+     * Checks if app data is present in database. If yes, then loads it otherwise fetches data from PackageManager and saves in database
+     */
     private void loadAppsFromManagerOrDb() {
         Cursor cursor = getContentResolver().query(URI_APPS, null, null, null, null);
         if (cursor != null && cursor.getCount() != 0) {
@@ -176,7 +186,6 @@ public class SplashActivity extends Activity {
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
 
             startActivity(intent);
-//            finish();
 
         }
 

@@ -62,7 +62,7 @@ import com.addie.timesapp.R;
 import com.addie.timesapp.adapter.AppAdapter;
 import com.addie.timesapp.data.AppColumns;
 import com.addie.timesapp.extra.RecyclerViewDisabler;
-import com.addie.timesapp.extra.Utils;
+import com.addie.timesapp.utils.Utils;
 import com.addie.timesapp.model.App;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetSequence;
@@ -78,7 +78,7 @@ import timber.log.Timber;
 import static com.addie.timesapp.data.AppProvider.Apps.URI_APPS;
 
 /**
- * Displays a list of apps from which an app is selected for launching with a timer
+ * Displays a list of apps from which an app is selected for launching with a timer or app shortcuts are created on home screen
  */
 //TODO [FUTURE]Layout to display past usage of apps with/without usage of timers
 //TODO: Correct everything for rotation
@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private static final String APPS_LIST_KEY = "apps_list";
     private static final String APP_COLOR_KEY = "app_color";
     private static final String TEXT_COLOR_KEY = "text_color";
-    private static final String CALLING_CLASS_KEY = "calling_class";
 
 
     @BindView(R.id.rv_apps)
@@ -98,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     ProgressBar mLoadingIndicator;
 
 
-    private static final String APP_IN_USE_KEY = "app_in_use";
     private static final String TARGET_PACKAGE_KEY = "target_package";
 
     private AppAdapter mAdapter;
@@ -119,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                 // Start Loading Apps
                 loadAppsFromManagerOrDb();
             } else {
-
+                // Data has already been loaded by SplashActivity and assigned to public static variable
                 initViews();
             }
         } else {
@@ -127,6 +125,9 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         }
     }
 
+    /**
+     * Initialises the views of this activity as data is ready
+     */
     private void initViews() {
         showRecyclerView(true);
 
@@ -150,6 +151,9 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
+    /**
+     * Checks if app data is present in database. If yes, then loads it otherwise fetches data from PackageManager and saves in database
+     */
     private void loadAppsFromManagerOrDb() {
         Cursor cursor = getContentResolver().query(URI_APPS, null, null, null, null);
         if (cursor != null && cursor.getCount() != 0) {
@@ -181,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     }
 
     /**
-     * Called by AppAdapter when an app is long clickedin the RecyclerView
+     * Called by AppAdapter when an app is long clicked in the RecyclerView
      *
      * @param selectedApp the app that is selected
      */
@@ -251,7 +255,9 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         return true;
     }
 
-
+    /**
+     * Clears database and reloads data using packagemanager
+     */
     private void refreshAppsList() {
         if (mAdapter != null) {
 
@@ -336,7 +342,9 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     // to the sequence
                     @Override
                     public void onSequenceFinish() {
-                        // Yay
+                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                        preferences.edit().putBoolean(getString(R.string.pref_display_tap_target_apps), false).apply();
+
                     }
 
                     @Override
@@ -351,8 +359,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                 }).start();
 
 
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                preferences.edit().putBoolean(getString(R.string.pref_display_tap_target_apps), false).apply();
 
                 mAppsRecyclerView.removeOnItemTouchListener(mRecyclerViewDisabler);
 
@@ -397,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
                     app.setmAppColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
                     app.setmTextColor(Utils.getTextColor(app.getmAppColor()));
-                    Timber.e("APP:" + app.getmAppColor() + " TEXT " + app.getmTextColor());
+                    Timber.d("APP:" + app.getmAppColor() + " TEXT " + app.getmTextColor());
 
                     mAppsList.add(app);
                     values.put(AppColumns.APP_TITLE, app.getmTitle());
@@ -408,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
                     getContext().getContentResolver().insert(URI_APPS, values);
                     }catch (Exception e){
-                        Timber.e("COULD NOT INSERT");
+                        Timber.d("COULD NOT INSERT APP in Database");
                     }
                 }
 
@@ -452,12 +458,16 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
+    /**
+     * Creates shortcut on home screen for selected app
+     * @throws PackageManager.NameNotFoundException
+     */
     public void createShortcut() throws PackageManager.NameNotFoundException {
         Bitmap icon = getAppIconShortcut();
 
 
         Intent shortcutintent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-        //TODO Check requirement
+
         shortcutintent.putExtra("duplicate", true);
 
         shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
@@ -473,7 +483,11 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         sendBroadcast(shortcutintent);
     }
 
-
+    /**
+     * Returns an app icon which has the timer icon as overlay depending on preference
+     * @return
+     * @throws PackageManager.NameNotFoundException
+     */
     private Bitmap getAppIconShortcut() throws PackageManager.NameNotFoundException {
 
         Bitmap appIcon = ((BitmapDrawable) getPackageManager().getApplicationIcon(mSelectedApp.getmPackage())).getBitmap();

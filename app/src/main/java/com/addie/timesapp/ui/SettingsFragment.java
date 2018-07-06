@@ -43,7 +43,6 @@ import timber.log.Timber;
  */
 public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String CALLING_CLASS_KEY = "calling_class";
 
     private SharedPreferences sharedPreferences;
 

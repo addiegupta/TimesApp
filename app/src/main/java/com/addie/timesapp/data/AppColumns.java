@@ -32,6 +32,9 @@ import net.simonvt.schematic.annotation.Unique;
 import static net.simonvt.schematic.annotation.DataType.Type.INTEGER;
 import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
 
+/**
+ * Defines the columns needed in the database for storing app information
+ */
 public interface AppColumns {
 
     @DataType(INTEGER) @PrimaryKey

@@ -29,6 +29,10 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.addie.timesapp.R;
 
+/**
+ * Activity that displays the reason why foreground service notification is required
+ * Launched when foreground service notification is tapped
+ */
 public class ForegroundServiceActivity extends AppCompatActivity {
 
     @Override

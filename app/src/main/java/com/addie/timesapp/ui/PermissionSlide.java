@@ -25,10 +25,8 @@
 package com.addie.timesapp.ui;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.app.AppOpsManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -41,7 +39,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -68,7 +65,6 @@ public class PermissionSlide extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         if (getArguments() != null && getArguments().containsKey(ARG_LAYOUT_RES_ID)) {
             layoutResId = getArguments().getInt(ARG_LAYOUT_RES_ID);
         }
@@ -87,7 +83,6 @@ public class PermissionSlide extends Fragment {
         mPermissionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                showRequestUsageAccessDialog();
                 grantPermissionClicked();
             }
         });
@@ -97,19 +92,14 @@ public class PermissionSlide extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        CheckBox mGrantedCheckbox = (CheckBox) getView().findViewById(R.id.cb_permssion_granted);
-        ImageView mCheckImageView =(ImageView) getView().findViewById(R.id.iv_permission_slide_check_state);
+       ImageView mCheckImageView =(ImageView) getView().findViewById(R.id.iv_permission_slide_check_state);
 
         if (hasUsageStatsPermission(mContext)){
                 mCheckImageView.setImageResource(R.drawable.ic_check_green_24dp);
-//            mGrantedCheckbox.setEnabled(true);
-//            mGrantedCheckbox.setChecked(true);
         }
         else{
 
             mCheckImageView.setImageResource(R.drawable.ic_clear_red_24dp);
-//            mGrantedCheckbox.setEnabled(false);
-//            mGrantedCheckbox.setChecked(false);
         }
 
     }
@@ -123,40 +113,10 @@ public class PermissionSlide extends Fragment {
         return inflater.inflate(layoutResId, container, false);
     }
 
-    private void showRequestUsageAccessDialog() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && !hasUsageStatsPermission(mContext)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-
-            LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-            View checkboxLayout = layoutInflater.inflate(R.layout.never_ask_again_checkbox, null);
-
-            final CheckBox mNeverAskAgainCheckbox = (CheckBox) checkboxLayout.findViewById(R.id.skip);
-            builder.setView(checkboxLayout)
-                    .setTitle(R.string.usage_permission_title)
-                    .setMessage(R.string.usage_permission_message)
-                    .setPositiveButton(R.string.grant_permission, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            requestUsageStatsPermission();
-                        }
-                    })
-
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            preferences.edit().putBoolean(getString(R.string.usage_never_ask_again_pref_key)
-                                    , mNeverAskAgainCheckbox.isChecked()).apply();
-                            dialogInterface.dismiss();
-                        }
-                    });
-            builder.show();
-        } else {
-            Toast.makeText(mContext, "Permission already granted!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
+    /**
+     * Handles the button click to launch activity or not
+     */
     private void grantPermissionClicked() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
@@ -167,13 +127,19 @@ public class PermissionSlide extends Fragment {
         }
     }
 
-
+    /**
+     * Launches activity in settings to grant permission
+     */
     void requestUsageStatsPermission() {
         Toast.makeText(mContext, R.string.usage_permission_instruction, Toast.LENGTH_LONG).show();
         startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-//        }
     }
 
+    /**
+     * Checks if permission is granted or not
+     * @param context
+     * @return
+     */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     boolean hasUsageStatsPermission(Context context) {
         AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);

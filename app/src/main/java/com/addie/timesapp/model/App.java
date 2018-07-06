@@ -31,7 +31,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Model class to store data of apps i.e. title,package name and icon drawable
+ * Model class to store data of apps i.e. title,package name,app color ( obtained from palette), text color and icon drawable
  */
 
 public class App implements Parcelable {

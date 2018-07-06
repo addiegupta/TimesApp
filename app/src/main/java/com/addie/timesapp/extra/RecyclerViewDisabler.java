@@ -29,6 +29,7 @@ import android.view.MotionEvent;
 
 /**
  * Disables all touches for a RecyclerView
+ * Used before displaying tutorial
  */
 public class RecyclerViewDisabler implements RecyclerView.OnItemTouchListener {
 

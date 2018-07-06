@@ -37,6 +37,9 @@ import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.github.paolorotolo.appintro.model.SliderPage;
 
+/**
+ * An introductory activity that explains the method of use of the app
+ */
 public class IntroActivity extends AppIntro {
     private static final String CALLING_CLASS_KEY = "calling_class";
     private static String mCallingClass;
@@ -82,7 +85,7 @@ public class IntroActivity extends AppIntro {
         page4.setTitle(getString(R.string.intro_page4_title));
         page4.setDescription(getString(R.string.intro_page4_desc));
         page4.setBgColor(getResources().getColor(R.color.colorPrimaryDark));
-        page4.setImageDrawable(R.drawable.stop_dialog_new);
+        page4.setImageDrawable(R.drawable.stop_dialog);
 
         SliderPage page5 = new SliderPage();
         page5.setTitle(getString(R.string.intro_page5_title));
@@ -122,11 +125,15 @@ public class IntroActivity extends AppIntro {
         prefs.edit().putBoolean(getString(R.string.tutorial_seen_key), true).apply();
 
         Intent mainIntent = new Intent(this, MainActivity.class);
+
+        // Display tutorials preference has been selected from preference screen
         if (mCallingClass.equals("SettingsFragment")) {
             // Finish all activities
             finishAffinity();
             startActivity(mainIntent);
-        } else {
+        }
+        //Default behavior
+        else {
             startActivity(mainIntent);
             finish();
         }

@@ -43,7 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Adapter for binding items of the list of apps to the RecyclerView in the AppsActivity
+ * Adapter for binding items of the list of apps to the RecyclerView in the MainActivity
  */
 public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppAdapterViewHolder> {
 

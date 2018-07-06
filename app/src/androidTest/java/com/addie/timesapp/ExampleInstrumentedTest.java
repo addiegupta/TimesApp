@@ -45,6 +45,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.addie.maxfocus", appContext.getPackageName());
+        assertEquals("com.addie.timesapp", appContext.getPackageName());
     }
 }

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.addie.timesapp.extra;
+package com.addie.timesapp.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -33,11 +33,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 
 /**
- * Created by addie on 25-06-2018.
+ * Some helper methods
  */
 
 public final class Utils {
 
+    /**
+     * Returns white or black according to which will suit the current app background color
+     * @param color app background color
+     * @return white or black text color
+     */
     public static int getTextColor(int color) {
 
         int redColorValue = (color >> 16) & 0xFF;
@@ -55,7 +60,12 @@ public final class Utils {
 
     }
 
-
+    /**
+     * Convert vector drawable to be used as a bitmap
+     * @param context
+     * @param drawableId
+     * @return
+     */
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

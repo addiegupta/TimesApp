@@ -34,7 +34,7 @@ import android.support.v7.graphics.Palette;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.data.AppColumns;
-import com.addie.timesapp.extra.Utils;
+import com.addie.timesapp.utils.Utils;
 import com.addie.timesapp.model.App;
 
 import java.util.Collections;
@@ -44,6 +44,10 @@ import timber.log.Timber;
 
 import static com.addie.timesapp.data.AppProvider.Apps.URI_APPS;
 
+/**
+ * Fetches installed apps using PackageManager and saves them in the database for faster loading
+ * Launched on first app launch from splash screen
+ */
 public class SaveAppsInDbService extends IntentService {
 
     public SaveAppsInDbService() {
@@ -60,6 +64,7 @@ public class SaveAppsInDbService extends IntentService {
 
     /**
      * Loads a list of installed apps on the device using PackageManager
+     * Saves the apps in a database
      */
     private void saveAppsInDb() {
 
@@ -76,10 +81,10 @@ public class SaveAppsInDbService extends IntentService {
             app.setmTitle((String) ri.loadLabel(mPackageManager));
             app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
 
+            //Fetches vibrant colour of app icon using Palette library for better design
             Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
             app.setmAppColor(p.getVibrantColor(getResources().getColor(R.color.black)));
             app.setmTextColor(Utils.getTextColor(app.getmAppColor()));
-            Timber.e("APP:" + app.getmAppColor() + " TEXT " + app.getmTextColor());
 
             values.put(AppColumns.APP_TITLE, app.getmTitle());
             values.put(AppColumns.PACKAGE_NAME, app.getmPackage());
@@ -89,7 +94,7 @@ public class SaveAppsInDbService extends IntentService {
 
             getContentResolver().insert(URI_APPS, values);
             }catch (Exception e){
-                Timber.e("COULD NOT INSERT FROM SERVICE");
+                Timber.d("COULD NOT INSERT FROM SERVICE");
             }
         }
 

@@ -85,17 +85,5 @@
             android:id="@+id/iv_permission_slide_check_state"
             android:src="@drawable/ic_clear_red_24dp"/>
     </LinearLayout>
-    <!--<CheckBox-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="1"-->
-        <!--android:layout_marginBottom="76dp"-->
-        <!--android:layout_gravity="center_horizontal"-->
-        <!--android:clickable="false"-->
-        <!--android:textSize="16sp"-->
-        <!--android:textColor="@color/white"-->
-        <!--android:checked="false"-->
-        <!--android:id="@+id/cb_permssion_granted"-->
-        <!--android:text="@string/permission_granted"-->
-        <!--/>-->
+
 </LinearLayout>

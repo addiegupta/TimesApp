@@ -43,7 +43,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -91,16 +90,8 @@ public class DialogActivity extends Activity {
         super.onCreate(savedInstanceState);
         overridePendingTransition(0, 0);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
-        mPackageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
-        mAppColor = getIntent().getIntExtra(APP_COLOR_KEY, getResources().getColor(R.color.black));
-        mTextColor = getIntent().getIntExtra(TEXT_COLOR_KEY, getResources().getColor(R.color.white));
-        mDisplay1Min = getIntent().getBooleanExtra(DISPLAY_1_MIN, true);
-        mCallingClass = getIntent().getStringExtra(CALLING_CLASS_KEY);
-        if (mCallingClass == null) {
-            mCallingClass = "";
-        }
+        initVariables();
+
         fetchAppData();
 
         Timber.d("Calling activity %s", getCallingActivity());
@@ -119,11 +110,30 @@ public class DialogActivity extends Activity {
         }
     }
 
+    /**
+     * Initialises values of variables to be used from starting intent and preferencemanager
+     */
+    private void initVariables() {
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
+        mPackageName = getIntent().getStringExtra(TARGET_PACKAGE_KEY);
+        mAppColor = getIntent().getIntExtra(APP_COLOR_KEY, getResources().getColor(R.color.black));
+        mTextColor = getIntent().getIntExtra(TEXT_COLOR_KEY, getResources().getColor(R.color.white));
+        mDisplay1Min = getIntent().getBooleanExtra(DISPLAY_1_MIN, true);
+        mCallingClass = getIntent().getStringExtra(CALLING_CLASS_KEY);
+        if (mCallingClass == null) {
+            mCallingClass = "";
+        }
+    }
+
+    /**
+     * A variation of TimeDialog to be displayed from Preferences to be able to set a default time
+     */
     private void displayPrefTimeDialog() {
         mPrefDialog = new PrefTimeDialog(this);
         mPrefDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         mPrefDialog.setCancelable(false);
-
 
         mPrefDialog.show();
     }
@@ -135,12 +145,11 @@ public class DialogActivity extends Activity {
 
 
         mTimeDialog = new TimeDialog(DialogActivity.this, mPackageName, mAppColor, mTextColor);
-//        mTimeDialog.getWindow().setWindowAnimations(R.style.AnimatedDialog);
         mTimeDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
         mTimeDialog.show();
 
-        Log.e("TAG", (String.format("#%06X", (0xFFFFFF & mAppColor))));
+        Timber.d("#%06X", (0xFFFFFF & mAppColor));
 
 
         mTimeDialog.getWindow().getDecorView().setBackgroundColor(mAppColor);
@@ -157,15 +166,22 @@ public class DialogActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        // Get locked and sleep state of device
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         boolean isPhoneLocked = myKM.inKeyguardRestrictedInputMode();
 
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         boolean isSceenAwake = (Build.VERSION.SDK_INT < 20 ? powerManager.isScreenOn() : powerManager.isInteractive());
 
-        if (!isPhoneLocked && !isSceenAwake) {
 
-            // Prevents dialog activity from leaking dialog window when activity is pause
+
+
+        //Do not dismiss dialog if activity is paused due to being locked
+        // This is required as app may be in use when time expires, hence a dialog is to be shown when screen is turned on
+        if (!isPhoneLocked && isSceenAwake) {
+
+            // Prevents dialog activity from leaking dialog window when activity is paused
             switch (mCallingClass) {
                 case "AppTimeDialogService":
                     mStopAppDialog.dismiss();
@@ -180,6 +196,7 @@ public class DialogActivity extends Activity {
             }
 
 
+            // Remove activity from Recents screen
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
                 ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -218,6 +235,7 @@ public class DialogActivity extends Activity {
                         }).setIcon(new BitmapDrawable(getResources(), mAppIcon))
         ;
 
+        // Boolean flag for whether the +1 Min option is to be shown or not
         if (mDisplay1Min) {
 
             builder.setNegativeButton(Html.fromHtml("<font color='" + colorHex + "'>+1 Min</font>")
@@ -231,9 +249,8 @@ public class DialogActivity extends Activity {
 
         }
 
-        if (hasUsageAccess) {
-            builder.setMessage(Html.fromHtml("<font color='" + colorHex + "'>Time's up!</font>"));
-        }
+        builder.setMessage(Html.fromHtml("<font color='" + colorHex + "'>Time's up!</font>"));
+
         mStopAppDialog = builder.show();
 
         // Only this seems to work, Passing the int directly to setTextColor seems to be missing some properties
@@ -283,6 +300,9 @@ public class DialogActivity extends Activity {
 
     }
 
+    /**
+     * Fetches app data
+     */
     private void fetchAppData() {
         ApplicationInfo appInfo;
         PackageManager pm = getPackageManager();

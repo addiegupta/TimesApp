@@ -50,7 +50,7 @@
     <string name="usage_never_ask_again_pref_key">usage_never_ask_again</string>
     <string name="pref_app_time_label">Default time for app timers</string>
     <string name="pref_app_time_key">pref_app_time_default</string>
-    <string name="app_closed_notification_title">was closed before time</string>
+    <string name="app_closed_notification_title">was closed</string>
     <string name="app_closed_notification_subtitle">Tap to remove notification</string>
     <string name="TARGET_APP_TITLE_KEY">target_app_title</string>
     <string name="no_limit">No Limit</string>

@@ -42,6 +42,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
+/**
+ * A variation of TimeDialog to be displayed from Preferences to be able to set a default time
+ */
 public class PrefTimeDialog extends Dialog implements
         android.view.View.OnClickListener {
 

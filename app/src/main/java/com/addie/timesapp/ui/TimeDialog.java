@@ -102,24 +102,32 @@ public class TimeDialog extends Dialog implements
         this.mTargetPackage = targetPackage;
         this.mAppColor = appColor;
         this.mTextColor = textColor;
-        Timber.d(String.valueOf(mAppColor));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        Timber.d("Created dialog");
+        Timber.d("Created time dialog");
 
         setContentView(R.layout.layout_time_dialog);
 
         ButterKnife.bind(this);
 
-        SharedPreferences preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
+        //Initialises views
+        initViews();
+
+    }
+
+    /**
+     * Initialises views
+     */
+    private void initViews(){
+        // Display tap target views if not shown earlier
+        preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
         if (!preferences.contains(mContext.getString(R.string.pref_display_tap_target_time_dialog))|| preferences.getBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog),true)) {
             displayTapTargetView();
         }
-
 
         mStartButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
@@ -138,8 +146,7 @@ public class TimeDialog extends Dialog implements
         }
         final String applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
 
-        String titleText = applicationName;
-        mDialogTitleTextView.setText(titleText);
+        mDialogTitleTextView.setText(applicationName);
         mAppIconImageView.setImageBitmap(icon);
 
         String progressText = " " + String.valueOf(mSeekArc.getProgress());
@@ -174,9 +181,7 @@ public class TimeDialog extends Dialog implements
 
             }
         });
-
     }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -221,7 +226,10 @@ public class TimeDialog extends Dialog implements
                         ).listener(new TapTargetSequence.Listener() {
                      @Override
                     public void onSequenceFinish() {
-                        }
+
+                          preferences.edit().putBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog), false).apply();
+
+                     }
 
                     @Override
                     public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
@@ -230,12 +238,9 @@ public class TimeDialog extends Dialog implements
 
                     @Override
                     public void onSequenceCanceled(TapTarget lastTarget) {
-                       }
+                        }
                 }).start();
 
-
-                SharedPreferences preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
-                preferences.edit().putBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog), false).apply();
 
 
             }

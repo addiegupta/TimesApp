@@ -24,16 +24,20 @@
 
 package com.addie.timesapp.service;
 
+import android.annotation.TargetApi;
+import android.app.AppOpsManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -47,13 +51,15 @@ import com.rvalerio.fgchecker.AppChecker;
 
 import timber.log.Timber;
 
+/**
+ * Foreground service that handles background tasks of counting time,launching stop dialog etc
+ */
 public class AppTimeDialogService extends Service {
 
     private static final String TIME_KEY = "time";
     private static final String TARGET_PACKAGE_KEY = "target_package";
     private static final String APP_COLOR_KEY = "app_color";
     private static final String TEXT_COLOR_KEY = "text_color";
-    private static final String APP_IN_USE_KEY = "app_in_use";
     private static final int APP_STOPPED_NOTIF_ID = 77;
     private static final String CALLING_CLASS_KEY = "calling_class";
     private SharedPreferences preferences;
@@ -78,89 +84,100 @@ public class AppTimeDialogService extends Service {
     @Override
     public void onDestroy() {
         cdt.cancel();
-        Timber.i("Timer cancelled");
         super.onDestroy();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Timber.plant(new Timber.DebugTree());
 
         if (intent == null) {
-            Timber.e("Service started with null intent. Stopping self");
             stopSelf();
         } else {
-            Timber.i("Starting timer in ATDService...");
 
             initialiseVariables(intent);
+
+            checkIfPermissionGrantedManually();
 
             fetchAppData();
 
             runForegroundService();
 
             setupAndStartCDT();
-
-
         }
 
         return super.onStartCommand(intent, flags, startId);
     }
 
+    private void checkIfPermissionGrantedManually() {
+        // Check if permission has been granted manually
+        if (!preferences.getBoolean(getString(R.string.usage_permission_pref), false)) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                    && hasUsageStatsPermission(this)) {
+                preferences.edit().putBoolean(getString(R.string.usage_permission_pref), true).apply();
+
+            }
+        }
+        hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
+    }
+
+    /**
+     * Initialises variables to be used
+     *
+     * @param intent starting intent
+     */
     private void initialiseVariables(Intent intent) {
-        if (cdt!=null){
+        if (cdt != null) {
             cdt.cancel();
         }
         appTime = intent.getIntExtra(TIME_KEY, 0);
         targetPackage = intent.getStringExtra(TARGET_PACKAGE_KEY);
-        mAppColor = intent.getIntExtra(APP_COLOR_KEY,getResources().getColor(R.color.black));
-        mTextColor = intent.getIntExtra(TEXT_COLOR_KEY,getResources().getColor(R.color.white));
-        Timber.d("apptime is " + appTime + " targetpackage is " + targetPackage);
+        mAppColor = intent.getIntExtra(APP_COLOR_KEY, getResources().getColor(R.color.black));
+        mTextColor = intent.getIntExtra(TEXT_COLOR_KEY, getResources().getColor(R.color.white));
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        hasUsageAccess = preferences.getBoolean(getString(R.string.usage_permission_pref), false);
-
     }
 
+    /**
+     * Starts countdown timer for required time as specified by the class starting this service
+     */
     private void setupAndStartCDT() {
         cdt = new CountDownTimer(appTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
 
-                Timber.i("Countdown seconds remaining in ATDService: " + millisUntilFinished / 1000);
+                Timber.i("Countdown seconds remaining in ATDService: %s", millisUntilFinished / 1000);
             }
 
             @Override
             public void onFinish() {
 
-                Timber.i("Timer finished");
-
-                Timber.d("Starting activity");
+                Timber.i("Timer finished.Starting activity");
 
                 showStopDialog();
 
                 stopForeground(true);
 
                 stopSelf();
-
             }
         };
-
         cdt.start();
-
     }
 
+    /**
+     * Displays stop dialog on top of the current activity ( has a transparent background due to DialogActivity)
+     */
     private void showStopDialog() {
         Intent dialogIntent = new Intent(AppTimeDialogService.this, DialogActivity.class);
         dialogIntent.putExtra(TARGET_PACKAGE_KEY, targetPackage);
         dialogIntent.putExtra(APP_COLOR_KEY, mAppColor);
         dialogIntent.putExtra(TEXT_COLOR_KEY, mTextColor);
-        dialogIntent.putExtra(CALLING_CLASS_KEY,getClass().getSimpleName());
+        dialogIntent.putExtra(CALLING_CLASS_KEY, getClass().getSimpleName());
         dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         // Duration equal to 1 minute
-        if (appTime==60000)
-            dialogIntent.putExtra(DISPLAY_1_MIN,false);
+        if (appTime == 60000)
+            dialogIntent.putExtra(DISPLAY_1_MIN, false);
 
         if (hasUsageAccess) {
 
@@ -183,6 +200,23 @@ public class AppTimeDialogService extends Service {
     }
 
     /**
+     * Checks if usage permission has been granted
+     *
+     * @param context
+     * @return
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    boolean hasUsageStatsPermission(Context context) {
+        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
+                android.os.Process.myUid(), context.getPackageName());
+        boolean granted = mode == AppOpsManager.MODE_ALLOWED;
+        preferences.edit().putBoolean(getString(R.string.usage_permission_pref), granted).apply();
+
+        return granted;
+    }
+
+    /**
      * Fetches data of target app i.e. application name and icon
      */
     private void fetchAppData() {
@@ -201,6 +235,9 @@ public class AppTimeDialogService extends Service {
 
     }
 
+    /**
+     * App is no longer running. Display notification instead of dialog
+     */
     private void issueAppStoppedNotification() {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);

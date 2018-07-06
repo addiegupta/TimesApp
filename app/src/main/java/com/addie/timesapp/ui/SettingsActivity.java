@@ -33,8 +33,7 @@ import android.view.MenuItem;
 import com.addie.timesapp.R;
 
 /**
- * Settings Activity that contains fragment which has preferences
- * for various settings
+ * Settings Activity that contains fragment which has preferences for the app
  */
 public class SettingsActivity extends AppCompatActivity {
     @Override
