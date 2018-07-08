@@ -214,20 +214,21 @@ public class TimeDialog extends Dialog implements
                 int height = metrics.heightPixels;
                 Rect lowerScreen = new Rect(width/8, height-height/15, width-(width/8), height+height/8);
 
-                new TapTargetSequence(TimeDialog.this)
+                final TapTarget cancelableTapTarget = TapTarget.forView(mCancelButton, "Launch without a timer")
+                        .cancelable(false).outerCircleColor(R.color.colorPrimary);
+
+                        new TapTargetSequence(TimeDialog.this)
                         .targets(
                                 TapTarget.forView(mSeekArc, "Set a timer by adjusting the slider")
-                                        .cancelable(false).transparentTarget(true).targetRadius(width/10).outerCircleColor(R.color.colorPrimary),
+                                        .cancelable(false).transparentTarget(true).targetRadius(120).outerCircleColor(R.color.colorPrimary),
 
-                                TapTarget.forView(mStartButton, "Launch the app with the timer set" ).cancelable(false).outerCircleColor(R.color.colorPrimary),
-                                TapTarget.forView(mCancelButton, "Launch without a timer")
-                                        .cancelable(false).outerCircleColor(R.color.colorPrimary),
-                                TapTarget.forBounds(lowerScreen,"Press back to close dialog").targetRadius(width/12).transparentTarget(true).outerCircleColor(R.color.colorPrimary)
+                                TapTarget.forView(mStartButton, "Launch the app with the timer set" ).cancelable(false).outerCircleColor(R.color.colorPrimary),cancelableTapTarget,
+                                TapTarget.forBounds(lowerScreen,"Press back to close dialog").targetRadius(100).transparentTarget(true).outerCircleColor(R.color.colorPrimary)
                         ).listener(new TapTargetSequence.Listener() {
                      @Override
                     public void onSequenceFinish() {
 
-                          preferences.edit().putBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog), false).apply();
+                         preferences.edit().putBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog), false).apply();
 
                      }
 
@@ -238,7 +239,9 @@ public class TimeDialog extends Dialog implements
 
                     @Override
                     public void onSequenceCanceled(TapTarget lastTarget) {
-                        }
+                        preferences.edit().putBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog), false).apply();
+
+                    }
                 }).start();
 
 

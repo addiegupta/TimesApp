@@ -501,16 +501,17 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
             } else {
                 timerIcon = Utils.getBitmapFromVectorDrawable(this, R.drawable.sandclock_icon_white);
             }
-            // FIXME:Might have compatibility issues
-            Bitmap thumbBitmap = ThumbnailUtils.extractThumbnail(timerIcon, 60, 83);
+            int appIconWidth = appIcon.getWidth();
+            int appIconHeight = appIcon.getHeight();
+
+            Bitmap thumbBitmap = ThumbnailUtils.extractThumbnail(timerIcon, appIconWidth/3, appIconHeight/2);
 
             Bitmap bmOverlay = Bitmap.createBitmap(appIcon.getWidth(), appIcon.getHeight(), appIcon.getConfig());
             Canvas canvas = new Canvas(bmOverlay);
             canvas.drawBitmap(appIcon, new
 
                     Matrix(), null);
-//            canvas.drawBitmap(timerIcon, 94, 94, null);
-            canvas.drawBitmap(thumbBitmap, appIcon.getWidth() - 60, appIcon.getHeight() - 83, null);
+            canvas.drawBitmap(thumbBitmap, appIconWidth-appIconWidth/3, appIconHeight-appIconHeight/2, null);
 
             return bmOverlay;
         } else
