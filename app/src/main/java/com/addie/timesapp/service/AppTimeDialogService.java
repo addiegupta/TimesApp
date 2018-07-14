@@ -241,14 +241,15 @@ public class AppTimeDialogService extends Service {
     private void issueAppStoppedNotification() {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-        Notification.Builder builder = new Notification.Builder(AppTimeDialogService.this);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(AppTimeDialogService.this);
 
         String title = mAppName + " " + getString(R.string.app_closed_notification_title);
         builder.setContentTitle(title)
-                .setSmallIcon(R.mipmap.launcher)
+                .setSmallIcon(R.drawable.app_notification_icon)
                 .setContentIntent(PendingIntent.getActivity(AppTimeDialogService.this,
                         0, new Intent(), 0))
                 .setLargeIcon(mAppIcon)
+                .setColor(getResources().getColor(R.color.colorPrimary))
                 .setSubText(getString(R.string.app_closed_notification_subtitle))
                 .setAutoCancel(true);
         Notification notification = builder.build();
@@ -283,9 +284,10 @@ public class AppTimeDialogService extends Service {
         Notification notification = builder
                 .setContentText(getString(R.string.app_running_service_notif_text))
                 .setSubText(getString(R.string.tap_for_more_info_foreground_notif))
+                .setColor(getResources().getColor(R.color.colorPrimary))
                 .addAction(actionBuilder.build())
                 .setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(R.mipmap.launcher)
+                .setSmallIcon(R.drawable.app_notification_icon)
                 .setContentIntent(pendingIntent).build();
 
         startForeground(FOREGROUND_NOTIF_ID, notification);
