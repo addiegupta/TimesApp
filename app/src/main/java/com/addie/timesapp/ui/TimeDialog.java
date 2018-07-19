@@ -271,6 +271,7 @@ public class TimeDialog extends Dialog implements
     /**
      * Called when time is selected and "start" is pressed on the dialog
      */
+    //FIXME Crashes if app is not installed anymore
     private void launchTargetApp() {
 
         // Start service selected time for app to be stopped

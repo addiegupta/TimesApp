@@ -29,13 +29,12 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.graphics.Palette;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.data.AppColumns;
-import com.addie.timesapp.utils.Utils;
 import com.addie.timesapp.model.App;
+import com.addie.timesapp.utils.Utils;
 
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +81,7 @@ public class SaveAppsInDbService extends IntentService {
             app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
 
             //Fetches vibrant colour of app icon using Palette library for better design
-            Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
+            Palette p = Palette.from(Utils.getBitmapFromDrawable(app.getmIcon())).generate();
             app.setmAppColor(p.getVibrantColor(getResources().getColor(R.color.black)));
             app.setmTextColor(Utils.getTextColor(app.getmAppColor()));
 

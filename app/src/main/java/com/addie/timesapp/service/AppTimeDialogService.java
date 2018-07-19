@@ -27,6 +27,7 @@ package com.addie.timesapp.service;
 import android.annotation.TargetApi;
 import android.app.AppOpsManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -36,17 +37,20 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.ui.DialogActivity;
 import com.addie.timesapp.ui.ForegroundServiceActivity;
+import com.addie.timesapp.utils.Utils;
 import com.rvalerio.fgchecker.AppChecker;
 
 import timber.log.Timber;
@@ -225,7 +229,9 @@ public class AppTimeDialogService extends Service {
         PackageManager pm = getPackageManager();
 
         try {
-            mAppIcon = ((BitmapDrawable) pm.getApplicationIcon(targetPackage)).getBitmap();
+            Drawable iconDrawable = pm.getApplicationIcon(targetPackage);
+
+            mAppIcon = Utils.getBitmapFromDrawable(iconDrawable);
             appInfo = pm.getApplicationInfo(targetPackage, 0);
         } catch (final PackageManager.NameNotFoundException e) {
             appInfo = null;
@@ -241,7 +247,16 @@ public class AppTimeDialogService extends Service {
     private void issueAppStoppedNotification() {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(AppTimeDialogService.this);
+
+        String channelId = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String CHANNEL_ID = "timesapp_app_stopped";// The id of the channel.
+            String channelName = getString(R.string.notif_app_stopped_channel_name);// The user-visible name of the channel.
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            channelId = createNotificationChannel(CHANNEL_ID, channelName, importance);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(AppTimeDialogService.this, channelId);
 
         String title = mAppName + " " + getString(R.string.app_closed_notification_title);
         builder.setContentTitle(title)
@@ -267,12 +282,17 @@ public class AppTimeDialogService extends Service {
     }
 
     private void runForegroundService() {
+
+        String channelId = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channelId = createNotificationChannel("timesapp_fg_service", "Background Service Notification", NotificationManager.IMPORTANCE_NONE);
+        }
         Intent notificationIntent = new Intent(this, ForegroundServiceActivity.class);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
 
         Intent appLaunchIntent = getPackageManager().getLaunchIntentForPackage(targetPackage);
 
@@ -281,7 +301,10 @@ public class AppTimeDialogService extends Service {
                 new NotificationCompat.Action.Builder(R.drawable.ic_exit_to_app_black_24dp,
                         "Return to " + mAppName, actionPendingIntent);
 
-        Notification notification = builder
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder.setCategory(Notification.CATEGORY_SERVICE);
+        }
+        Notification notification = builder.setOngoing(true)
                 .setContentText(getString(R.string.app_running_service_notif_text))
                 .setSubText(getString(R.string.tap_for_more_info_foreground_notif))
                 .setColor(getResources().getColor(R.color.colorPrimary))
@@ -291,5 +314,20 @@ public class AppTimeDialogService extends Service {
                 .setContentIntent(pendingIntent).build();
 
         startForeground(FOREGROUND_NOTIF_ID, notification);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel(String channelId, String channelName, int importance) {
+
+        NotificationChannel chan = new NotificationChannel(channelId,
+                channelName, importance);
+        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager != null) {
+            manager.createNotificationChannel(chan);
+        }
+        return channelId;
     }
 }

@@ -78,4 +78,5 @@
     <string name="intro_page5_title">All Set!</string>
     <string name="intro_page5_desc">Press Done to begin</string>
     <string name="intro_page1_desc">Take control of your phone usage</string>
+    <string name="notif_app_stopped_channel_name">App Stopped Notification</string>
 </resources>

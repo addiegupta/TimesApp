@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "212169058851",
+    "firebase_url": "https://timesapp-91176.firebaseio.com",
+    "project_id": "timesapp-91176",
+    "storage_bucket": "timesapp-91176.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212169058851:android:652f927df48bfdce",
+        "android_client_info": {
+          "package_name": "com.addie.timesapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "212169058851-qo8ev2uitk9aqpvc1mesmssd6sumqj60.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa5Ch-yI98G1ONn72VVM8C9RioXX2Crs0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

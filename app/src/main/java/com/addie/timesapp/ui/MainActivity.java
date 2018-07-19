@@ -35,7 +35,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,8 +62,8 @@ import com.addie.timesapp.R;
 import com.addie.timesapp.adapter.AppAdapter;
 import com.addie.timesapp.data.AppColumns;
 import com.addie.timesapp.extra.RecyclerViewDisabler;
-import com.addie.timesapp.utils.Utils;
 import com.addie.timesapp.model.App;
+import com.addie.timesapp.utils.Utils;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetSequence;
 
@@ -400,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     app.setmTitle((String) ri.loadLabel(mPackageManager));
                     app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
 
-                    Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
+                    Palette p = Palette.from(Utils.getBitmapFromDrawable(app.getmIcon())).generate();
                     app.setmAppColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
                     app.setmTextColor(Utils.getTextColor(app.getmAppColor()));
                     Timber.d("APP:" + app.getmAppColor() + " TEXT " + app.getmTextColor());
@@ -490,7 +490,8 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
      */
     private Bitmap getAppIconShortcut() throws PackageManager.NameNotFoundException {
 
-        Bitmap appIcon = ((BitmapDrawable) getPackageManager().getApplicationIcon(mSelectedApp.getmPackage())).getBitmap();
+        Drawable iconDrawable = getPackageManager().getApplicationIcon(mSelectedApp.getmPackage());
+        Bitmap appIcon = Utils.getBitmapFromDrawable(iconDrawable);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (prefs.getBoolean(getString(R.string.pref_shortcut_icon_key), true)) {
