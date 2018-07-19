@@ -113,7 +113,7 @@ public class IntroActivity extends AppIntro {
     @Override
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
-        getPager().setCurrentItem(5);
+        getPager().setCurrentItem(4);
 
     }
 

@@ -37,7 +37,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,9 +48,9 @@ import android.view.WindowManager;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.data.AppColumns;
-import com.addie.timesapp.utils.Utils;
 import com.addie.timesapp.model.App;
 import com.addie.timesapp.service.SaveAppsInDbService;
+import com.addie.timesapp.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -234,7 +233,8 @@ public class SplashActivity extends Activity {
                     app.setmTitle((String) ri.loadLabel(mPackageManager));
                     app.setmIcon(ri.activityInfo.loadIcon(mPackageManager));
 
-                    Palette p = Palette.from(((BitmapDrawable) app.getmIcon()).getBitmap()).generate();
+
+                    Palette p = Palette.from(Utils.getBitmapFromDrawable(app.getmIcon())).generate();
                     app.setmAppColor(p.getVibrantColor(getContext().getResources().getColor(R.color.black)));
                     app.setmTextColor(Utils.getTextColor(app.getmAppColor()));
                     Timber.e("APP:" + app.getmAppColor() + " TEXT " + app.getmTextColor());

@@ -35,7 +35,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -48,6 +48,7 @@ import android.widget.TextView;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.service.AppTimeDialogService;
+import com.addie.timesapp.utils.Utils;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.triggertrap.seekarc.SeekArc;
@@ -138,7 +139,8 @@ public class TimeDialog extends Dialog implements
         PackageManager pm = mContext.getPackageManager();
         Bitmap icon;
         try {
-            icon = ((BitmapDrawable) pm.getApplicationIcon(mTargetPackage)).getBitmap();
+            Drawable drawableIcon = pm.getApplicationIcon(mTargetPackage);
+            icon = Utils.getBitmapFromDrawable(drawableIcon);
             ai = pm.getApplicationInfo(mTargetPackage, 0);
         } catch (final PackageManager.NameNotFoundException e) {
             ai = null;

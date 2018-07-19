@@ -36,6 +36,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -49,6 +50,7 @@ import android.widget.Button;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.service.AppTimeDialogService;
+import com.addie.timesapp.utils.Utils;
 
 import java.util.List;
 
@@ -308,7 +310,8 @@ public class DialogActivity extends Activity {
         PackageManager pm = getPackageManager();
 
         try {
-            mAppIcon = ((BitmapDrawable) pm.getApplicationIcon(mPackageName)).getBitmap();
+            Drawable drawableIcon = pm.getApplicationIcon(mPackageName);
+            mAppIcon = Utils.getBitmapFromDrawable(drawableIcon);
             appInfo = pm.getApplicationInfo(mPackageName, 0);
         } catch (final PackageManager.NameNotFoundException e) {
             appInfo = null;
