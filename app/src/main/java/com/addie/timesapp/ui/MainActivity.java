@@ -31,12 +31,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.media.ThumbnailUtils;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -359,7 +363,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                 }).start();
 
 
-
                 mAppsRecyclerView.removeOnItemTouchListener(mRecyclerViewDisabler);
 
             }
@@ -410,10 +413,10 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     values.put(AppColumns.PACKAGE_NAME, app.getmPackage());
                     values.put(AppColumns.PALETTE_COLOR, app.getmAppColor());
                     values.put(AppColumns.TEXT_COLOR, app.getmTextColor());
-                    try{
+                    try {
 
-                    getContext().getContentResolver().insert(URI_APPS, values);
-                    }catch (Exception e){
+                        getContext().getContentResolver().insert(URI_APPS, values);
+                    } catch (Exception e) {
                         Timber.d("COULD NOT INSERT APP in Database");
                     }
                 }
@@ -460,31 +463,59 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     /**
      * Creates shortcut on home screen for selected app
+     *
      * @throws PackageManager.NameNotFoundException
      */
     public void createShortcut() throws PackageManager.NameNotFoundException {
-        Bitmap icon = getAppIconShortcut();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Drawable drawable = getPackageManager().getApplicationIcon(mSelectedApp.getmPackage());
+            Bitmap appIcon = Utils.getBitmapFromDrawable(drawable);
+
+            Icon iconDrawable = Icon.createWithBitmap(appIcon);
+
+            ShortcutInfo.Builder mShortcutInfoBuilder = new ShortcutInfo.Builder(getApplicationContext(), mSelectedApp.getmTitle());
+            mShortcutInfoBuilder.setShortLabel(mSelectedApp.getmTitle());
+            mShortcutInfoBuilder.setLongLabel(mSelectedApp.getmTitle());
+            mShortcutInfoBuilder.setIcon(iconDrawable);
+
+            Intent shortcutIntent = new Intent(getApplicationContext(), DialogActivity.class);
+            shortcutIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
+            shortcutIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmAppColor());
+            shortcutIntent.putExtra(TEXT_COLOR_KEY, mSelectedApp.getmTextColor());
+            shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
 
-        Intent shortcutintent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+            shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
+            mShortcutInfoBuilder.setIntent(shortcutIntent);
+            ShortcutInfo mShortcutInfo = mShortcutInfoBuilder.build();
+            ShortcutManager mShortcutManager = getSystemService(ShortcutManager.class);
+            mShortcutManager.requestPinShortcut(mShortcutInfo, null);
 
-        shortcutintent.putExtra("duplicate", true);
+        } else {
+            Bitmap icon = getAppIconShortcut();
 
-        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
-        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
+            Intent shortcutintent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
 
-        Intent appIntent = new Intent(getApplicationContext(), DialogActivity.class);
-        appIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
-        appIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmAppColor());
-        appIntent.putExtra(TEXT_COLOR_KEY, mSelectedApp.getmTextColor());
-        appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            shortcutintent.putExtra("duplicate", true);
 
-        shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, appIntent);
-        sendBroadcast(shortcutintent);
+            shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
+            shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_NAME, mSelectedApp.getmTitle());
+
+            Intent appIntent = new Intent(getApplicationContext(), DialogActivity.class);
+            appIntent.putExtra(TARGET_PACKAGE_KEY, mSelectedApp.getmPackage());
+            appIntent.putExtra(APP_COLOR_KEY, mSelectedApp.getmAppColor());
+            appIntent.putExtra(TEXT_COLOR_KEY, mSelectedApp.getmTextColor());
+            appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            shortcutintent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, appIntent);
+            sendBroadcast(shortcutintent);
+        }
     }
 
     /**
      * Returns an app icon which has the timer icon as overlay depending on preference
+     *
      * @return
      * @throws PackageManager.NameNotFoundException
      */
@@ -505,14 +536,14 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
             int appIconWidth = appIcon.getWidth();
             int appIconHeight = appIcon.getHeight();
 
-            Bitmap thumbBitmap = ThumbnailUtils.extractThumbnail(timerIcon, appIconWidth/3, appIconHeight/2);
+            Bitmap thumbBitmap = ThumbnailUtils.extractThumbnail(timerIcon, appIconWidth / 3, appIconHeight / 2);
 
             Bitmap bmOverlay = Bitmap.createBitmap(appIcon.getWidth(), appIcon.getHeight(), appIcon.getConfig());
             Canvas canvas = new Canvas(bmOverlay);
             canvas.drawBitmap(appIcon, new
 
                     Matrix(), null);
-            canvas.drawBitmap(thumbBitmap, appIconWidth-appIconWidth/3, appIconHeight-appIconHeight/2, null);
+            canvas.drawBitmap(thumbBitmap, appIconWidth - appIconWidth / 3, appIconHeight - appIconHeight / 2, null);
 
             return bmOverlay;
         } else

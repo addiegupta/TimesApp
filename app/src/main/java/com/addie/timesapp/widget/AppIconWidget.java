@@ -30,12 +30,13 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.service.LaunchAppFromWidgetService;
+import com.addie.timesapp.utils.Utils;
 
 /**
  * Implementation of App Widget functionality.
@@ -52,7 +53,8 @@ public class AppIconWidget extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.layout_widget_icon);
         try {
-            views.setImageViewBitmap(R.id.app_widget_icon, ((BitmapDrawable) context.getPackageManager().getApplicationIcon(packageName)).getBitmap());
+            Drawable iconDrawable = context.getPackageManager().getApplicationIcon(packageName);
+            views.setImageViewBitmap(R.id.app_widget_icon, Utils.getBitmapFromDrawable(iconDrawable));
 
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

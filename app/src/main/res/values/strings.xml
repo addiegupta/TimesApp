@@ -60,7 +60,7 @@
     <string name="why_see_notification_ans">As a security feature of the Android platform, background tasks cannot be run efficiently without showing a notification. This notification is required to keep track of the time and keep your phone usage time in control.</string>
     <string name="pref_shortcut_icon_key">pref_shortcut_icon</string>
     <string name="pref_shortcut_icon">Shortcut Timer Icon</string>
-    <string name="pref_shortcut_icon_hint">Add timer icon to the application icon on home screen</string>
+    <string name="pref_shortcut_icon_hint">Add timer icon to home screen app shortcuts</string>
     <string name="set_default_duration">Set default duration</string>
     <string name="set">Set</string>
     <string name="is_first_start">isFirstStart</string>
@@ -79,4 +79,7 @@
     <string name="intro_page5_desc">Press Done to begin</string>
     <string name="intro_page1_desc">Take control of your phone usage</string>
     <string name="notif_app_stopped_channel_name">App Stopped Notification</string>
+    <string name="pref_notification_done_key">pref_notification_done</string>
+    <string name="pref_notification_done_hint">Add button to stop timer in notification</string>
+    <string name="pref_notification_done">Stop timer button</string>
 </resources>

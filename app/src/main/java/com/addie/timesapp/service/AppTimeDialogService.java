@@ -66,6 +66,7 @@ public class AppTimeDialogService extends Service {
     private static final String TEXT_COLOR_KEY = "text_color";
     private static final int APP_STOPPED_NOTIF_ID = 77;
     private static final String CALLING_CLASS_KEY = "calling_class";
+    private static final String ACTION_STOP_SERVICE = "action_stop_service";
     private SharedPreferences preferences;
     private static final int FOREGROUND_NOTIF_ID = 104;
     private static final String DISPLAY_1_MIN = "display_1_min";
@@ -98,15 +99,26 @@ public class AppTimeDialogService extends Service {
             stopSelf();
         } else {
 
-            initialiseVariables(intent);
 
-            checkIfPermissionGrantedManually();
+            if (intent.getAction() != null && ACTION_STOP_SERVICE.equals(intent.getAction())) {
 
-            fetchAppData();
+                if (cdt!=null){
+                    cdt.cancel();
+                }
+                stopForeground(true);
+                stopSelf();
+            } else {
 
-            runForegroundService();
+                initialiseVariables(intent);
 
-            setupAndStartCDT();
+                checkIfPermissionGrantedManually();
+
+                fetchAppData();
+
+                runForegroundService();
+
+                setupAndStartCDT();
+            }
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -252,7 +264,7 @@ public class AppTimeDialogService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String CHANNEL_ID = "timesapp_app_stopped";// The id of the channel.
             String channelName = getString(R.string.notif_app_stopped_channel_name);// The user-visible name of the channel.
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+            int importance = NotificationManager.IMPORTANCE_LOW;
             channelId = createNotificationChannel(CHANNEL_ID, channelName, importance);
         }
 
@@ -285,7 +297,7 @@ public class AppTimeDialogService extends Service {
 
         String channelId = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channelId = createNotificationChannel("timesapp_fg_service", "Background Service Notification", NotificationManager.IMPORTANCE_NONE);
+            channelId = createNotificationChannel("timesapp_fg_service", "Background Service Notification", NotificationManager.IMPORTANCE_LOW);
         }
         Intent notificationIntent = new Intent(this, ForegroundServiceActivity.class);
 
@@ -303,6 +315,15 @@ public class AppTimeDialogService extends Service {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder.setCategory(Notification.CATEGORY_SERVICE);
+        }
+        if (preferences.getBoolean(getString(R.string.pref_notification_done_key), true)) {
+            Intent stopSelfIntent = new Intent(this, AppTimeDialogService.class);
+            stopSelfIntent.setAction(ACTION_STOP_SERVICE);
+            PendingIntent stopSelfPIntent = PendingIntent.getService(this, 0, stopSelfIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            NotificationCompat.Action.Builder stopActionBuilder =
+                    new NotificationCompat.Action.Builder(R.drawable.ic_clear_black_24dp,
+                            "Done", stopSelfPIntent);
+            builder.addAction(stopActionBuilder.build());
         }
         Notification notification = builder.setOngoing(true)
                 .setContentText(getString(R.string.app_running_service_notif_text))

@@ -24,7 +24,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-   <Preference
+    <Preference
         android:key= "@string/pref_app_time_key"
         android:title="@string/pref_app_time_label">
         <intent
@@ -33,12 +33,6 @@
             <extra android:name="calling_class" android:value="SettingsFragment" />
         </intent>
     </Preference>
-    <CheckBoxPreference
-        android:key="@string/pref_shortcut_icon_key"
-        android:summary="@string/pref_shortcut_icon_hint"
-        android:title="@string/pref_shortcut_icon"
-        android:defaultValue="true" />
-
     <CheckBoxPreference
         android:key="@string/pref_notification_done_key"
         android:summary="@string/pref_notification_done_hint"
