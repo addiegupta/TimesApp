@@ -88,7 +88,10 @@ public class AppTimeDialogService extends Service {
 
     @Override
     public void onDestroy() {
-        cdt.cancel();
+        if(cdt!=null){
+
+            cdt.cancel();
+        }
         super.onDestroy();
     }
 
