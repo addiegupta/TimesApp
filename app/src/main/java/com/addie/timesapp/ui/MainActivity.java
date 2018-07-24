@@ -108,12 +108,15 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     private App mSelectedApp;
     private static PackageManager mPackageManager;
     private RecyclerView.OnItemTouchListener mRecyclerViewDisabler;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 
         if (mAppsList != null) {
             if (mAppsList.isEmpty()) {
@@ -140,8 +143,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
         mAdapter.setListData(mAppsList);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        if (!preferences.contains(getString(R.string.pref_display_tap_target_apps)) || preferences.getBoolean(getString(R.string.pref_display_tap_target_apps), true)) {
+       if (!preferences.contains(getString(R.string.pref_display_tap_target_apps)) || preferences.getBoolean(getString(R.string.pref_display_tap_target_apps), true)) {
 
             mRecyclerViewDisabler = new RecyclerViewDisabler();
 
@@ -179,13 +181,8 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     @Override
     public void onClick(App selectedApp) {
         mSelectedApp = selectedApp;
-        try {
-            createShortcut();
-            Toast.makeText(this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
 
+        handleClickOperation(false);
     }
 
     /**
@@ -197,7 +194,28 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
     public void onLongClick(App selectedApp) {
         mSelectedApp = selectedApp;
 
-        showTimerDialog();
+        handleClickOperation(true);
+    }
+
+    /**
+     * Called when app is clicked/long clicked. Launches app with timer/creates shortcut depending on
+     * preference.
+     */
+    private void handleClickOperation(boolean isLongPress){
+        boolean flipLongPress = preferences.getBoolean(getString(R.string.pref_flip_long_press_key),false);
+        if((isLongPress && flipLongPress)||(!isLongPress&&!flipLongPress)){
+
+            try {
+                createShortcut();
+                Toast.makeText(this, R.string.shortcut_created, Toast.LENGTH_SHORT).show();
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
+        else{
+            showTimerDialog();
+        }
     }
 
     /**
@@ -294,7 +312,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
             mAdapter.setListData(data);
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
             if (!preferences.contains(getString(R.string.pref_display_tap_target_apps)) || preferences.getBoolean(getString(R.string.pref_display_tap_target_apps), true)) {
 
                 mRecyclerViewDisabler = new RecyclerViewDisabler();
@@ -332,10 +349,19 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                 if (mAppsRecyclerView.getChildCount() >= 8) {
                     childNum = 8;
                 }
+                String appIconTitle,appIconDescription;
+                if (preferences.getBoolean(getString(R.string.pref_flip_long_press_key),false)){
+                    appIconTitle = getString(R.string.tap_target_apps_title_flipped);
+                    appIconDescription = getString(R.string.tap_target_apps_message_flipped);
+                }
+                else{
+                    appIconTitle= getString(R.string.tap_target_apps_title);
+                    appIconDescription= getString(R.string.tap_target_apps_message);
+                }
 
                 new TapTargetSequence(MainActivity.this)
                         .targets(
-                                TapTarget.forView(mAppsRecyclerView.getChildAt(childNum).findViewById(R.id.iv_app_list_item_icon), getString(R.string.tap_target_apps_title), getString(R.string.tap_target_apps_message))
+                                TapTarget.forView(mAppsRecyclerView.getChildAt(childNum).findViewById(R.id.iv_app_list_item_icon),appIconTitle, appIconDescription)
                                         .cancelable(false).transparentTarget(true).targetRadius(60),
 
                                 TapTarget.forView(findViewById(R.id.menu_apps_action_refresh_list), "Refresh", "Reload the list of apps").cancelable(false),
@@ -346,7 +372,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
                     // to the sequence
                     @Override
                     public void onSequenceFinish() {
-                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                         preferences.edit().putBoolean(getString(R.string.pref_display_tap_target_apps), false).apply();
 
                     }
@@ -524,8 +549,7 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         Drawable iconDrawable = getPackageManager().getApplicationIcon(mSelectedApp.getmPackage());
         Bitmap appIcon = Utils.getBitmapFromDrawable(iconDrawable);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.getBoolean(getString(R.string.pref_shortcut_icon_key), true)) {
+        if (preferences.getBoolean(getString(R.string.pref_shortcut_icon_key), true)) {
             Bitmap timerIcon;
             if (mSelectedApp.getmTextColor() == 0) {
 

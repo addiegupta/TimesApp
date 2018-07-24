@@ -38,6 +38,11 @@
         android:summary="@string/pref_notification_done_hint"
         android:title="@string/pref_notification_done"
         android:defaultValue="false" />
+    <CheckBoxPreference
+        android:key="@string/pref_flip_long_press_key"
+        android:summary="@string/pref_flip_long_press_hint"
+        android:title="@string/pref_flip_long_press"
+        android:defaultValue="false" />
     <Preference
         android:key= "@string/pref_tutorial_key"
         android:title="@string/pref_tutorial_label">
