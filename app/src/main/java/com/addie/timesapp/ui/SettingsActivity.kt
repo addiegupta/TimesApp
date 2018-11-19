@@ -22,41 +22,36 @@
  * SOFTWARE.
  */
 
-package com.addie.timesapp.ui;
+package com.addie.timesapp.ui
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
-
-import com.addie.timesapp.R;
+import android.content.Intent
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
+import com.addie.timesapp.R
 
 /**
  * Settings Activity that contains fragment which has preferences for the app
  */
-public class SettingsActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+class SettingsActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-        ActionBar actionBar = this.getSupportActionBar();
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_settings)
+        val actionBar = this.supportActionBar
 
         // Set the action bar back button to look like an up button
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        actionBar?.setDisplayHomeAsUpEnabled(true)
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
 
         if (id == android.R.id.home) {
-            finish();
-            startActivity(new Intent(SettingsActivity.this,MainActivity.class));
+            finish()
+            startActivity(Intent(this@SettingsActivity, MainActivity::class.java))
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
 }
