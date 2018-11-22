@@ -22,13 +22,8 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-
-<resources>
-    <color name="colorPrimary">#8e44ad</color>
-    <color name="colorPrimaryDark">#6A3382</color>
-    <color name="colorPrimaryDarker">#560763</color>
-    <color name="colorAccent">#fbc02d</color>
-    <color name="colorAccentLight">#fedb83</color>
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/colorAccent" />
+    <corners android:radius="5dp" />
+</shape>
