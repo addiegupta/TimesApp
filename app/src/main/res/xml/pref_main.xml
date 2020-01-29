@@ -28,8 +28,8 @@
         android:key= "@string/pref_app_time_key"
         android:title="@string/pref_app_time_label">
         <intent
-            android:targetPackage="com.addie.timesapp"
-            android:targetClass="com.addie.timesapp.ui.DialogActivity">
+            android:targetPackage="com.addie.timesapp2"
+            android:targetClass="com.addie.timesapp2.ui.DialogActivity">
             <extra android:name="calling_class" android:value="SettingsFragment" />
         </intent>
     </Preference>
@@ -53,8 +53,8 @@
         android:key= "@string/pref_tutorial_key"
         android:title="@string/pref_tutorial_label">
         <intent
-            android:targetPackage="com.addie.timesapp"
-            android:targetClass="com.addie.timesapp.ui.IntroActivity">
+            android:targetPackage="com.addie.timesapp2"
+            android:targetClass="com.addie.timesapp2.ui.IntroActivity">
             <extra android:name="calling_class" android:value="SettingsFragment" />
         </intent>
     </Preference>

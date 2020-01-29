@@ -22,38 +22,20 @@
  * SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.addie.timesapp2;
 
-buildscript {
+import org.junit.Test;
 
-    apply from: 'versions.gradle'
-    apply from: 'keys.gradle'
+import static org.junit.Assert.*;
 
-    ext.kotlin_version = '1.3.30'
-
-    addRepos(repositories)
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
-        classpath 'com.google.gms:google-services:4.0.0'
-        classpath 'io.fabric.tools:gradle:1.25.4'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.30'
-
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+public class ExampleUnitTest {
+    @Test
+    public void addition_isCorrect() throws Exception {
+        assertEquals(4, 2 + 2);
     }
 }
-
-apply plugin: "kotlin"
-
-
-allprojects {
-    addRepos(repositories)
-}
-
-dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
-}
-//task clean(type: Delete) {
-//    delete rootProject.buildDir
-//}

@@ -22,38 +22,29 @@
  * SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.addie.timesapp2;
 
-buildscript {
+import android.content.Context;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-    apply from: 'versions.gradle'
-    apply from: 'keys.gradle'
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-    ext.kotlin_version = '1.3.30'
+import static org.junit.Assert.*;
 
-    addRepos(repositories)
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
-        classpath 'com.google.gms:google-services:4.0.0'
-        classpath 'io.fabric.tools:gradle:1.25.4'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.30'
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+@RunWith(AndroidJUnit4.class)
+public class ExampleInstrumentedTest {
+    @Test
+    public void useAppContext() throws Exception {
+        // Context of the app under test.
+/*        Context appContext = InstrumentationRegistry.getTargetContext();
 
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        assertEquals("com.addie.timesapp", appContext.getPackageName());*/
     }
 }
-
-apply plugin: "kotlin"
-
-
-allprojects {
-    addRepos(repositories)
-}
-
-dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
-}
-//task clean(type: Delete) {
-//    delete rootProject.buildDir
-//}

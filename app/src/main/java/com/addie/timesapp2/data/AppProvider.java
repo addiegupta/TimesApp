@@ -22,38 +22,33 @@
  * SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.addie.timesapp2.data;
 
-buildscript {
+import android.net.Uri;
 
-    apply from: 'versions.gradle'
-    apply from: 'keys.gradle'
+import com.addie.timesapp2.BuildConfig;
 
-    ext.kotlin_version = '1.3.30'
+import net.simonvt.schematic.annotation.ContentProvider;
+import net.simonvt.schematic.annotation.ContentUri;
+import net.simonvt.schematic.annotation.TableEndpoint;
 
-    addRepos(repositories)
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
-        classpath 'com.google.gms:google-services:4.0.0'
-        classpath 'io.fabric.tools:gradle:1.25.4'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.30'
+@ContentProvider(authority = AppProvider.AUTHORITY, database = AppDatabase.class)
+public class AppProvider {
 
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID;
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+    @TableEndpoint(table = AppDatabase.APPS)
+    public static class Apps {
+
+        @ContentUri(
+                path = "apps",
+                type = "vnd.android.cursor.dir/app",
+                defaultSort = AppColumns.APP_TITLE + " ASC")
+        public static final Uri URI_APPS = Uri.parse("content://" + AUTHORITY + "/apps");
+
     }
+
+
 }
 
-apply plugin: "kotlin"
 
-
-allprojects {
-    addRepos(repositories)
-}
-
-dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
-}
-//task clean(type: Delete) {
-//    delete rootProject.buildDir
-//}

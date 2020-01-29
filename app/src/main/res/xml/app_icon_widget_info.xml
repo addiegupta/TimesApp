@@ -24,7 +24,7 @@
   -->
 
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.addie.timesapp.widget.AppIconWidgetConfigureActivity"
+    android:configure="com.addie.timesapp2.widget.AppIconWidgetConfigureActivity"
     android:initialKeyguardLayout="@layout/app_icon_widget"
     android:initialLayout="@layout/app_icon_widget"
     android:minHeight="40dp"

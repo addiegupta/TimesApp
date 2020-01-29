@@ -25,29 +25,30 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.addie.timesapp">
+    package="com.addie.timesapp2">
 
     <!-- Permissions needed to access current app in use -->
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/launcher"
+        android:icon="@mipmap/launcher2"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/launcher"
+        android:roundIcon="@mipmap/launcher2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
         <activity
-            android:name="com.addie.timesapp.ui.MainActivity"
+            android:name="com.addie.timesapp2.ui.MainActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name="com.addie.timesapp.ui.DialogActivity"
+            android:name="com.addie.timesapp2.ui.DialogActivity"
             android:autoRemoveFromRecents="true"
             android:noHistory="true"
             android:theme="@style/AnimatedDialog"
@@ -61,12 +62,12 @@
         </activity>
 
         <provider
-            android:name="com.addie.timesapp.data.generated.AppProvider"
+            android:name="com.addie.timesapp2.data.generated.AppProvider"
             android:authorities="${applicationId}"
             android:exported="false" />
 
         <receiver
-            android:name="com.addie.timesapp.widget.AppIconWidget"
+            android:name="com.addie.timesapp2.widget.AppIconWidget"
             android:label="Timed App">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -78,36 +79,36 @@
         </receiver>
 
         <activity
-            android:name="com.addie.timesapp.widget.AppIconWidgetConfigureActivity">
+            android:name="com.addie.timesapp2.widget.AppIconWidgetConfigureActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
 
         <service
-            android:name="com.addie.timesapp.service.LaunchAppFromWidgetService"
+            android:name="com.addie.timesapp2.service.LaunchAppFromWidgetService"
             android:exported="false" />
 
         <activity
-            android:name="com.addie.timesapp.ui.SettingsActivity"
-            android:parentActivityName="com.addie.timesapp.ui.MainActivity">
+            android:name="com.addie.timesapp2.ui.SettingsActivity"
+            android:parentActivityName="com.addie.timesapp2.ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.addie.timesapp.ui.MainActivity" />
+                android:value="com.addie.timesapp2.ui.MainActivity" />
         </activity>
 
         <service
-            android:name="com.addie.timesapp.service.AppTimeDialogService"
+            android:name="com.addie.timesapp2.service.AppTimeDialogService"
             android:exported="false" />
 
         <activity
-            android:name="com.addie.timesapp.ui.ForegroundServiceActivity"
+            android:name="com.addie.timesapp2.ui.ForegroundServiceActivity"
             android:noHistory="true"/>
         <activity
-            android:name="com.addie.timesapp.ui.IntroActivity"
+            android:name="com.addie.timesapp2.ui.IntroActivity"
             android:theme="@style/AppFullScreenTheme" />
         <activity
-            android:name="com.addie.timesapp.ui.SplashActivity"
+            android:name="com.addie.timesapp2.ui.SplashActivity"
             android:noHistory="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -118,7 +119,7 @@
         </activity>
 
         <service
-            android:name="com.addie.timesapp.service.SaveAppsInDbService"
+            android:name="com.addie.timesapp2.service.SaveAppsInDbService"
             android:exported="false" />
     </application>
 

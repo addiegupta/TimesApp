@@ -22,38 +22,21 @@
  * SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.addie.timesapp2.ui
 
-buildscript {
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
-    apply from: 'versions.gradle'
-    apply from: 'keys.gradle'
+import com.addie.timesapp2.R
 
-    ext.kotlin_version = '1.3.30'
+/**
+ * Activity that displays the reason why foreground service notification is required
+ * Launched when foreground service notification is tapped
+ */
+class ForegroundServiceActivity : AppCompatActivity() {
 
-    addRepos(repositories)
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
-        classpath 'com.google.gms:google-services:4.0.0'
-        classpath 'io.fabric.tools:gradle:1.25.4'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.30'
-
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_foreground_service)
     }
 }
-
-apply plugin: "kotlin"
-
-
-allprojects {
-    addRepos(repositories)
-}
-
-dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
-}
-//task clean(type: Delete) {
-//    delete rootProject.buildDir
-//}
