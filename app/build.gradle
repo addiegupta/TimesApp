@@ -1,0 +1,107 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 aSoft
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'io.fabric'
+
+android {
+    signingConfigs {
+        key {
+            keyAlias pass.passwords.keyAlias
+            keyPassword pass.passwords.keyPassword
+            storeFile pass.passwords.storeFile
+            storePassword pass.passwords.storePassword
+        }
+    }
+    compileSdkVersion 29
+    defaultConfig {
+        multiDexEnabled true
+        applicationId "com.addie.timesapp"
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 7
+        versionName "1.6"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resConfigs "en"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //Other parameters
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+//            signingConfig playStoreConfig //Add your own signing config
+            pseudoLocalesEnabled false
+            zipAlignEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.key
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    // AndroidX Dependencies
+    implementation deps.androidx.appcompat
+    implementation deps.androidx.recyclerview
+    implementation deps.androidx.constraintlayout
+    implementation deps.androidx.palette
+    implementation deps.androidx.preference
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+
+    // UI Dependencies
+    implementation 'com.github.Triggertrap:SeekArc:v1.1'
+    implementation 'com.github.AppIntro:AppIntro:5.1.0'
+    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.0'
+
+    // BoilerPlate Removal Dependencies
+    implementation 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+    implementation 'com.jakewharton.timber:timber:4.6.0'
+    annotationProcessor 'net.simonvt.schematic:schematic-compiler:0.7.0'
+    implementation 'net.simonvt.schematic:schematic:0.7.0'
+
+    // Miscellaneous Dependencies
+    implementation 'com.rvalerio:fgchecker:1.1.0'
+    implementation 'com.google.firebase:firebase-core:16.0.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+apply plugin: 'com.google.gms.google-services'

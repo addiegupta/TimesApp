@@ -50,6 +50,7 @@
             android:targetPackage="com.addie.timesapp"
             android:targetClass="com.addie.timesapp.ui.IntroActivity">
             <extra android:name="calling_class" android:value="SettingsFragment" />
+            <extra android:name="@string/intro_activity_mode" android:value="intro_activity_mode_tutorial" />
         </intent>
     </Preference>
 

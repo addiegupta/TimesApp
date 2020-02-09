@@ -29,7 +29,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.support.v7.graphics.Palette;
+import androidx.palette.graphics.Palette;
 
 import com.addie.timesapp.R;
 import com.addie.timesapp.data.AppColumns;

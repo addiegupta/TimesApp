@@ -24,7 +24,7 @@
 
 package com.addie.timesapp.extra;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.MotionEvent;
 
 /**

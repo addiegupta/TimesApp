@@ -29,12 +29,13 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.preference.PreferenceManager;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,21 +45,21 @@ import android.widget.Toast;
 
 import com.addie.timesapp.R;
 
-public class PermissionSlide extends Fragment {
+public class UsagePermissionSlide extends Fragment {
 
     private static final String ARG_LAYOUT_RES_ID = "layoutResId";
     private int layoutResId;
     private SharedPreferences preferences;
     private Context mContext;
 
-    public static PermissionSlide newInstance(int layoutResId) {
-        PermissionSlide permissionSlide = new PermissionSlide();
+    public static UsagePermissionSlide newInstance(int layoutResId) {
+        UsagePermissionSlide usagePermissionSlide = new UsagePermissionSlide();
 
         Bundle args = new Bundle();
         args.putInt(ARG_LAYOUT_RES_ID, layoutResId);
-        permissionSlide.setArguments(args);
+        usagePermissionSlide.setArguments(args);
 
-        return permissionSlide;
+        return usagePermissionSlide;
     }
 
     @Override
@@ -92,7 +93,7 @@ public class PermissionSlide extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-       ImageView mCheckImageView =(ImageView) getView().findViewById(R.id.iv_permission_slide_check_state);
+       ImageView mCheckImageView =(ImageView) getView().findViewById(R.id.iv_usage_permission_slide_check_state);
 
         if (hasUsageStatsPermission(mContext)){
                 mCheckImageView.setImageResource(R.drawable.ic_check_green_24dp);
@@ -131,8 +132,7 @@ public class PermissionSlide extends Fragment {
      * Launches activity in settings to grant permission
      */
     void requestUsageStatsPermission() {
-        Toast.makeText(mContext, R.string.usage_permission_instruction, Toast.LENGTH_LONG).show();
-        startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+        startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS, Uri.parse("package:" + mContext.getPackageName())));
     }
 
     /**

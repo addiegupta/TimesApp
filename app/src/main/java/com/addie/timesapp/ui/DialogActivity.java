@@ -41,7 +41,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.Window;
@@ -94,6 +94,11 @@ public class DialogActivity extends Activity {
 
         initVariables();
 
+        // For updating to Q, need display over other apps
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.Q && !preferences.contains(getString(R.string.pref_overlay_permission_update))){
+            displayOverlayPermissionScreen();
+        }
+
         fetchAppData();
 
         Timber.d("Calling activity %s", getCallingActivity());
@@ -112,6 +117,13 @@ public class DialogActivity extends Activity {
         }
     }
 
+    private void displayOverlayPermissionScreen(){
+
+        Intent intent = new Intent(DialogActivity.this,IntroActivity.class);
+        intent.putExtra(getString(R.string.intro_activity_mode),getString(R.string.intro_activity_mode_overlay_update));
+        startActivity(intent);
+        finish();
+    }
     /**
      * Initialises values of variables to be used from starting intent and preferencemanager
      */

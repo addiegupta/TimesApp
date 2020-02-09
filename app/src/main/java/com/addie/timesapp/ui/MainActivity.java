@@ -43,18 +43,18 @@ import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
-import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.palette.graphics.Palette;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -117,7 +117,10 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
         ButterKnife.bind(this);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-
+        // For updating to Q, need display over other apps permission
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.Q && !preferences.contains(getString(R.string.pref_overlay_permission_update))){
+            displayOverlayPermissionScreen();
+        }
         if (mAppsList != null) {
             if (mAppsList.isEmpty()) {
 
@@ -290,6 +293,13 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.AppOnC
 
     }
 
+    private void displayOverlayPermissionScreen(){
+
+        Intent intent = new Intent(MainActivity.this,IntroActivity.class);
+        intent.putExtra(getString(R.string.intro_activity_mode),getString(R.string.intro_activity_mode_overlay_update));
+        startActivity(intent);
+        finish();
+    }
     private LoaderManager.LoaderCallbacks<ArrayList> fetchAppsListener
             = new LoaderManager.LoaderCallbacks<ArrayList>() {
         @NonNull

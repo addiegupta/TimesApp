@@ -27,8 +27,8 @@ package com.addie.timesapp.ui
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import com.addie.timesapp.R
 import com.github.paolorotolo.appintro.AppIntro
 import com.github.paolorotolo.appintro.AppIntroFragment
@@ -41,17 +41,55 @@ class IntroActivity : AppIntro() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this@IntroActivity)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            preferences.edit().putBoolean(getString(R.string.pref_overlay_permission_update), true).apply()
+        }
+
         mCallingClass = ""
         if (intent.hasExtra(CALLING_CLASS_KEY)) {
             mCallingClass = intent.getStringExtra(CALLING_CLASS_KEY)
             if (mCallingClass == "SettingsFragment") {
-                val preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this@IntroActivity)
                 preferences.edit().putBoolean(getString(R.string.pref_display_tap_target_apps), true).apply()
 
                 preferences.edit().putBoolean(getString(R.string.pref_display_tap_target_time_dialog), true).apply()
             }
         }
 
+        val introMode = intent.getStringExtra(getString(R.string.intro_activity_mode))
+        if (introMode == getString(R.string.intro_activity_mode_tutorial)) {
+            launchTutorialMode()
+        } else if (introMode == getString(R.string.intro_activity_mode_overlay_update)) {
+            launchOverlayMode()
+        }
+
+
+    }
+
+    fun launchOverlayMode() {
+
+        val donePage = SliderPage()
+        donePage.apply {
+
+            title = getString(R.string.intro_page5_title)
+            description = getString(R.string.intro_page5_desc)
+            imageDrawable = R.drawable.ic_check_circle_big_green_128dp
+            bgColor = resources.getColor(R.color.colorPrimaryDark)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            addSlide(OverlayPermissionSlide.newInstance(R.layout.fragment_overlay_permission_slide))
+        }
+        addSlide(AppIntroFragment.newInstance(donePage))
+
+        isProgressButtonEnabled = true
+        showSeparator(false)
+        showStatusBar(false)
+        setFadeAnimation()
+    }
+
+    fun launchTutorialMode() {
         val page1 = SliderPage()
         page1.title = getString(R.string.app_name)
         page1.description = getString(R.string.intro_page1_desc)
@@ -87,7 +125,10 @@ class IntroActivity : AppIntro() {
         addSlide(AppIntroFragment.newInstance(page3))
         addSlide(AppIntroFragment.newInstance(page4))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            addSlide(PermissionSlide.newInstance(R.layout.fragment_permission_slide))
+            addSlide(UsagePermissionSlide.newInstance(R.layout.fragment_usage_permission_slide))
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            addSlide(OverlayPermissionSlide.newInstance(R.layout.fragment_overlay_permission_slide))
         }
         addSlide(AppIntroFragment.newInstance(page5))
 

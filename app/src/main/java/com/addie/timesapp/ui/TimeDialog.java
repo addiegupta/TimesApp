@@ -38,7 +38,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
@@ -46,6 +45,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.preference.PreferenceManager;
 import com.addie.timesapp.R;
 import com.addie.timesapp.service.AppTimeDialogService;
 import com.addie.timesapp.utils.Utils;
@@ -125,7 +125,7 @@ public class TimeDialog extends Dialog implements
      */
     private void initViews(){
         // Display tap target views if not shown earlier
-        preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
+        preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (!preferences.contains(mContext.getString(R.string.pref_display_tap_target_time_dialog))|| preferences.getBoolean(mContext.getString(R.string.pref_display_tap_target_time_dialog),true)) {
             displayTapTargetView();
         }

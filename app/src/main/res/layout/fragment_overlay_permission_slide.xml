@@ -37,7 +37,7 @@
         android:layout_weight="2"
         android:gravity="center"
         android:textColor="@color/white"
-        android:text="Usage Permission Required"
+        android:text="Overlay Permission Required"
         android:textSize="28sp"
         android:textStyle="bold" />
 
@@ -50,10 +50,10 @@
         android:textAlignment="center"
         android:padding="32dp"
         android:textColor="@color/white"
-        android:text="@string/usage_permission_message"/>
+        android:text="@string/overlay_permission_message"/>
 
     <Button
-        android:id="@+id/btn_usage_permission"
+        android:id="@+id/btn_popup_permission"
         android:layout_width="wrap_content"
         style="@style/Base.Widget.AppCompat.Button"
         android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:id="@+id/iv_permission_slide_check_state"
+            android:id="@+id/iv_overlay_permission_slide_check_state"
             android:src="@drawable/ic_clear_red_24dp"/>
     </LinearLayout>
 
