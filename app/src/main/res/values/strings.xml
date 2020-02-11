@@ -43,7 +43,7 @@
     <string name="tap_target_apps_message">Long click to launch app</string>
     <string name="tap_target_apps_message_flipped">Long click to add app shortcut to home screen</string>
     <string name="pref_display_tap_target_apps">display_tap_target_apps</string>
-    <string name="pref_overlay_permission_update">display_tap_target_apps</string>
+    <string name="pref_overlay_permission_update">pref_overlay_permission_update</string>
     <string name="usage_permission_title">Usage Permission Access</string>
     <string name="usage_permission_message">&appname; requires access to your app usage statistics for a better experience. The only data accessed is the name of the app being used.No data is saved.</string>
     <string name="overlay_permission_message">&appname; requires permission to display over other apps in order to display a dialog when specified time has passed (Android 10 onwards)</string>
