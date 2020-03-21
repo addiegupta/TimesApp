@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
@@ -147,8 +148,11 @@ public class OverlayPermissionSlide extends Fragment {
     /**
      * Launches activity in settings to grant permission
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     void requestOverlayPermission() {
-        startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + mContext.getPackageName())), ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
+        Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+        Toast.makeText(mContext, R.string.overlay_permission_instruction, Toast.LENGTH_LONG).show();
+        startActivityForResult(overlayIntent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
     }
 
     /**

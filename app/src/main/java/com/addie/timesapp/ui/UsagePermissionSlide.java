@@ -34,6 +34,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -131,8 +132,10 @@ public class UsagePermissionSlide extends Fragment {
     /**
      * Launches activity in settings to grant permission
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     void requestUsageStatsPermission() {
-        startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS, Uri.parse("package:" + mContext.getPackageName())));
+        Toast.makeText(mContext, R.string.usage_permission_instruction, Toast.LENGTH_LONG).show();
+        startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
     }
 
     /**
